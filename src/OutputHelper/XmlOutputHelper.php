@@ -44,7 +44,7 @@ class XmlOutputHelper implements OutputHelperInterface
     /**
      * @throws InvalidArgumentException If the value of an attribute is not a string.
      */
-    protected function createAttributesHtml(array $attributes): string
+    public function createAttributesHtml(array $attributes): string
     {
         if (!$attributes) {
             return '';

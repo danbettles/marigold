@@ -168,4 +168,36 @@ class XmlOutputHelperTest extends AbstractTestCase
 
         $this->assertSame($expected, $helper->escape($input));
     }
+
+    public function providesAttributesHtml(): array
+    {
+        return [
+            [
+                '',
+                [],
+            ],
+            [
+                'foo="bar"',
+                ['foo' => 'bar'],
+            ],
+            [
+                'foo="bar" baz="qux"',
+                ['foo' => 'bar', 'baz' => 'qux'],
+            ],
+            [
+                'foo="&amp;&quot;&apos;&lt;&gt;"',
+                ['foo' => '&"\'<>'],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider providesAttributesHtml
+     */
+    public function testCreateattributeshtml($expected, $input)
+    {
+        $helper = new XmlOutputHelper();
+
+        $this->assertSame($expected, $helper->createAttributesHtml($input));
+    }
 }
