@@ -8,7 +8,7 @@ use BadMethodCallException;
 use DanBettles\Marigold\OutputHelper\Html5OutputHelper;
 use DanBettles\Marigold\OutputHelper\XmlOutputHelper;
 use DanBettles\Marigold\Tests\AbstractTestCase;
-use DomainException;
+use RangeException;
 use ReflectionClass;
 
 class Html5OutputHelperTest extends AbstractTestCase
@@ -103,7 +103,7 @@ class Html5OutputHelperTest extends AbstractTestCase
 
     public function testCreateelThrowsAnExceptionIfAnAttemptIsMadeToCreateAVoidElementWithContent()
     {
-        $this->expectException(DomainException::class);
+        $this->expectException(RangeException::class);
         $this->expectExceptionMessage('Content was passed: a void element may not have content.');
 
         (new Html5OutputHelper())->createEl('br', 'foo');

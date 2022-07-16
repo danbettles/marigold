@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace DanBettles\Marigold\OutputHelper;
 
 use BadMethodCallException;
-use DomainException;
+use RangeException;
 use ReflectionMethod;
 
 use function array_unshift;
@@ -50,7 +50,7 @@ class Html5OutputHelper extends XmlOutputHelper
     }
 
     /**
-     * @throws DomainException If content was passed when creating a void element.
+     * @throws RangeException If content was passed when creating a void element.
      */
     protected function createElement(
         string $tagName,
@@ -60,7 +60,7 @@ class Html5OutputHelper extends XmlOutputHelper
         // See https://html.spec.whatwg.org/multipage/syntax.html#void-elements
         if (in_array($tagName, self::TAG_NAMES_BY_TYPE['void'])) {
             if (null !== $content) {
-                throw new DomainException('Content was passed: a void element may not have content.');
+                throw new RangeException('Content was passed: a void element may not have content.');
             }
 
             $attributesHtml = $this->createAttributesHtml($attributes);
