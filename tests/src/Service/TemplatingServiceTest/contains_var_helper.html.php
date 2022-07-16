@@ -1,1 +1,1 @@
-<?= spl_object_id($helper) ?>
+<?= get_class($helper) ?>

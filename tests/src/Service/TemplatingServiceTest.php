@@ -7,6 +7,10 @@ namespace DanBettles\Marigold\Tests\Service;
 use DanBettles\Marigold\OutputHelper\OutputHelperInterface;
 use DanBettles\Marigold\Service\TemplatingService;
 use DanBettles\Marigold\Tests\AbstractTestCase;
+use DanBettles\Marigold\Tests\Service\TemplatingServiceTest\NotAnOutputHelper;
+use DanBettles\Marigold\Tests\Service\TemplatingServiceTest\OutputHelper;
+use RangeException;
+use stdClass;
 
 use function spl_object_id;
 
@@ -62,19 +66,150 @@ class TemplatingServiceTest extends AbstractTestCase
         $this->assertSame((string) spl_object_id($service), $output);
     }
 
-    public function testRenderPassesAnAppropriateOutputHelperToTheTemplateIfItsNameFollowsTheConvention()
+    public function providesInjectedOutputHelperClassNames(): array
     {
-        $outputHelperStub = $this->createStub(OutputHelperInterface::class);
-
-        $service = new TemplatingService([
-            'output_helpers' => [
-                'html' => $outputHelperStub,
+        return [
+            [
+                OutputHelper::class,
+                [
+                    'output_helpers' => [
+                        'html' => new OutputHelper(),
+                    ],
+                ],
             ],
-        ]);
+            // Lazy loading:
+            [
+                OutputHelper::class,
+                [
+                    'output_helpers' => [
+                        'html' => OutputHelper::class,
+                    ],
+                ],
+            ],
+            [
+                OutputHelper::class,
+                [
+                    'output_helpers' => [
+                        'html' => function () {
+                            return new OutputHelper();
+                        },
+                    ],
+                ],
+            ],
+        ];
+    }
 
-        $output = $service->render($this->createFixturePathname('contains_var_helper.html.php'), []);
+    /**
+     * @dataProvider providesInjectedOutputHelperClassNames
+     */
+    public function testRenderInjectsAnAppropriateOutputHelperIfTheNameOfTheTemplateFollowsTheConvention(
+        string $expectedClassName,
+        array $serviceConfig
+    ) {
+        $output = (new TemplatingService($serviceConfig))
+            ->render($this->createFixturePathname('contains_var_helper.html.php'), [])
+        ;
 
-        $this->assertSame((string) spl_object_id($outputHelperStub), $output);
+        $this->assertSame($expectedClassName, $output);
+    }
+
+    public function testRenderThrowsAnExceptionIfTheOutputHelperClassDoesNotExist()
+    {
+        $nonExistentClassName = __CLASS__ . '\\NonExistent';
+
+        $this->expectException(RangeException::class);
+        $this->expectExceptionMessage("The output-helper class `{$nonExistentClassName}` does not exist.");
+
+        (new TemplatingService([
+            'output_helpers' => [
+                'html' => $nonExistentClassName,
+            ],
+        ]))
+            ->render($this->createFixturePathname('empty_file'), [])
+        ;
+    }
+
+    public function testRenderThrowsAnExceptionIfTheOutputHelperClassIsNotAnOutputHelper()
+    {
+        $notAnOutputHelperClassName = NotAnOutputHelper::class;
+        $outputHelperBaseName = OutputHelperInterface::class;
+
+        $this->expectException(RangeException::class);
+        $this->expectExceptionMessage("The helper for `html` output, `{$notAnOutputHelperClassName}`, does not implement `{$outputHelperBaseName}`.");
+
+        (new TemplatingService([
+            'output_helpers' => [
+                'html' => $notAnOutputHelperClassName,
+            ],
+        ]))
+            ->render($this->createFixturePathname('empty_file'), [])
+        ;
+    }
+
+    public function testRenderThrowsAnExceptionIfTheOutputHelperClosureDoesNotReturnAnObject()
+    {
+        $this->expectException(RangeException::class);
+        $this->expectExceptionMessage("The output-helper factory for `html` output does not return an object.");
+
+        (new TemplatingService([
+            'output_helpers' => [
+                'html' => function () {
+                },
+            ],
+        ]))
+            ->render($this->createFixturePathname('empty_file'), [])
+        ;
+    }
+
+    public function testRenderThrowsAnExceptionIfTheOutputHelperClosureDoesNotReturnAnOutputHelper()
+    {
+        $outputHelperBaseName = OutputHelperInterface::class;
+
+        $this->expectException(RangeException::class);
+        $this->expectExceptionMessage("The helper for `html` output, `stdClass`, does not implement `{$outputHelperBaseName}`.");
+
+        (new TemplatingService([
+            'output_helpers' => [
+                'html' => function () {
+                    return new stdClass();
+                },
+            ],
+        ]))
+            ->render($this->createFixturePathname('empty_file'), [])
+        ;
+    }
+
+    public function providesInvalidOutputHelpers(): array
+    {
+        // Garbage.
+        return [
+            [
+                123,
+            ],
+            [
+                1.23,
+            ],
+            [
+                [],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider providesInvalidOutputHelpers
+     */
+    public function testRenderThrowsAnExceptionIfTheOutputHelperDoesNotResolveToAnOutputHelper($invalid)
+    {
+        $this->expectException(RangeException::class);
+        $this->expectExceptionMessage("The output-helper config for `html` format is invalid: it must be a class name, a closure, or an object.");
+
+        (new TemplatingService([
+            'output_helpers' => [
+                'html' => $invalid,
+            ],
+        ]))
+            ->render($this->createFixturePathname('empty_file'), [])
+        ;
     }
 
     public function testUsesTheTemplatesDirConfigIfSet()
