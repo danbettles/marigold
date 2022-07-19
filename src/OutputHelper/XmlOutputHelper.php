@@ -21,12 +21,7 @@ use const null;
  */
 class XmlOutputHelper implements OutputHelperInterface
 {
-    private ?string $encoding;
-
-    public function __construct(?string $encoding = null)
-    {
-        $this->setEncoding($encoding);
-    }
+    private ?string $encoding = null;
 
     /**
      * Will not encode existing entities.
@@ -106,13 +101,13 @@ class XmlOutputHelper implements OutputHelperInterface
         return $this->createElement($tagName, $attributes, $content);
     }
 
-    private function setEncoding(?string $encoding): self
+    public function setEncoding(?string $encoding): self
     {
         $this->encoding = $encoding;
         return $this;
     }
 
-    protected function getEncoding(): ?string
+    public function getEncoding(): ?string
     {
         return $this->encoding;
     }

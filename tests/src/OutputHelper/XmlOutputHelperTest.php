@@ -8,6 +8,7 @@ use DanBettles\Marigold\OutputHelper\OutputHelperInterface;
 use DanBettles\Marigold\OutputHelper\XmlOutputHelper;
 use DanBettles\Marigold\Tests\AbstractTestCase;
 use InvalidArgumentException;
+use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionClass;
 use stdClass;
 
@@ -21,6 +22,18 @@ class XmlOutputHelperTest extends AbstractTestCase
         $class = new ReflectionClass(XmlOutputHelper::class);
 
         $this->assertTrue($class->implementsInterface(OutputHelperInterface::class));
+    }
+
+    public function testEncodingAccessors()
+    {
+        $helper = new XmlOutputHelper();
+
+        $this->assertNull($helper->getEncoding());
+
+        $something = $helper->setEncoding('UTF-8');
+
+        $this->assertSame('UTF-8', $helper->getEncoding());
+        $this->assertSame($helper, $something);
     }
 
     public function testCreateelCreatesAnElement()
@@ -167,6 +180,33 @@ class XmlOutputHelperTest extends AbstractTestCase
         $helper = new XmlOutputHelper();
 
         $this->assertSame($expected, $helper->escape($input));
+    }
+
+    public function testEscapeUsesTheEncoding()
+    {
+        // Something weird so we can easily see that the encoding is used.
+        $japaneseEncoding = 'SJIS';
+
+        /** @var MockObject|XmlOutputHelper */
+        $helperMock = $this
+            ->getMockBuilder(XmlOutputHelper::class)
+            ->onlyMethods(['getEncoding'])
+            ->getMock()
+        ;
+
+        $helperMock
+            ->method('getEncoding')
+            ->willReturn($japaneseEncoding)
+        ;
+
+        $helperMock
+            ->expects($this->once())
+            ->method('getEncoding')
+        ;
+
+        $sourceUtf8Str = 'Ā';
+
+        $this->assertNotSame($sourceUtf8Str, $helperMock->escape($sourceUtf8Str));
     }
 
     public function providesAttributesHtml(): array

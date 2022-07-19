@@ -42,13 +42,6 @@ class Html5OutputHelper extends XmlOutputHelper
 
     private ReflectionMethod $createEl;
 
-    public function __construct(?string $encoding = null)
-    {
-        parent::__construct($encoding);
-
-        $this->setCreateEl(new ReflectionMethod(__CLASS__, 'createEl'));
-    }
-
     /**
      * @throws RangeException If content was passed when creating a void element.
      */
@@ -94,14 +87,12 @@ class Html5OutputHelper extends XmlOutputHelper
         return $this->getCreateEl()->invokeArgs($this, $arguments);
     }
 
-    private function setCreateEl(ReflectionMethod $reflectionMethod): self
-    {
-        $this->createEl = $reflectionMethod;
-        return $this;
-    }
-
     private function getCreateEl(): ReflectionMethod
     {
+        if (!isset($this->createEl)) {
+            $this->createEl = new ReflectionMethod(__CLASS__, 'createEl');
+        }
+
         return $this->createEl;
     }
 }
