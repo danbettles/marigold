@@ -39,7 +39,7 @@ class XmlOutputHelper implements OutputHelperInterface
     /**
      * @throws InvalidArgumentException If the value of an attribute is not a string.
      */
-    public function createAttributesHtml(array $attributes): string
+    public function createAttributes(array $attributes): string
     {
         if (!$attributes) {
             return '';
@@ -63,15 +63,15 @@ class XmlOutputHelper implements OutputHelperInterface
         array $attributes,
         ?string $content
     ): string {
-        $attributesHtml = $this->createAttributesHtml($attributes);
+        $attributesStr = $this->createAttributes($attributes);
 
-        if ($attributesHtml) {
-            $attributesHtml = " {$attributesHtml}";
+        if ($attributesStr) {
+            $attributesStr = " {$attributesStr}";
         }
 
         return null === $content
-            ? "<{$tagName}{$attributesHtml}/>"
-            : "<{$tagName}{$attributesHtml}>{$content}</{$tagName}>"
+            ? "<{$tagName}{$attributesStr}/>"
+            : "<{$tagName}{$attributesStr}>{$content}</{$tagName}>"
         ;
     }
 

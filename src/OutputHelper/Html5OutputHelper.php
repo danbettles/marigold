@@ -56,13 +56,13 @@ class Html5OutputHelper extends XmlOutputHelper
                 throw new RangeException('Content was passed: a void element may not have content.');
             }
 
-            $attributesHtml = $this->createAttributesHtml($attributes);
+            $attributesStr = $this->createAttributes($attributes);
 
-            if ($attributesHtml) {
-                $attributesHtml = " {$attributesHtml}";
+            if ($attributesStr) {
+                $attributesStr = " {$attributesStr}";
             }
 
-            return "<{$tagName}{$attributesHtml}>";
+            return "<{$tagName}{$attributesStr}>";
         }
 
         return parent::createElement($tagName, $attributes, $content);

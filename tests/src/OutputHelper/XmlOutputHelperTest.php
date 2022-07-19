@@ -209,7 +209,7 @@ class XmlOutputHelperTest extends AbstractTestCase
         $this->assertNotSame($sourceUtf8Str, $helperMock->escape($sourceUtf8Str));
     }
 
-    public function providesAttributesHtml(): array
+    public function providesAttributesStrings(): array
     {
         return [
             [
@@ -232,12 +232,12 @@ class XmlOutputHelperTest extends AbstractTestCase
     }
 
     /**
-     * @dataProvider providesAttributesHtml
+     * @dataProvider providesAttributesStrings
      */
-    public function testCreateattributeshtml($expected, $input)
+    public function testCreateattributes($expected, $input)
     {
         $helper = new XmlOutputHelper();
 
-        $this->assertSame($expected, $helper->createAttributesHtml($input));
+        $this->assertSame($expected, $helper->createAttributes($input));
     }
 }
