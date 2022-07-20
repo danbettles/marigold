@@ -7,6 +7,7 @@ namespace DanBettles\Marigold;
 use InvalidArgumentException;
 
 use function extract;
+use function file_get_contents;
 use function is_file;
 use function ob_end_clean;
 use function ob_get_contents;
@@ -38,6 +39,10 @@ class PhpTemplate
 
     public function render(array $_VARIABLES = []): string
     {
+        if ('php' !== $this->getFileExtension()) {
+            return file_get_contents($this->getPathname());
+        }
+
         $__FILE__ = $this->getPathname();
 
         return (static function () use ($__FILE__, $_VARIABLES) {
