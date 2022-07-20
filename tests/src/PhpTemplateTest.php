@@ -11,6 +11,8 @@ use function ob_get_length;
 use function ob_end_clean;
 use function ob_start;
 
+use const null;
+
 class PhpTemplateTest extends AbstractTestCase
 {
     public function testIsConstructedWithThePathnameOfATemplate()
@@ -116,7 +118,7 @@ class PhpTemplateTest extends AbstractTestCase
                 $this->createFixturePathname('test_getoutputformat.xml.php'),
             ],
             [
-                'json',
+                'json',  // Normalized, see.
                 $this->createFixturePathname('test_getoutputformat.JSON.php'),
             ],
         ];
@@ -130,5 +132,33 @@ class PhpTemplateTest extends AbstractTestCase
         $template = new PhpTemplate($templatePathname);
 
         $this->assertSame($expectedFormat, $template->getOutputFormat());
+    }
+
+    public function providesTemplateFileExtensions(): array
+    {
+        return [
+            [
+                null,
+                $this->createFixturePathname('empty_file'),
+            ],
+            [
+                'txt',
+                $this->createFixturePathname('hello_world.txt'),
+            ],
+            [
+                'php',
+                $this->createFixturePathname('goodbye_cruel_world.php'),
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider providesTemplateFileExtensions
+     */
+    public function testGetfileextensionReturnsTheExtensionOfTheFile($expectedFileExtension, $templatePathname)
+    {
+        $template = new PhpTemplate($templatePathname);
+
+        $this->assertSame($expectedFileExtension, $template->getFileExtension());
     }
 }

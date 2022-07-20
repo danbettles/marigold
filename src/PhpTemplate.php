@@ -15,6 +15,7 @@ use function preg_match;
 use function strtolower;
 
 use const null;
+use const PREG_UNMATCHED_AS_NULL;
 
 class PhpTemplate
 {
@@ -24,6 +25,11 @@ class PhpTemplate
     private string $pathname;
 
     private string $outputFormat;
+
+    /**
+     * The pathname *may* contain the file extension.
+     */
+    private ?string $fileExtension;
 
     public function __construct(string $pathname)
     {
@@ -58,6 +64,17 @@ class PhpTemplate
         return $this->outputFormat;
     }
 
+    private function setFileExtension(?string $extension): self
+    {
+        $this->fileExtension = $extension;
+        return $this;
+    }
+
+    public function getFileExtension(): ?string
+    {
+        return $this->fileExtension;
+    }
+
     /**
      * @throws InvalidArgumentException If the template file does not exist.
      */
@@ -69,14 +86,31 @@ class PhpTemplate
 
         $this->pathname = $pathname;
 
-        $matches = null;
-        $pathnameContainsOutputFormat = (bool) preg_match('~\.([a-zA-Z]+)\.[a-zA-Z]+$~', $this->pathname, $matches);
+        $extensionPattern = '\.([a-zA-Z]+)';
+        $extensionMatches = [];
 
-        $this->setOutputFormat(
-            $pathnameContainsOutputFormat
-                ? $matches[1]
-                : self::DEFAULT_OUTPUT_FORMAT
+        preg_match(
+            "~(?:{$extensionPattern})?(?:{$extensionPattern})$~",
+            $this->pathname,
+            $extensionMatches,
+            PREG_UNMATCHED_AS_NULL
         );
+
+        $outputFormat = null;
+        $fileExtension = null;
+
+        if ($extensionMatches) {
+            list(, $outputFormat, $fileExtension) = $extensionMatches;
+        }
+
+        $this
+            ->setOutputFormat(
+                null === $outputFormat
+                    ? self::DEFAULT_OUTPUT_FORMAT
+                    : $outputFormat
+            )
+            ->setFileExtension($fileExtension)
+        ;
 
         return $this;
     }
