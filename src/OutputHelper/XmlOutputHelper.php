@@ -52,7 +52,7 @@ class XmlOutputHelper implements OutputHelperInterface
                 throw new InvalidArgumentException("The value of attribute `{$name}` is not a string.");
             }
 
-            $pairs[] = $name . '="' . $this->escape((string) $value) . '"';
+            $pairs[] = $name . '="' . $this->escape($value) . '"';
         }
 
         return implode(' ', $pairs);
