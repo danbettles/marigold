@@ -106,7 +106,7 @@ class PhpTemplateTest extends AbstractTestCase
     {
         return [
             [
-                'html',
+                null,
                 $this->createFixturePathname('test_getoutputformat.php'),
             ],
             [

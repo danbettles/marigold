@@ -47,7 +47,9 @@ class TemplatingService
      */
     private function createOutputHelperFromTemplate(PhpTemplate $template): ?OutputHelperInterface
     {
-        $outputFormat = $template->getOutputFormat();
+        $outputFormat = $template->getOutputFormat()
+            ?: 'html'
+        ;
 
         $classNameOrClosure = $this->getConfig()['output_helpers'][$outputFormat]
             ?? null

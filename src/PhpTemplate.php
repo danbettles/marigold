@@ -19,12 +19,12 @@ use const PREG_UNMATCHED_AS_NULL;
 
 class PhpTemplate
 {
-    /** @var string */
-    private const DEFAULT_OUTPUT_FORMAT = 'html';
-
     private string $pathname;
 
-    private string $outputFormat;
+    /**
+     * The pathname *may* contain the output format.
+     */
+    private ?string $outputFormat;
 
     /**
      * The pathname *may* contain the file extension.
@@ -53,13 +53,17 @@ class PhpTemplate
         })();
     }
 
-    private function setOutputFormat(string $format): self
+    private function setOutputFormat(?string $format): self
     {
-        $this->outputFormat = strtolower($format);
+        $this->outputFormat = null === $format
+            ? $format
+            : strtolower($format)
+        ;
+
         return $this;
     }
 
-    public function getOutputFormat(): string
+    public function getOutputFormat(): ?string
     {
         return $this->outputFormat;
     }
@@ -104,11 +108,7 @@ class PhpTemplate
         }
 
         $this
-            ->setOutputFormat(
-                null === $outputFormat
-                    ? self::DEFAULT_OUTPUT_FORMAT
-                    : $outputFormat
-            )
+            ->setOutputFormat($outputFormat)
             ->setFileExtension($fileExtension)
         ;
 
