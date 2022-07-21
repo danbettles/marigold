@@ -36,9 +36,11 @@ class XmlOutputHelper implements OutputHelperInterface
         );
     }
 
-    /**
-     * @throws InvalidArgumentException If the value of an attribute is not a string.
-     */
+    private function createAttribute(string $name, string $value): string
+    {
+        return $name . '="' . $this->escape($value) . '"';
+    }
+
     public function createAttributes(array $attributes): string
     {
         if (!$attributes) {
@@ -48,11 +50,7 @@ class XmlOutputHelper implements OutputHelperInterface
         $pairs = [];
 
         foreach ($attributes as $name => $value) {
-            if (!is_string($value)) {
-                throw new InvalidArgumentException("The value of attribute `{$name}` is not a string.");
-            }
-
-            $pairs[] = $name . '="' . $this->escape($value) . '"';
+            $pairs[] = $this->createAttribute($name, $value);
         }
 
         return implode(' ', $pairs);

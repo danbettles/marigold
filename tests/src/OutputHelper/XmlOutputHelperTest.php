@@ -95,9 +95,8 @@ class XmlOutputHelperTest extends AbstractTestCase
      */
     public function testCreateelThrowsAnExceptionIfTheValueOfAnAttributeIsInvalid(array $attributesWithInvalidValues)
     {
-        $this->expectException(InvalidArgumentException::class);
-        // @todo Improve this?
-        $this->expectExceptionMessage('The value of attribute `bar` is not a string.');
+        $this->expectError();
+        $this->expectErrorMessage('Argument #2 ($value) must be of type string, ');
 
         (new XmlOutputHelper())->createEl('foo', $attributesWithInvalidValues);
     }
