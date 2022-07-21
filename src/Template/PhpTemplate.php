@@ -50,17 +50,20 @@ class PhpTemplate implements TemplateInterface
     /**
      * @inheritDoc
      */
-    public function render(array $vars = []): string
+    public function render(array $variables = []): string
     {
         $__FILE__ = $this->getPathname();
+        $__VARS__ = $variables;
 
-        return (static function () use ($__FILE__, $vars) {
+        return (static function () use ($__FILE__, $__VARS__) {
             ob_start();
 
             try {
-                extract($vars);
-                unset($vars);  // (Aiming to expose as little as possible.)
+                extract($__VARS__);
+                unset($__VARS__);  // (Aiming to expose as little as possible.)
+
                 require $__FILE__;
+
                 return ob_get_contents();
             } finally {
                 ob_end_clean();
