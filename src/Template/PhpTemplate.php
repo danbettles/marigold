@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DanBettles\Marigold;
+namespace DanBettles\Marigold\Template;
 
 use InvalidArgumentException;
 
@@ -18,7 +18,7 @@ use function strtolower;
 use const null;
 use const PREG_UNMATCHED_AS_NULL;
 
-class PhpTemplate
+class PhpTemplate implements TemplateInterface
 {
     private string $pathname;
 
@@ -37,6 +37,9 @@ class PhpTemplate
         $this->setPathname($pathname);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function render(array $_VARIABLES = []): string
     {
         if ('php' !== $this->getFileExtension()) {
@@ -68,6 +71,9 @@ class PhpTemplate
         return $this;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getOutputFormat(): ?string
     {
         return $this->outputFormat;

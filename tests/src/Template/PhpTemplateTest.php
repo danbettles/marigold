@@ -2,10 +2,13 @@
 
 declare(strict_types=1);
 
-namespace DanBettles\Marigold\Tests;
+namespace DanBettles\Marigold\Tests\Template;
 
-use DanBettles\Marigold\PhpTemplate;
+use DanBettles\Marigold\Template\PhpTemplate;
+use DanBettles\Marigold\Template\TemplateInterface;
+use DanBettles\Marigold\Tests\AbstractTestCase;
 use InvalidArgumentException;
+use ReflectionClass;
 
 use function ob_get_length;
 use function ob_end_clean;
@@ -15,6 +18,13 @@ use const null;
 
 class PhpTemplateTest extends AbstractTestCase
 {
+    public function testIsATemplate()
+    {
+        $class = new ReflectionClass(PhpTemplate::class);
+
+        $this->assertTrue($class->implementsInterface(TemplateInterface::class));
+    }
+
     public function testIsConstructedWithThePathnameOfATemplate()
     {
         $pathname = $this->createFixturePathname('empty_file');

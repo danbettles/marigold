@@ -6,7 +6,7 @@ namespace DanBettles\Marigold\Service;
 
 use Closure;
 use DanBettles\Marigold\OutputHelper\OutputHelperInterface;
-use DanBettles\Marigold\PhpTemplate;
+use DanBettles\Marigold\Template\PhpTemplate;
 use RangeException;
 
 use function class_exists;
