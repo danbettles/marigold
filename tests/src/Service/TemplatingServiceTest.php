@@ -53,7 +53,7 @@ class TemplatingServiceTest extends AbstractTestCase
     public function testRenderDoesNotRequireVars()
     {
         $service = new TemplatingService();
-        $output = $service->render($this->createFixturePathname('hello_world.txt'));
+        $output = $service->render($this->createFixturePathname('hello_world.php'));
 
         $this->assertSame('Hello, world!', $output);
     }
@@ -125,7 +125,7 @@ class TemplatingServiceTest extends AbstractTestCase
                 'html' => $nonExistentClassName,
             ],
         ]))
-            ->render($this->createFixturePathname('empty_file'), [])
+            ->render($this->createFixturePathname('empty_file.php'), [])
         ;
     }
 
@@ -142,7 +142,7 @@ class TemplatingServiceTest extends AbstractTestCase
                 'html' => $notAnOutputHelperClassName,
             ],
         ]))
-            ->render($this->createFixturePathname('empty_file'), [])
+            ->render($this->createFixturePathname('empty_file.php'), [])
         ;
     }
 
@@ -157,7 +157,7 @@ class TemplatingServiceTest extends AbstractTestCase
                 },
             ],
         ]))
-            ->render($this->createFixturePathname('empty_file'), [])
+            ->render($this->createFixturePathname('empty_file.php'), [])
         ;
     }
 
@@ -175,7 +175,7 @@ class TemplatingServiceTest extends AbstractTestCase
                 },
             ],
         ]))
-            ->render($this->createFixturePathname('empty_file'), [])
+            ->render($this->createFixturePathname('empty_file.php'), [])
         ;
     }
 
@@ -208,7 +208,7 @@ class TemplatingServiceTest extends AbstractTestCase
                 'html' => $invalid,
             ],
         ]))
-            ->render($this->createFixturePathname('empty_file'), [])
+            ->render($this->createFixturePathname('empty_file.php'), [])
         ;
     }
 
@@ -218,7 +218,7 @@ class TemplatingServiceTest extends AbstractTestCase
             'templates_dir' => $this->getFixturesDir(),
         ]);
 
-        $output = $service->render('hello_world.txt');
+        $output = $service->render('hello_world.php');
 
         $this->assertSame('Hello, world!', $output);
     }

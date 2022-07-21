@@ -8,6 +8,7 @@ use DanBettles\Marigold\Template\PhpTemplate;
 use DanBettles\Marigold\Template\TemplateInterface;
 use DanBettles\Marigold\Tests\AbstractTestCase;
 use InvalidArgumentException;
+use RangeException;
 use ReflectionClass;
 
 use function ob_get_length;
@@ -25,9 +26,35 @@ class PhpTemplateTest extends AbstractTestCase
         $this->assertTrue($class->implementsInterface(TemplateInterface::class));
     }
 
-    public function testIsConstructedWithThePathnameOfATemplate()
+    public function providesValidPhpTemplatePathnames(): array
     {
-        $pathname = $this->createFixturePathname('empty_file');
+        return [
+            [
+                $this->createFixturePathname('empty_file.php'),
+            ],
+            [
+                $this->createFixturePathname('empty_file.phtml'),
+            ],
+            [
+                $this->createFixturePathname('empty_file.php3'),
+            ],
+            [
+                $this->createFixturePathname('empty_file.php4'),
+            ],
+            [
+                $this->createFixturePathname('empty_file.php5'),
+            ],
+            [
+                $this->createFixturePathname('empty_file.phps'),
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider providesValidPhpTemplatePathnames
+     */
+    public function testIsConstructedWithThePathnameOfATemplate($pathname)
+    {
         $template = new PhpTemplate($pathname);
 
         $this->assertSame($pathname, $template->getPathname());
@@ -43,22 +70,25 @@ class PhpTemplateTest extends AbstractTestCase
         new PhpTemplate($templatePathname);
     }
 
+    public function testConstructorThrowsAnExceptionIfTheFileDoesNotAppearToContainPhp()
+    {
+        $this->expectException(RangeException::class);
+        $this->expectExceptionMessage('The file does not appear to contain PHP: its extension must be one of ');
+
+        new PhpTemplate($this->createFixturePathname('empty_file'));
+    }
+
     public function providesRenderedTemplateOutput(): array
     {
         return [
             [
                 '',
-                $this->createFixturePathname('empty_file'),
+                $this->createFixturePathname('empty_file.php'),
                 [],
             ],
             [
                 'Hello, world!',
-                $this->createFixturePathname('hello_world.txt'),
-                [],
-            ],
-            [
-                'Goodbye, cruel world.',
-                $this->createFixturePathname('goodbye_cruel_world.php'),
+                $this->createFixturePathname('hello_world.php'),
                 [],
             ],
             [
@@ -96,7 +126,7 @@ class PhpTemplateTest extends AbstractTestCase
 
     public function testRenderDoesNotRequireVars()
     {
-        $template = new PhpTemplate($this->createFixturePathname('hello_world.txt'));
+        $template = new PhpTemplate($this->createFixturePathname('hello_world.php'));
         $output = $template->render();
 
         $this->assertSame('Hello, world!', $output);
@@ -142,33 +172,5 @@ class PhpTemplateTest extends AbstractTestCase
         $template = new PhpTemplate($templatePathname);
 
         $this->assertSame($expectedFormat, $template->getOutputFormat());
-    }
-
-    public function providesTemplateFileExtensions(): array
-    {
-        return [
-            [
-                null,
-                $this->createFixturePathname('empty_file'),
-            ],
-            [
-                'txt',
-                $this->createFixturePathname('hello_world.txt'),
-            ],
-            [
-                'php',
-                $this->createFixturePathname('goodbye_cruel_world.php'),
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider providesTemplateFileExtensions
-     */
-    public function testGetfileextensionReturnsTheExtensionOfTheFile($expectedFileExtension, $templatePathname)
-    {
-        $template = new PhpTemplate($templatePathname);
-
-        $this->assertSame($expectedFileExtension, $template->getFileExtension());
     }
 }
