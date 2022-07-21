@@ -40,7 +40,7 @@ class PhpTemplate implements TemplateInterface
     /**
      * @inheritDoc
      */
-    public function render(array $_VARIABLES = []): string
+    public function render(array $vars = []): string
     {
         if ('php' !== $this->getFileExtension()) {
             return file_get_contents($this->getPathname());
@@ -48,11 +48,12 @@ class PhpTemplate implements TemplateInterface
 
         $__FILE__ = $this->getPathname();
 
-        return (static function () use ($__FILE__, $_VARIABLES) {
+        return (static function () use ($__FILE__, $vars) {
             ob_start();
 
             try {
-                extract($_VARIABLES);
+                extract($vars);
+                unset($vars);  // (Aiming to expose as little as possible.)
                 require $__FILE__;
                 return ob_get_contents();
             } finally {
