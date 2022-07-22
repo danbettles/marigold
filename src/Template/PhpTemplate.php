@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DanBettles\Marigold\Template;
 
-use InvalidArgumentException;
+use DanBettles\Marigold\Exception\FileNotFoundException;
 use RangeException;
 
 use function array_map;
@@ -90,13 +90,13 @@ class PhpTemplate implements TemplateInterface
     }
 
     /**
-     * @throws InvalidArgumentException If the template file does not exist.
+     * @throws FileNotFoundException If the template file does not exist.
      * @throws RangeException If the file does not appear to contain PHP.
      */
     private function setPathname(string $pathname): self
     {
         if (!is_file($pathname)) {
-            throw new InvalidArgumentException("The template file, `{$pathname}`, does not exist.");
+            throw new FileNotFoundException($pathname);
         }
 
         list($outputFormat, $fileExtension) = self::splitPathname($pathname);

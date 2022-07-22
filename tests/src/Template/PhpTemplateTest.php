@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace DanBettles\Marigold\Tests\Template;
 
+use DanBettles\Marigold\Exception\FileNotFoundException;
 use DanBettles\Marigold\Template\PhpTemplate;
 use DanBettles\Marigold\Template\TemplateInterface;
 use DanBettles\Marigold\Tests\AbstractTestCase;
-use InvalidArgumentException;
 use RangeException;
 use ReflectionClass;
 
@@ -64,8 +64,8 @@ class PhpTemplateTest extends AbstractTestCase
     {
         $templatePathname = $this->createFixturePathname('file_that_does_not_exist.php');
 
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("The template file, `{$templatePathname}`, does not exist.");
+        $this->expectException(FileNotFoundException::class);
+        $this->expectExceptionMessage("The file `{$templatePathname}` does not exist.");
 
         new PhpTemplate($templatePathname);
     }
