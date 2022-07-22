@@ -11,6 +11,9 @@ use DanBettles\Marigold\Tests\AbstractTestCase;
 use RangeException;
 use ReflectionClass;
 
+use const false;
+use const true;
+
 class Html5OutputHelperTest extends AbstractTestCase
 {
     public function testIsAXmloutputhelper()
@@ -20,7 +23,7 @@ class Html5OutputHelperTest extends AbstractTestCase
         $this->assertTrue($class->isSubclassOf(XmlOutputHelper::class));
     }
 
-    public function providesVoidElementArgs(): array
+    public function providesArgsForVoidElements(): array
     {
         return [
             [
@@ -92,9 +95,35 @@ class Html5OutputHelperTest extends AbstractTestCase
     }
 
     /**
-     * @dataProvider providesVoidElementArgs
+     * @dataProvider providesArgsForVoidElements
      */
     public function testCreateelCanCreateVoidElements($expected, $tagName, $attributes)
+    {
+        $helper = new Html5OutputHelper();
+
+        $this->assertSame($expected, $helper->createEl($tagName, $attributes));
+    }
+
+    public function providesArgsForElementsWithBooleanAttributes(): array
+    {
+        return [
+            [
+                '<input type="checkbox" checked>',
+                'input',
+                ['type' => 'checkbox', 'checked' => true]
+            ],
+            [
+                '<input type="checkbox">',
+                'input',
+                ['type' => 'checkbox', 'checked' => false]
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider providesArgsForElementsWithBooleanAttributes
+     */
+    public function testCreateelCanCreateElementsWithBooleanAttributes($expected, $tagName, $attributes)
     {
         $helper = new Html5OutputHelper();
 
@@ -192,6 +221,16 @@ class Html5OutputHelperTest extends AbstractTestCase
             '<img src="pretty.jpg" alt="A pretty picture">',
             $helper->createImg(['src' => 'pretty.jpg', 'alt' => 'A pretty picture'])
         );
+
+        $this->assertSame(
+            '<input type="checkbox" checked>',
+            $helper->createInput(['type' => 'checkbox', 'checked' => true])
+        );
+
+        $this->assertSame(
+            '<input type="checkbox">',
+            $helper->createInput(['type' => 'checkbox', 'checked' => false])
+        );
     }
 
     public function testCallThrowsAnExceptionIfTheMethodDoesNotExist()
@@ -200,5 +239,29 @@ class Html5OutputHelperTest extends AbstractTestCase
         $this->expectExceptionMessage('The method, `create`, does not exist.');
 
         (new Html5OutputHelper())->create();
+    }
+
+    public function providesAttributesStrings(): array
+    {
+        return [
+            [
+                'value="1" checked',
+                ['value' => '1', 'checked' => true],
+            ],
+            [
+                '',
+                ['checked' => false],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider providesAttributesStrings
+     */
+    public function testCreateattributesCanCreateBooleanAttributes($expected, $input)
+    {
+        $helper = new Html5OutputHelper();
+
+        $this->assertSame($expected, $helper->createAttributes($input));
     }
 }

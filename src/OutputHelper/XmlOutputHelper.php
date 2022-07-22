@@ -36,7 +36,8 @@ class XmlOutputHelper implements OutputHelperInterface
         );
     }
 
-    private function createAttribute(string $name, string $value): string
+    // @todo Validate attribute name.
+    protected function createAttribute(string $name, string $value): string
     {
         return $name . '="' . $this->escape($value) . '"';
     }

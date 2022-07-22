@@ -10,6 +10,7 @@ use ReflectionMethod;
 
 use function array_unshift;
 use function in_array;
+use function is_bool;
 use function preg_match;
 use function strtolower;
 
@@ -41,6 +42,38 @@ class Html5OutputHelper extends XmlOutputHelper
     ];
 
     private ReflectionMethod $createEl;
+
+    public function createAttributes(array $attributes): string
+    {
+        if (!$attributes) {
+            return '';
+        }
+
+        $pairs = [];
+
+        foreach ($attributes as $name => $value) {
+            $pair = null;
+
+            if (is_bool($value)) {
+                // See https://meiert.com/en/blog/boolean-attributes-of-html/
+                // @todo Validate attribute name.
+                if ($value) {
+                    $pair = $name;
+                }
+            } else {
+                $pair = $this->createAttribute($name, $value);
+            }
+
+            if (null !== $pair) {
+                $pairs[] = $pair;
+            }
+        }
+
+        return $pairs
+            ? implode(' ', $pairs)
+            : ''
+        ;
+    }
 
     /**
      * @throws RangeException If content was passed when creating a void element.
