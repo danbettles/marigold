@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace DanBettles\Marigold\Template;
 
 use DanBettles\Marigold\Exception\FileNotFoundException;
+use DanBettles\Marigold\Utils\FilesystemUtils;
 use RangeException;
 
 use function array_map;
-use function array_slice;
 use function extract;
 use function implode;
 use function in_array;
@@ -16,12 +16,10 @@ use function is_file;
 use function ob_end_clean;
 use function ob_get_contents;
 use function ob_start;
-use function preg_match;
 use function sprintf;
 use function strtolower;
 
 use const null;
-use const PREG_UNMATCHED_AS_NULL;
 
 class PhpTemplate implements TemplateInterface
 {
@@ -133,23 +131,18 @@ class PhpTemplate implements TemplateInterface
      */
     private static function splitPathname(string $pathname): array
     {
-        $extensionPattern = '\.([a-zA-Z0-9]+)';
-        $extensionMatches = [];
+        list(
+            'extension' => $fileExtension,
+            'filename' => $remainderOfBasename
+        ) = FilesystemUtils::pathinfo($pathname);
 
-        preg_match(
-            "~(?:{$extensionPattern})?(?:{$extensionPattern})$~",
-            $pathname,
-            $extensionMatches,
-            PREG_UNMATCHED_AS_NULL
-        );
+        list(
+            'extension' => $outputFormat
+        ) = FilesystemUtils::pathinfo($remainderOfBasename);
 
-        if (!$extensionMatches) {
-            return [
-                null,
-                null,
-            ];
-        }
-
-        return array_slice($extensionMatches, 1);
+        return [
+            $outputFormat,
+            $fileExtension,
+        ];
     }
 }
