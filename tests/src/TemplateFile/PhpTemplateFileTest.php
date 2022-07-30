@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace DanBettles\Marigold\Tests\TemplateFile;
 
 use DanBettles\Marigold\Exception\FileNotFoundException;
+use DanBettles\Marigold\Exception\FileTypeNotSupportedException;
 use DanBettles\Marigold\TemplateFile\PhpTemplateFile;
 use DanBettles\Marigold\TemplateFile\TemplateFileInterface;
 use DanBettles\Marigold\Tests\AbstractTestCase;
-use RangeException;
 use ReflectionClass;
 use SplFileInfo;
 
@@ -80,8 +80,8 @@ class PhpTemplateFileTest extends AbstractTestCase
 
     public function testConstructorThrowsAnExceptionIfTheFileDoesNotAppearToContainPhp()
     {
-        $this->expectException(RangeException::class);
-        $this->expectExceptionMessage('The file does not appear to contain PHP: its extension must be one of ');
+        $this->expectException(FileTypeNotSupportedException::class);
+        $this->expectExceptionMessage('The file-type `` is not supported.  Supported types: php; ');
 
         new PhpTemplateFile($this->createFixturePathname('empty_file'));
     }

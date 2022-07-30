@@ -5,17 +5,14 @@ declare(strict_types=1);
 namespace DanBettles\Marigold\TemplateFile;
 
 use DanBettles\Marigold\Exception\FileNotFoundException;
-use RangeException;
+use DanBettles\Marigold\Exception\FileTypeNotSupportedException;
 use SplFileInfo;
 
-use function array_map;
 use function extract;
-use function implode;
 use function in_array;
 use function ob_end_clean;
 use function ob_get_contents;
 use function ob_start;
-use function sprintf;
 use function strtolower;
 
 use const null;
@@ -39,7 +36,7 @@ class PhpTemplateFile extends SplFileInfo implements TemplateFileInterface
 
     /**
      * @throws FileNotFoundException If the template file does not exist.
-     * @throws RangeException If the file does not appear to contain PHP.
+     * @throws FileTypeNotSupportedException If the file does not appear to contain PHP.
      */
     public function __construct(string $filename)
     {
@@ -50,12 +47,7 @@ class PhpTemplateFile extends SplFileInfo implements TemplateFileInterface
         }
 
         if (!in_array($this->getExtension(), self::VALID_FILE_EXTENSIONS)) {
-            throw new RangeException(sprintf(
-                'The file does not appear to contain PHP: its extension must be one of [%s].',
-                implode(', ', array_map(function (string $validFileExtension) {
-                    return "\"{$validFileExtension}\"";
-                }, self::VALID_FILE_EXTENSIONS))
-            ));
+            throw new FileTypeNotSupportedException($this->getExtension(), self::VALID_FILE_EXTENSIONS);
         }
 
         $basenameMinusExtension = $this->getBasename(".{$this->getExtension()}");

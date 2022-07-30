@@ -17,4 +17,14 @@ class FileNotFoundExceptionTest extends AbstractTestCase
 
         $this->assertTrue($class->isSubclassOf(RuntimeException::class));
     }
+
+    public function testThrowing()
+    {
+        $pathname = $this->createFixturePathname('file_that_does_not_exist.php');
+
+        $this->expectException(FileNotFoundException::class);
+        $this->expectExceptionMessage("The file `{$pathname}` does not exist.");
+
+        throw new FileNotFoundException($pathname);
+    }
 }
