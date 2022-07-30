@@ -10,6 +10,7 @@ use DanBettles\Marigold\TemplateFile\TemplateFileInterface;
 use DanBettles\Marigold\Tests\AbstractTestCase;
 use RangeException;
 use ReflectionClass;
+use SplFileInfo;
 
 use function ob_get_length;
 use function ob_end_clean;
@@ -19,6 +20,13 @@ use const null;
 
 class PhpTemplateFileTest extends AbstractTestCase
 {
+    public function testIsAFile()
+    {
+        $class = new ReflectionClass(PhpTemplateFile::class);
+
+        $this->assertTrue($class->isSubclassOf(SplFileInfo::class));
+    }
+
     public function testIsATemplateFile()
     {
         $class = new ReflectionClass(PhpTemplateFile::class);
