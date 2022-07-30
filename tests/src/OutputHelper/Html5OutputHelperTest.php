@@ -9,7 +9,6 @@ use DanBettles\Marigold\OutputHelper\Html5OutputHelper;
 use DanBettles\Marigold\OutputHelper\XmlOutputHelper;
 use DanBettles\Marigold\Tests\AbstractTestCase;
 use RangeException;
-use ReflectionClass;
 
 use const false;
 use const true;
@@ -18,9 +17,7 @@ class Html5OutputHelperTest extends AbstractTestCase
 {
     public function testIsAXmloutputhelper()
     {
-        $class = new ReflectionClass(Html5OutputHelper::class);
-
-        $this->assertTrue($class->isSubclassOf(XmlOutputHelper::class));
+        $this->assertTrue($this->getTestedClass()->isSubclassOf(XmlOutputHelper::class));
     }
 
     public function providesArgsForVoidElements(): array

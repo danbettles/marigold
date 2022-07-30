@@ -9,7 +9,6 @@ use DanBettles\Marigold\OutputHelper\XmlOutputHelper;
 use DanBettles\Marigold\Tests\AbstractTestCase;
 use InvalidArgumentException;
 use PHPUnit\Framework\MockObject\MockObject;
-use ReflectionClass;
 use stdClass;
 
 use const false;
@@ -19,9 +18,7 @@ class XmlOutputHelperTest extends AbstractTestCase
 {
     public function testIsAnOutputhelper()
     {
-        $class = new ReflectionClass(XmlOutputHelper::class);
-
-        $this->assertTrue($class->implementsInterface(OutputHelperInterface::class));
+        $this->assertTrue($this->getTestedClass()->implementsInterface(OutputHelperInterface::class));
     }
 
     public function testEncodingAccessors()

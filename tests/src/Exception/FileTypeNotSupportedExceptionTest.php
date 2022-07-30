@@ -6,16 +6,13 @@ namespace DanBettles\Marigold\Tests\Exception;
 
 use DanBettles\Marigold\Exception\FileTypeNotSupportedException;
 use DanBettles\Marigold\Tests\AbstractTestCase;
-use ReflectionClass;
 use RuntimeException;
 
 class FileTypeNotSupportedExceptionTest extends AbstractTestCase
 {
     public function testIsARuntimeexception()
     {
-        $class = new ReflectionClass(FileTypeNotSupportedException::class);
-
-        $this->assertTrue($class->isSubclassOf(RuntimeException::class));
+        $this->assertTrue($this->getTestedClass()->isSubclassOf(RuntimeException::class));
     }
 
     public function testThrowingWithOnlyTheNameOfTheInvalidFileType()
