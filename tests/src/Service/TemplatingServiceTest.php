@@ -55,7 +55,7 @@ class TemplatingServiceTest extends AbstractTestCase
         $service = new TemplatingService();
         $output = $service->render($this->createFixturePathname('hello_world.php'));
 
-        $this->assertSame('Hello, world!', $output);
+        $this->assertSame('Hello, World!', $output);
     }
 
     public function testRenderPassesTheTemplatingServiceToTheTemplateFile()
@@ -220,6 +220,6 @@ class TemplatingServiceTest extends AbstractTestCase
 
         $output = $service->render('hello_world.php');
 
-        $this->assertSame('Hello, world!', $output);
+        $this->assertSame('Hello, World!', $output);
     }
 }

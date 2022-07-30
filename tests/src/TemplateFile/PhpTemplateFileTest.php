@@ -69,7 +69,7 @@ class PhpTemplateFileTest extends AbstractTestCase
                 [],
             ],
             [
-                'Hello, world!',
+                'Hello, World!',
                 $this->createFixturePathname('hello_world.php'),
                 [],
             ],
@@ -109,7 +109,7 @@ class PhpTemplateFileTest extends AbstractTestCase
         $templateFile = new PhpTemplateFile($this->createFixturePathname('hello_world.php'));
         $output = $templateFile->render();
 
-        $this->assertSame('Hello, world!', $output);
+        $this->assertSame('Hello, World!', $output);
     }
 
     public function testTemplateFilesDoNotHaveAccessToThis()
