@@ -6,7 +6,7 @@ namespace DanBettles\Marigold\Service;
 
 use Closure;
 use DanBettles\Marigold\OutputHelper\OutputHelperInterface;
-use DanBettles\Marigold\Template\PhpTemplate;
+use DanBettles\Marigold\TemplateFile\PhpTemplateFile;
 use RangeException;
 
 use function class_exists;
@@ -27,7 +27,7 @@ class TemplatingService
         $this->setConfig($config);
     }
 
-    private function createTemplatePathname(string $pathnameOrBasename): string
+    private function createTemplateFilePathname(string $pathnameOrBasename): string
     {
         $templatesDir = $this->getConfig()['templates_dir']
             ?? null
@@ -45,9 +45,9 @@ class TemplatingService
      * @throws RangeException If the output-helper config is invalid.
      * @throws RangeException If the helper is not an output helper.
      */
-    private function createOutputHelperFromTemplate(PhpTemplate $template): ?OutputHelperInterface
+    private function createOutputHelperFromTemplateFile(PhpTemplateFile $templateFile): ?OutputHelperInterface
     {
-        $outputFormat = $template->getOutputFormat()
+        $outputFormat = $templateFile->getOutputFormat()
             ?: 'html'
         ;
 
@@ -97,20 +97,20 @@ class TemplatingService
         string $pathnameOrBasename,
         array $variables = []
     ): string {
-        $template = new PhpTemplate($this->createTemplatePathname($pathnameOrBasename));
+        $templateFile = new PhpTemplateFile($this->createTemplateFilePathname($pathnameOrBasename));
 
         $augmentedVars = [
             'variables' => $variables,
             'service' => $this,
         ];
 
-        $outputHelper = $this->createOutputHelperFromTemplate($template);
+        $outputHelper = $this->createOutputHelperFromTemplateFile($templateFile);
 
         if ($outputHelper) {
             $augmentedVars['helper'] = $outputHelper;
         }
 
-        return $template->render($augmentedVars);
+        return $templateFile->render($augmentedVars);
     }
 
     private function setConfig(array $config): self

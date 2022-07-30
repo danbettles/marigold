@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace DanBettles\Marigold\Tests\Template;
+namespace DanBettles\Marigold\Tests\TemplateFile;
 
 use DanBettles\Marigold\Exception\FileNotFoundException;
-use DanBettles\Marigold\Template\PhpTemplate;
-use DanBettles\Marigold\Template\TemplateInterface;
+use DanBettles\Marigold\TemplateFile\PhpTemplateFile;
+use DanBettles\Marigold\TemplateFile\TemplateFileInterface;
 use DanBettles\Marigold\Tests\AbstractTestCase;
 use RangeException;
 use ReflectionClass;
@@ -17,16 +17,16 @@ use function ob_start;
 
 use const null;
 
-class PhpTemplateTest extends AbstractTestCase
+class PhpTemplateFileTest extends AbstractTestCase
 {
-    public function testIsATemplate()
+    public function testIsATemplateFile()
     {
-        $class = new ReflectionClass(PhpTemplate::class);
+        $class = new ReflectionClass(PhpTemplateFile::class);
 
-        $this->assertTrue($class->implementsInterface(TemplateInterface::class));
+        $this->assertTrue($class->implementsInterface(TemplateFileInterface::class));
     }
 
-    public function providesValidPhpTemplatePathnames(): array
+    public function providesValidPhpTemplateFilePathnames(): array
     {
         return [
             [
@@ -51,23 +51,23 @@ class PhpTemplateTest extends AbstractTestCase
     }
 
     /**
-     * @dataProvider providesValidPhpTemplatePathnames
+     * @dataProvider providesValidPhpTemplateFilePathnames
      */
     public function testIsConstructedWithThePathnameOfATemplate($pathname)
     {
-        $template = new PhpTemplate($pathname);
+        $templateFile = new PhpTemplateFile($pathname);
 
-        $this->assertSame($pathname, $template->getPathname());
+        $this->assertSame($pathname, $templateFile->getPathname());
     }
 
     public function testConstructorThrowsAnExceptionIfTheFileDoesNotExist()
     {
-        $templatePathname = $this->createFixturePathname('file_that_does_not_exist.php');
+        $templateFilePathname = $this->createFixturePathname('file_that_does_not_exist.php');
 
         $this->expectException(FileNotFoundException::class);
-        $this->expectExceptionMessage("The file `{$templatePathname}` does not exist.");
+        $this->expectExceptionMessage("The file `{$templateFilePathname}` does not exist.");
 
-        new PhpTemplate($templatePathname);
+        new PhpTemplateFile($templateFilePathname);
     }
 
     public function testConstructorThrowsAnExceptionIfTheFileDoesNotAppearToContainPhp()
@@ -75,7 +75,7 @@ class PhpTemplateTest extends AbstractTestCase
         $this->expectException(RangeException::class);
         $this->expectExceptionMessage('The file does not appear to contain PHP: its extension must be one of ');
 
-        new PhpTemplate($this->createFixturePathname('empty_file'));
+        new PhpTemplateFile($this->createFixturePathname('empty_file'));
     }
 
     public function providesRenderedTemplateOutput(): array
@@ -108,14 +108,14 @@ class PhpTemplateTest extends AbstractTestCase
     /**
      * @dataProvider providesRenderedTemplateOutput
      */
-    public function testRender($expectedOutput, $templatePathname, $templateVars)
+    public function testRender($expectedOutput, $templateFilePathname, $templateVars)
     {
         ob_start();
 
         try {
-            $template = new PhpTemplate($templatePathname);
+            $templateFile = new PhpTemplateFile($templateFilePathname);
 
-            $output = $template->render($templateVars);
+            $output = $templateFile->render($templateVars);
 
             $this->assertSame(0, ob_get_length());
             $this->assertSame($expectedOutput, $output);
@@ -126,18 +126,18 @@ class PhpTemplateTest extends AbstractTestCase
 
     public function testRenderDoesNotRequireVars()
     {
-        $template = new PhpTemplate($this->createFixturePathname('hello_world.php'));
-        $output = $template->render();
+        $templateFile = new PhpTemplateFile($this->createFixturePathname('hello_world.php'));
+        $output = $templateFile->render();
 
         $this->assertSame('Hello, world!', $output);
     }
 
-    public function testTemplatesDoNotHaveAccessToThis()
+    public function testTemplateFilesDoNotHaveAccessToThis()
     {
         $this->expectError();
         $this->expectErrorMessage('Using $this when not in object context');
 
-        (new PhpTemplate($this->createFixturePathname('does_not_contain_var_this.php')))
+        (new PhpTemplateFile($this->createFixturePathname('does_not_contain_var_this.php')))
             ->render()
         ;
     }
@@ -167,10 +167,10 @@ class PhpTemplateTest extends AbstractTestCase
     /**
      * @dataProvider providesPathnamesContainingOutputFormat
      */
-    public function testGetoutputformatReturnsTheOutputFormatOfTheTemplate($expectedFormat, $templatePathname)
+    public function testGetoutputformatReturnsTheOutputFormatOfTheTemplateFile($expectedFormat, $templateFilePathname)
     {
-        $template = new PhpTemplate($templatePathname);
+        $templateFile = new PhpTemplateFile($templateFilePathname);
 
-        $this->assertSame($expectedFormat, $template->getOutputFormat());
+        $this->assertSame($expectedFormat, $templateFile->getOutputFormat());
     }
 }

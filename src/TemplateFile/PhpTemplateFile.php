@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DanBettles\Marigold\Template;
+namespace DanBettles\Marigold\TemplateFile;
 
 use DanBettles\Marigold\Exception\FileNotFoundException;
 use DanBettles\Marigold\Utils\FilesystemUtils;
@@ -21,7 +21,7 @@ use function strtolower;
 
 use const null;
 
-class PhpTemplate implements TemplateInterface
+class PhpTemplateFile implements TemplateFileInterface
 {
     /** @var string[] */
     private const VALID_FILE_EXTENSIONS = [

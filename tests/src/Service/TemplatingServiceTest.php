@@ -31,7 +31,7 @@ class TemplatingServiceTest extends AbstractTestCase
         $this->assertInstanceOf(TemplatingService::class, $service);
     }
 
-    public function testRenderPassesAllTemplateVarsToTheTemplateInAnArray()
+    public function testRenderPassesAllTemplateVarsToTheTemplateFileInAnArray()
     {
         $service = new TemplatingService();
 
@@ -58,7 +58,7 @@ class TemplatingServiceTest extends AbstractTestCase
         $this->assertSame('Hello, world!', $output);
     }
 
-    public function testRenderPassesTheTemplatingServiceToTheTemplate()
+    public function testRenderPassesTheTemplatingServiceToTheTemplateFile()
     {
         $service = new TemplatingService();
         $output = $service->render($this->createFixturePathname('contains_var_service.php'), []);
@@ -102,7 +102,7 @@ class TemplatingServiceTest extends AbstractTestCase
     /**
      * @dataProvider providesInjectedOutputHelperClassNames
      */
-    public function testRenderInjectsAnAppropriateOutputHelperIfTheNameOfTheTemplateFollowsTheConvention(
+    public function testRenderInjectsAnAppropriateOutputHelperIfTheNameOfTheTemplateFileFollowsTheConvention(
         string $expectedClassName,
         array $serviceConfig
     ) {
