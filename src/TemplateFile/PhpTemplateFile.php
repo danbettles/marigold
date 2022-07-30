@@ -4,20 +4,15 @@ declare(strict_types=1);
 
 namespace DanBettles\Marigold\TemplateFile;
 
-use DanBettles\Marigold\Exception\FileNotFoundException;
 use DanBettles\Marigold\Exception\FileTypeNotSupportedException;
-use SplFileInfo;
 
 use function extract;
 use function in_array;
 use function ob_end_clean;
 use function ob_get_contents;
 use function ob_start;
-use function strtolower;
 
-use const null;
-
-class PhpTemplateFile extends SplFileInfo implements TemplateFileInterface
+class PhpTemplateFile extends AbstractTemplateFile
 {
     /** @var string[] */
     private const VALID_FILE_EXTENSIONS = [
@@ -30,30 +25,15 @@ class PhpTemplateFile extends SplFileInfo implements TemplateFileInterface
     ];
 
     /**
-     * The pathname *may* contain the output format.
-     */
-    private ?string $outputFormat;
-
-    /**
-     * @throws FileNotFoundException If the template file does not exist.
      * @throws FileTypeNotSupportedException If the file does not appear to contain PHP.
      */
     public function __construct(string $filename)
     {
         parent::__construct($filename);
 
-        if (!$this->isFile()) {
-            throw new FileNotFoundException($this->getPathname());
-        }
-
         if (!in_array($this->getExtension(), self::VALID_FILE_EXTENSIONS)) {
             throw new FileTypeNotSupportedException($this->getExtension(), self::VALID_FILE_EXTENSIONS);
         }
-
-        $basenameMinusExtension = $this->getBasename(".{$this->getExtension()}");
-        $outputFormat = (new SplFileInfo($basenameMinusExtension))->getExtension();
-
-        $this->setOutputFormat($outputFormat);
     }
 
     /**
@@ -78,24 +58,5 @@ class PhpTemplateFile extends SplFileInfo implements TemplateFileInterface
                 ob_end_clean();
             }
         })();
-    }
-
-    private function setOutputFormat(?string $format): self
-    {
-        // Normalize.
-        $this->outputFormat = null === $format || '' === $format
-            ? null
-            : strtolower($format)
-        ;
-
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getOutputFormat(): ?string
-    {
-        return $this->outputFormat;
     }
 }

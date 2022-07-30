@@ -4,37 +4,23 @@ declare(strict_types=1);
 
 namespace DanBettles\Marigold\Tests\TemplateFile;
 
-use DanBettles\Marigold\Exception\FileNotFoundException;
 use DanBettles\Marigold\Exception\FileTypeNotSupportedException;
+use DanBettles\Marigold\TemplateFile\AbstractTemplateFile;
 use DanBettles\Marigold\TemplateFile\PhpTemplateFile;
-use DanBettles\Marigold\TemplateFile\TemplateFileInterface;
 use DanBettles\Marigold\Tests\AbstractTestCase;
-use ReflectionClass;
-use SplFileInfo;
 
 use function ob_get_length;
 use function ob_end_clean;
 use function ob_start;
 
-use const null;
-
 class PhpTemplateFileTest extends AbstractTestCase
 {
-    public function testIsAFile()
+    public function testIsAnAbstracttemplatefile()
     {
-        $class = new ReflectionClass(PhpTemplateFile::class);
-
-        $this->assertTrue($class->isSubclassOf(SplFileInfo::class));
+        $this->assertTrue($this->getTestedClass()->isSubclassOf(AbstractTemplateFile::class));
     }
 
-    public function testIsATemplateFile()
-    {
-        $class = new ReflectionClass(PhpTemplateFile::class);
-
-        $this->assertTrue($class->implementsInterface(TemplateFileInterface::class));
-    }
-
-    public function providesValidPhpTemplateFilePathnames(): array
+    public function providesPathnamesOfPhpTemplateFiles(): array
     {
         return [
             [
@@ -44,13 +30,13 @@ class PhpTemplateFileTest extends AbstractTestCase
                 $this->createFixturePathname('empty_file.phtml'),
             ],
             [
-                $this->createFixturePathname('empty_file.php3'),
+                $this->createFixturePathname('empty_file.php5'),
             ],
             [
                 $this->createFixturePathname('empty_file.php4'),
             ],
             [
-                $this->createFixturePathname('empty_file.php5'),
+                $this->createFixturePathname('empty_file.php3'),
             ],
             [
                 $this->createFixturePathname('empty_file.phps'),
@@ -58,32 +44,20 @@ class PhpTemplateFileTest extends AbstractTestCase
         ];
     }
 
-    /**
-     * @dataProvider providesValidPhpTemplateFilePathnames
-     */
-    public function testIsConstructedWithThePathnameOfATemplate($pathname)
+    /** @dataProvider providesPathnamesOfPhpTemplateFiles */
+    public function testConstructorAcceptsPathnamesWithVariousPhpFileExtensions(string $templateFilePathname)
     {
-        $templateFile = new PhpTemplateFile($pathname);
+        $templateFile = new PhpTemplateFile($templateFilePathname);
 
-        $this->assertSame($pathname, $templateFile->getPathname());
-    }
-
-    public function testConstructorThrowsAnExceptionIfTheFileDoesNotExist()
-    {
-        $templateFilePathname = $this->createFixturePathname('file_that_does_not_exist.php');
-
-        $this->expectException(FileNotFoundException::class);
-        $this->expectExceptionMessage("The file `{$templateFilePathname}` does not exist.");
-
-        new PhpTemplateFile($templateFilePathname);
+        $this->assertSame($templateFilePathname, $templateFile->getPathname());
     }
 
     public function testConstructorThrowsAnExceptionIfTheFileDoesNotAppearToContainPhp()
     {
         $this->expectException(FileTypeNotSupportedException::class);
-        $this->expectExceptionMessage('The file-type `` is not supported.  Supported types: php; ');
+        $this->expectExceptionMessage('The file-type `txt` is not supported.  Supported types: php; ');
 
-        new PhpTemplateFile($this->createFixturePathname('empty_file'));
+        new PhpTemplateFile($this->createFixturePathname('hello_world.txt'));
     }
 
     public function providesRenderedTemplateOutput(): array
@@ -113,9 +87,7 @@ class PhpTemplateFileTest extends AbstractTestCase
         ];
     }
 
-    /**
-     * @dataProvider providesRenderedTemplateOutput
-     */
+    /** @dataProvider providesRenderedTemplateOutput */
     public function testRender($expectedOutput, $templateFilePathname, $templateVars)
     {
         ob_start();
@@ -148,37 +120,5 @@ class PhpTemplateFileTest extends AbstractTestCase
         (new PhpTemplateFile($this->createFixturePathname('does_not_contain_var_this.php')))
             ->render()
         ;
-    }
-
-    public function providesPathnamesContainingOutputFormat(): array
-    {
-        return [
-            [
-                null,
-                $this->createFixturePathname('test_getoutputformat.php'),
-            ],
-            [
-                'html',
-                $this->createFixturePathname('test_getoutputformat.html.php'),
-            ],
-            [
-                'xml',
-                $this->createFixturePathname('test_getoutputformat.xml.php'),
-            ],
-            [
-                'json',  // Normalized, see.
-                $this->createFixturePathname('test_getoutputformat.JSON.php'),
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider providesPathnamesContainingOutputFormat
-     */
-    public function testGetoutputformatReturnsTheOutputFormatOfTheTemplateFile($expectedFormat, $templateFilePathname)
-    {
-        $templateFile = new PhpTemplateFile($templateFilePathname);
-
-        $this->assertSame($expectedFormat, $templateFile->getOutputFormat());
     }
 }
