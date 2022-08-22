@@ -6,7 +6,8 @@ namespace DanBettles\Marigold\Service;
 
 use Closure;
 use DanBettles\Marigold\OutputHelper\OutputHelperInterface;
-use DanBettles\Marigold\TemplateFile\PhpTemplateFile;
+use DanBettles\Marigold\File\TemplateFile;
+use DanBettles\Marigold\TemplateProcessor;
 use RangeException;
 
 use function class_exists;
@@ -45,7 +46,7 @@ class TemplatingService
      * @throws RangeException If the output-helper config is invalid.
      * @throws RangeException If the helper is not an output helper.
      */
-    private function createOutputHelperFromTemplateFile(PhpTemplateFile $templateFile): ?OutputHelperInterface
+    private function createOutputHelperFromTemplateFile(TemplateFile $templateFile): ?OutputHelperInterface
     {
         $outputFormat = $templateFile->getOutputFormat()
             ?: 'html'
@@ -97,7 +98,8 @@ class TemplatingService
         string $pathnameOrBasename,
         array $variables = []
     ): string {
-        $templateFile = new PhpTemplateFile($this->createTemplateFilePathname($pathnameOrBasename));
+        $templatePathname = $this->createTemplateFilePathname($pathnameOrBasename);
+        $templateFile = new TemplateFile($templatePathname);
 
         $augmentedVars = [
             'variables' => $variables,
@@ -110,7 +112,10 @@ class TemplatingService
             $augmentedVars['helper'] = $outputHelper;
         }
 
-        return $templateFile->render($augmentedVars);
+        return (new TemplateProcessor())->render(
+            $templateFile,
+            $augmentedVars
+        );
     }
 
     private function setConfig(array $config): self

@@ -2,16 +2,20 @@
 
 declare(strict_types=1);
 
-namespace DanBettles\Marigold\TemplateFile;
+namespace DanBettles\Marigold\File;
 
 use DanBettles\Marigold\Exception\FileNotFoundException;
-use SplFileInfo;
 
+use function array_slice;
+use function count;
 use function strtolower;
 
 use const null;
 
-abstract class AbstractTemplateFile extends SplFileInfo implements TemplateFileInterface
+/**
+ * The template file must exist.
+ */
+class TemplateFile extends FileInfo
 {
     private ?string $outputFormat;
 
@@ -26,8 +30,13 @@ abstract class AbstractTemplateFile extends SplFileInfo implements TemplateFileI
             throw new FileNotFoundException($this->getPathname());
         }
 
-        $basenameMinusExtension = $this->getBasename(".{$this->getExtension()}");
-        $outputFormat = (new SplFileInfo($basenameMinusExtension))->getExtension();
+        $maxExtensions = 2;
+        $extensions = array_slice($this->getExtensions(), -$maxExtensions);
+
+        $outputFormat = $maxExtensions === count($extensions)
+            ? $extensions[0]
+            : null
+        ;
 
         $this->setOutputFormat($outputFormat);
     }
@@ -44,7 +53,7 @@ abstract class AbstractTemplateFile extends SplFileInfo implements TemplateFileI
     }
 
     /**
-     * @inheritDoc
+     * Returns the name of the format of the output of the file, or `null` if the format is unknown.
      */
     public function getOutputFormat(): ?string
     {

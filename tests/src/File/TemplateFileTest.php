@@ -2,40 +2,37 @@
 
 declare(strict_types=1);
 
-namespace DanBettles\Marigold\Tests\TemplateFile;
+namespace DanBettles\Marigold\Tests\File;
 
 use DanBettles\Marigold\Exception\FileNotFoundException;
-use DanBettles\Marigold\TemplateFile\AbstractTemplateFile;
-use DanBettles\Marigold\TemplateFile\TemplateFileInterface;
+use DanBettles\Marigold\File\FileInfo;
+use DanBettles\Marigold\File\TemplateFile;
 use DanBettles\Marigold\Tests\AbstractTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
-use SplFileInfo;
 
 use const null;
 
-class AbstractTemplateFileTest extends AbstractTestCase
+class TemplateFileTest extends AbstractTestCase
 {
-    public function testIsAbstract()
+    public function testIsAFileinfo()
     {
-        $this->assertTrue($this->getTestedClass()->isAbstract());
+        $this->assertTrue($this->getTestedClass()->isSubclassOf(FileInfo::class));
     }
 
-    public function testIsASplfileinfo()
-    {
-        $this->assertTrue($this->getTestedClass()->isSubclassOf(SplFileInfo::class));
-    }
-
-    public function testIsATemplateFile()
-    {
-        $this->assertTrue($this->getTestedClass()->implementsInterface(TemplateFileInterface::class));
-    }
-
-    public function providesExistentTemplateFileMetadata(): array
+    public function providesExistentFileMetadata(): array
     {
         return [
             [
                 null,
+                $this->createFixturePathname('.hello_world'),
+            ],
+            [
+                null,
                 $this->createFixturePathname('hello_world'),
+            ],
+            [
+                null,
+                $this->createFixturePathname('hello_world.'),
             ],
             [
                 null,
@@ -52,11 +49,11 @@ class AbstractTemplateFileTest extends AbstractTestCase
         ];
     }
 
-    /** @dataProvider providesExistentTemplateFileMetadata */
+    /** @dataProvider providesExistentFileMetadata */
     public function testIsConstructedWithThePathnameOfATemplate($ignore, $pathname)
     {
-        /** @var MockObject|AbstractTemplateFile */
-        $templateFile = $this->getMockForAbstractClass(AbstractTemplateFile::class, [
+        /** @var MockObject|TemplateFile */
+        $templateFile = $this->getMockForAbstractClass(TemplateFile::class, [
             'filename' => $pathname,
         ]);
 
@@ -70,17 +67,17 @@ class AbstractTemplateFileTest extends AbstractTestCase
         $this->expectException(FileNotFoundException::class);
         $this->expectExceptionMessage("The file `{$templateFilePathname}` does not exist.");
 
-        /** @var MockObject|AbstractTemplateFile */
-        $this->getMockForAbstractClass(AbstractTemplateFile::class, [
+        /** @var MockObject|TemplateFile */
+        $this->getMockForAbstractClass(TemplateFile::class, [
             'filename' => $templateFilePathname,
         ]);
     }
 
-    /** @dataProvider providesExistentTemplateFileMetadata */
+    /** @dataProvider providesExistentFileMetadata */
     public function testGetoutputformat($expectedOutputFormat, $templateFilePathname)
     {
-        /** @var MockObject|AbstractTemplateFile */
-        $templateFile = $this->getMockForAbstractClass(AbstractTemplateFile::class, [
+        /** @var MockObject|TemplateFile */
+        $templateFile = $this->getMockForAbstractClass(TemplateFile::class, [
             'filename' => $templateFilePathname,
         ]);
 

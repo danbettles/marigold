@@ -6,7 +6,9 @@
     <file>tests/</file>
 
     <!-- Ignore fixtures. -->
-    <exclude-pattern>\/([^\/]+)TemplateFileTest\/.*?$</exclude-pattern>
+    <exclude-pattern>\/FileInfoTest\/.*?$</exclude-pattern>
+    <exclude-pattern>\/TemplateFileTest\/.*?$</exclude-pattern>
+    <exclude-pattern>\/TemplateProcessorTest\/.*?$</exclude-pattern>
     <exclude-pattern>\/TemplatingServiceTest\/.*?$</exclude-pattern>
 
     <arg name="extensions" value="php"/>
