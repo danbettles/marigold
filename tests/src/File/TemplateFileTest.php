@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace DanBettles\Marigold\Tests\File;
 
+use DanBettles\Marigold\AbstractTestCase;
 use DanBettles\Marigold\Exception\FileNotFoundException;
 use DanBettles\Marigold\File\FileInfo;
 use DanBettles\Marigold\File\TemplateFile;
-use DanBettles\Marigold\Tests\AbstractTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
 use const null;
@@ -74,7 +74,7 @@ class TemplateFileTest extends AbstractTestCase
     }
 
     /** @dataProvider providesExistentFileMetadata */
-    public function testGetoutputformat($expectedOutputFormat, $templateFilePathname)
+    public function testGetoutputformatReturnsTheOutputFormatOfTheTemplate($expectedOutputFormat, $templateFilePathname)
     {
         /** @var MockObject|TemplateFile */
         $templateFile = $this->getMockForAbstractClass(TemplateFile::class, [

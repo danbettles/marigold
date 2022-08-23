@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace DanBettles\Marigold\Tests\Service;
 
+use DanBettles\Marigold\AbstractTestCase;
 use DanBettles\Marigold\OutputHelper\OutputHelperInterface;
 use DanBettles\Marigold\Service\TemplatingService;
-use DanBettles\Marigold\Tests\AbstractTestCase;
 use DanBettles\Marigold\Tests\Service\TemplatingServiceTest\NotAnOutputHelper;
 use DanBettles\Marigold\Tests\Service\TemplatingServiceTest\OutputHelper;
 use RangeException;

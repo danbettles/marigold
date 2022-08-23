@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace DanBettles\Marigold\Tests\File;
 
+use DanBettles\Marigold\AbstractTestCase;
 use DanBettles\Marigold\File\FileInfo;
-use DanBettles\Marigold\Tests\AbstractTestCase;
 use SplFileInfo;
 
 class FileInfoTest extends AbstractTestCase
@@ -46,7 +46,7 @@ class FileInfoTest extends AbstractTestCase
     }
 
     /** @dataProvider providesExistentFileMetadata */
-    public function testGetextensions($expectedExtensions, $pathname)
+    public function testGetextensionsReturnsAllExtensionsInTheFilename($expectedExtensions, $pathname)
     {
         $fileInfo = new FileInfo($pathname);
 

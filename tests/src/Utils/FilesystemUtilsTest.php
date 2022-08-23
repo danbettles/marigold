@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DanBettles\Marigold\Tests\Utils;
 
-use DanBettles\Marigold\Tests\AbstractTestCase;
+use DanBettles\Marigold\AbstractTestCase;
 use DanBettles\Marigold\Utils\FilesystemUtils;
 
 use const null;
@@ -12,7 +12,7 @@ use const PATHINFO_EXTENSION;
 
 class FilesystemUtilsTest extends AbstractTestCase
 {
-    public function testPathinfo()
+    public function testPathinfoReturnsInformationAboutAFilePath()
     {
         $this->assertEquals(
             [

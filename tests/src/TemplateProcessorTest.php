@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace DanBettles\Marigold\Tests;
 
+use DanBettles\Marigold\AbstractTestCase;
 use DanBettles\Marigold\Exception\FileTypeNotSupportedException;
 use DanBettles\Marigold\File\TemplateFile;
 use DanBettles\Marigold\TemplateProcessor;
-use DanBettles\Marigold\Tests\AbstractTestCase;
 
 use function ob_get_length;
 use function ob_end_clean;
@@ -79,7 +79,7 @@ class TemplateProcessorTest extends AbstractTestCase
     }
 
     /** @dataProvider providesRenderedTemplateOutput */
-    public function testRender($expectedOutput, $templateFilePathname, $templateVars)
+    public function testRenderReturnsTheRenderedOutputOfTheTemplate($expectedOutput, $templateFilePathname, $templateVars)
     {
         ob_start();
 

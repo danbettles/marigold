@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace DanBettles\Marigold\Tests\OutputHelper;
 
+use DanBettles\Marigold\AbstractTestCase;
 use DanBettles\Marigold\OutputHelper\OutputHelperInterface;
 use DanBettles\Marigold\OutputHelper\XmlOutputHelper;
-use DanBettles\Marigold\Tests\AbstractTestCase;
 use InvalidArgumentException;
 use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
@@ -21,7 +21,7 @@ class XmlOutputHelperTest extends AbstractTestCase
         $this->assertTrue($this->getTestedClass()->implementsInterface(OutputHelperInterface::class));
     }
 
-    public function testEncodingAccessors()
+    public function testGetencodingReturnsTheEncodingSetUsingSetencoding()
     {
         $helper = new XmlOutputHelper();
 
@@ -171,7 +171,7 @@ class XmlOutputHelperTest extends AbstractTestCase
     /**
      * @dataProvider providesEscapedStrings
      */
-    public function testEscape($expected, $input)
+    public function testEscapeEscapesSpecialCharsInTheInput($expected, $input)
     {
         $helper = new XmlOutputHelper();
 
@@ -230,7 +230,7 @@ class XmlOutputHelperTest extends AbstractTestCase
     /**
      * @dataProvider providesAttributesStrings
      */
-    public function testCreateattributes($expected, $input)
+    public function testCreateattributesCreatesAttributesHtmlFromAnArrayOfKeyValuePairs($expected, $input)
     {
         $helper = new XmlOutputHelper();
 

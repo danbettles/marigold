@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace DanBettles\Marigold\Tests;
+namespace DanBettles\Marigold;
 
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
 use function array_pop;
 use function explode;
-use function get_called_class;
+use function get_class;
 use function implode;
 use function preg_replace;
 use function strlen;
@@ -18,11 +18,12 @@ use function substr;
 use const DIRECTORY_SEPARATOR;
 use const null;
 
-/**
- * @todo Extract, and test, this.
- */
-class AbstractTestCase extends TestCase
+abstract class AbstractTestCase extends TestCase
 {
+    public static string $testsNamespace;
+
+    public static string $testsDir;
+
     private string $fixturesDir;
 
     private string $testedClassName;
@@ -36,10 +37,10 @@ class AbstractTestCase extends TestCase
     ) {
         parent::__construct($name, $data, $dataName);
 
-        $relativeClassName = substr(get_called_class(), strlen(__NAMESPACE__) + 1);
+        $relativeClassName = substr(get_class($this), strlen(self::$testsNamespace) + 1);
 
         $fixturesDir = (
-            __DIR__ .
+            self::$testsDir .
             DIRECTORY_SEPARATOR .
             preg_replace('~[\x2F\x5C]~', DIRECTORY_SEPARATOR, $relativeClassName)
         );
@@ -47,7 +48,7 @@ class AbstractTestCase extends TestCase
         $this->setFixturesDir($fixturesDir);
 
         $namespaceSeparator = '\\';
-        $namespaceParts = explode($namespaceSeparator, __NAMESPACE__);
+        $namespaceParts = explode($namespaceSeparator, self::$testsNamespace);
         array_pop($namespaceParts);
         $namespaceParts[] = preg_replace('~Test$~', '', $relativeClassName);
         $testedClassName = implode($namespaceSeparator, $namespaceParts);

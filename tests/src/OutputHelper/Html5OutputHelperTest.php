@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace DanBettles\Marigold\Tests\OutputHelper;
 
 use BadMethodCallException;
+use DanBettles\Marigold\AbstractTestCase;
 use DanBettles\Marigold\OutputHelper\Html5OutputHelper;
 use DanBettles\Marigold\OutputHelper\XmlOutputHelper;
-use DanBettles\Marigold\Tests\AbstractTestCase;
 use RangeException;
 
 use const false;
