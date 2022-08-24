@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace DanBettles\Marigold\Service;
 
-use Closure;
 use DanBettles\Marigold\OutputHelper\OutputHelperInterface;
 use DanBettles\Marigold\File\TemplateFile;
+use DanBettles\Marigold\ServiceFactory;
 use DanBettles\Marigold\TemplateProcessor;
 use RangeException;
 
-use function class_exists;
 use function get_class;
-use function is_object;
-use function is_string;
 use function sprintf;
 
 use const DIRECTORY_SEPARATOR;
@@ -23,9 +20,16 @@ class TemplatingService
 {
     private array $config;
 
-    public function __construct(array $config = [])
-    {
-        $this->setConfig($config);
+    private ServiceFactory $serviceFactory;
+
+    public function __construct(
+        array $config,
+        ServiceFactory $serviceFactory
+    ) {
+        $this
+            ->setConfig($config)
+            ->setServiceFactory($serviceFactory)
+        ;
     }
 
     private function createTemplateFilePathname(string $pathnameOrBasename): string
@@ -41,9 +45,6 @@ class TemplatingService
     }
 
     /**
-     * @throws RangeException If the output-helper class does not exist.
-     * @throws RangeException If the output-helper factory does not return an object.
-     * @throws RangeException If the output-helper config is invalid.
      * @throws RangeException If the helper is not an output helper.
      */
     private function createOutputHelperFromTemplateFile(TemplateFile $templateFile): ?OutputHelperInterface
@@ -52,35 +53,13 @@ class TemplatingService
             ?: 'html'
         ;
 
-        $classNameOrClosure = $this->getConfig()['output_helpers'][$outputFormat]
-            ?? null
-        ;
+        $helperServiceId = "output_helpers.{$outputFormat}";
 
-        if (null === $classNameOrClosure) {
+        if (!$this->getServiceFactory()->contains($helperServiceId)) {
             return null;
         }
 
-        $helper = $classNameOrClosure;
-
-        if (is_string($classNameOrClosure)) {
-            if (!class_exists($classNameOrClosure)) {
-                throw new RangeException("The output-helper class `{$classNameOrClosure}` does not exist.");
-            }
-
-            $helper = new $classNameOrClosure();
-        } elseif ($classNameOrClosure instanceof Closure) {
-            $helper = $classNameOrClosure();
-
-            if (!is_object($helper)) {
-                throw new RangeException(
-                    "The output-helper factory for `{$outputFormat}` output does not return an object."
-                );
-            }
-        } elseif (!is_object($helper)) {
-            throw new RangeException(
-                "The output-helper config for `{$outputFormat}` format is invalid: it must be a class name, a closure, or an object."
-            );
-        }
+        $helper = $this->getServiceFactory()->get($helperServiceId);
 
         if (!$helper instanceof OutputHelperInterface) {
             throw new RangeException(sprintf(
@@ -127,5 +106,16 @@ class TemplatingService
     public function getConfig(): array
     {
         return $this->config;
+    }
+
+    private function setServiceFactory(ServiceFactory $serviceFactory): self
+    {
+        $this->serviceFactory = $serviceFactory;
+        return $this;
+    }
+
+    public function getServiceFactory(): ServiceFactory
+    {
+        return $this->serviceFactory;
     }
 }

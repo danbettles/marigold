@@ -7,6 +7,7 @@ namespace DanBettles\Marigold\Tests\Service;
 use DanBettles\Marigold\AbstractTestCase;
 use DanBettles\Marigold\OutputHelper\OutputHelperInterface;
 use DanBettles\Marigold\Service\TemplatingService;
+use DanBettles\Marigold\ServiceFactory;
 use DanBettles\Marigold\Tests\Service\TemplatingServiceTest\NotAnOutputHelper;
 use DanBettles\Marigold\Tests\Service\TemplatingServiceTest\OutputHelper;
 use RangeException;
@@ -16,29 +17,25 @@ use function spl_object_id;
 
 class TemplatingServiceTest extends AbstractTestCase
 {
-    public function testConstructor()
+    public function testIsInstantiable()
     {
         $config = [];
-        $service = new TemplatingService($config);
+        $serviceFactory = new ServiceFactory([]);
+        $templatingService = new TemplatingService($config, $serviceFactory);
 
-        $this->assertEquals($config, $service->getConfig());
-    }
-
-    public function testDoesNotRequireConfig()
-    {
-        $service = new TemplatingService();
-
-        $this->assertInstanceOf(TemplatingService::class, $service);
+        $this->assertEquals($config, $templatingService->getConfig());
+        $this->assertSame($serviceFactory, $templatingService->getServiceFactory());
     }
 
     public function testRenderPassesAllTemplateVarsToTheTemplateFileInAnArray()
     {
-        $service = new TemplatingService();
-
-        $output = $service->render($this->createFixturePathname('contains_var_variables.php'), [
-            'foo' => 'bar',
-            'baz' => 'qux',
-        ]);
+        $output = $this
+            ->createEmptyTemplatingService()
+            ->render($this->createFixturePathname('contains_var_variables.php'), [
+                'foo' => 'bar',
+                'baz' => 'qux',
+            ])
+        ;
 
         $this->assertSame(<<<'END'
         Array
@@ -52,18 +49,20 @@ class TemplatingServiceTest extends AbstractTestCase
 
     public function testRenderDoesNotRequireVars()
     {
-        $service = new TemplatingService();
-        $output = $service->render($this->createFixturePathname('hello_world.php'));
+        $output = $this
+            ->createEmptyTemplatingService()
+            ->render($this->createFixturePathname('hello_world.php'))
+        ;
 
         $this->assertSame('Hello, World!', $output);
     }
 
     public function testRenderPassesTheTemplatingServiceToTheTemplateFile()
     {
-        $service = new TemplatingService();
-        $output = $service->render($this->createFixturePathname('contains_var_service.php'), []);
+        $templatingService = $this->createEmptyTemplatingService();
+        $output = $templatingService->render($this->createFixturePathname('contains_var_service.php'));
 
-        $this->assertSame((string) spl_object_id($service), $output);
+        $this->assertSame((string) spl_object_id($templatingService), $output);
     }
 
     public function providesInjectedOutputHelperClassNames(): array
@@ -72,28 +71,15 @@ class TemplatingServiceTest extends AbstractTestCase
             [
                 OutputHelper::class,
                 [
-                    'output_helpers' => [
-                        'html' => new OutputHelper(),
-                    ],
-                ],
-            ],
-            // Lazy loading:
-            [
-                OutputHelper::class,
-                [
-                    'output_helpers' => [
-                        'html' => OutputHelper::class,
-                    ],
+                    'output_helpers.html' => OutputHelper::class,
                 ],
             ],
             [
                 OutputHelper::class,
                 [
-                    'output_helpers' => [
-                        'html' => function () {
-                            return new OutputHelper();
-                        },
-                    ],
+                    'output_helpers.html' => function () {
+                        return new OutputHelper();
+                    },
                 ],
             ],
         ];
@@ -104,29 +90,15 @@ class TemplatingServiceTest extends AbstractTestCase
      */
     public function testRenderInjectsAnAppropriateOutputHelperIfTheNameOfTheTemplateFileFollowsTheConvention(
         string $expectedClassName,
-        array $serviceConfig
+        array $serviceFactoryConfig
     ) {
-        $output = (new TemplatingService($serviceConfig))
-            ->render($this->createFixturePathname('contains_var_helper.html.php'), [])
+        $serviceFactory = new ServiceFactory($serviceFactoryConfig);
+
+        $output = (new TemplatingService([], $serviceFactory))
+            ->render($this->createFixturePathname('contains_var_helper.html.php'))
         ;
 
         $this->assertSame($expectedClassName, $output);
-    }
-
-    public function testRenderThrowsAnExceptionIfTheOutputHelperClassDoesNotExist()
-    {
-        $nonExistentClassName = __CLASS__ . '\\NonExistent';
-
-        $this->expectException(RangeException::class);
-        $this->expectExceptionMessage("The output-helper class `{$nonExistentClassName}` does not exist.");
-
-        (new TemplatingService([
-            'output_helpers' => [
-                'html' => $nonExistentClassName,
-            ],
-        ]))
-            ->render($this->createFixturePathname('empty_file.php'), [])
-        ;
     }
 
     public function testRenderThrowsAnExceptionIfTheOutputHelperClassIsNotAnOutputHelper()
@@ -137,27 +109,12 @@ class TemplatingServiceTest extends AbstractTestCase
         $this->expectException(RangeException::class);
         $this->expectExceptionMessage("The helper for `html` output, `{$notAnOutputHelperClassName}`, does not implement `{$outputHelperBaseName}`.");
 
-        (new TemplatingService([
-            'output_helpers' => [
-                'html' => $notAnOutputHelperClassName,
-            ],
-        ]))
-            ->render($this->createFixturePathname('empty_file.php'), [])
-        ;
-    }
+        $serviceFactoryConfig = [
+            'output_helpers.html' => $notAnOutputHelperClassName,
+        ];
 
-    public function testRenderThrowsAnExceptionIfTheOutputHelperClosureDoesNotReturnAnObject()
-    {
-        $this->expectException(RangeException::class);
-        $this->expectExceptionMessage("The output-helper factory for `html` output does not return an object.");
-
-        (new TemplatingService([
-            'output_helpers' => [
-                'html' => function () {
-                },
-            ],
-        ]))
-            ->render($this->createFixturePathname('empty_file.php'), [])
+        (new TemplatingService([], new ServiceFactory($serviceFactoryConfig)))
+            ->render($this->createFixturePathname('empty_file.php'))
         ;
     }
 
@@ -168,58 +125,32 @@ class TemplatingServiceTest extends AbstractTestCase
         $this->expectException(RangeException::class);
         $this->expectExceptionMessage("The helper for `html` output, `stdClass`, does not implement `{$outputHelperBaseName}`.");
 
-        (new TemplatingService([
-            'output_helpers' => [
-                'html' => function () {
-                    return new stdClass();
-                },
-            ],
-        ]))
-            ->render($this->createFixturePathname('empty_file.php'), [])
-        ;
-    }
-
-    public function providesInvalidOutputHelpers(): array
-    {
-        // Garbage.
-        return [
-            [
-                123,
-            ],
-            [
-                1.23,
-            ],
-            [
-                [],
-            ],
+        $serviceFactoryConfig = [
+            'output_helpers.html' => function () {
+                return new stdClass();
+            },
         ];
-    }
 
-    /**
-     * @dataProvider providesInvalidOutputHelpers
-     */
-    public function testRenderThrowsAnExceptionIfTheOutputHelperDoesNotResolveToAnOutputHelper($invalid)
-    {
-        $this->expectException(RangeException::class);
-        $this->expectExceptionMessage("The output-helper config for `html` format is invalid: it must be a class name, a closure, or an object.");
-
-        (new TemplatingService([
-            'output_helpers' => [
-                'html' => $invalid,
-            ],
-        ]))
-            ->render($this->createFixturePathname('empty_file.php'), [])
+        (new TemplatingService([], new ServiceFactory($serviceFactoryConfig)))
+            ->render($this->createFixturePathname('empty_file.php'))
         ;
     }
 
     public function testUsesTheTemplatesDirConfigIfSet()
     {
-        $service = new TemplatingService([
+        $templatingServiceConfig = [
             'templates_dir' => $this->getFixturesDir(),
-        ]);
+        ];
 
-        $output = $service->render('hello_world.php');
+        $output = (new TemplatingService($templatingServiceConfig, new ServiceFactory([])))
+            ->render('hello_world.php')
+        ;
 
         $this->assertSame('Hello, World!', $output);
+    }
+
+    private function createEmptyTemplatingService(): TemplatingService
+    {
+        return new TemplatingService([], new ServiceFactory([]));
     }
 }
