@@ -67,7 +67,6 @@ class TemplateFileTest extends AbstractTestCase
         $this->expectException(FileNotFoundException::class);
         $this->expectExceptionMessage("The file `{$templateFilePathname}` does not exist.");
 
-        /** @var MockObject|TemplateFile */
         $this->getMockForAbstractClass(TemplateFile::class, [
             'filename' => $templateFilePathname,
         ]);

@@ -1,0 +1,18 @@
+parameters:
+    level: 5
+    paths:
+        - src
+        - tests
+    ignoreErrors:
+        -
+            message: '#^Variable \$\w+ might not be defined.$#'
+            paths:
+                - tests/src/Service/TemplatingServiceTest/*
+                - tests/src/TemplateProcessorTest/*
+        -
+            message: '#^Call to an undefined method DanBettles\\Marigold\\OutputHelper\\Html5OutputHelper::create[A-Z]#'
+            path: tests/src/OutputHelper/Html5OutputHelperTest.php
+        -
+            message: '#^Call to an undefined method DanBettles\\Marigold\\OutputHelper\\Html5OutputHelper::create\(\)\.$#'
+            path: tests/src/OutputHelper/Html5OutputHelperTest.php
+            count: 1
