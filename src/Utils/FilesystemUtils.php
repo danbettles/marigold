@@ -8,7 +8,6 @@ use function array_replace;
 use function pathinfo;
 
 use const null;
-use const PATHINFO_ALL;
 use const PATHINFO_EXTENSION;
 
 class FilesystemUtils
@@ -25,9 +24,9 @@ class FilesystemUtils
      */
     public static function pathinfo(
         string $path,
-        int $flags = PATHINFO_ALL
+        int $flags = null
     ) {
-        if (PATHINFO_ALL === $flags || PATHINFO_EXTENSION === $flags) {
+        if (null === $flags || PATHINFO_EXTENSION === $flags) {
             $all = array_replace([
                 'extension' => null,
             ], pathinfo($path));
