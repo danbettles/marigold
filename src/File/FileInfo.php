@@ -20,4 +20,16 @@ class FileInfo extends SplFileInfo
 
         return array_slice($parts, 1);
     }
+
+    public function getBasenameMinusExtension(): string
+    {
+        if (self::BASENAME_SEPARATOR === $this->getBasename()[0]) {
+            // `SplFileInfo::getExtension()` returns `"foo"` when pathname is `".foo"`.  Following that logic, we must
+            // now return `""` when pathname is like `".foo"`.  That's not what happens, however, if you follow the
+            // usual pattern -- as later on 🤦‍♂️
+            return '';
+        }
+
+        return $this->getBasename(self::BASENAME_SEPARATOR . $this->getExtension());
+    }
 }
