@@ -15,7 +15,7 @@ use function ob_start;
 
 class TemplateProcessorTest extends AbstractTestCase
 {
-    public function testRenderThrowsAnExceptionIfTheFileDoesNotAppearToContainPhp()
+    public function testRenderThrowsAnExceptionIfTheFileDoesNotAppearToContainPhp(): void
     {
         $this->expectException(FileTypeNotSupportedException::class);
         $this->expectExceptionMessage('The file-type `txt` is not supported.  Supported types: php; ');
@@ -26,6 +26,7 @@ class TemplateProcessorTest extends AbstractTestCase
         );
     }
 
+    /** @return array<int, array<int, mixed>> */
     public function providesRenderedTemplateOutput(): array
     {
         return [
@@ -78,9 +79,15 @@ class TemplateProcessorTest extends AbstractTestCase
         ];
     }
 
-    /** @dataProvider providesRenderedTemplateOutput */
-    public function testRenderReturnsTheRenderedOutputOfTheTemplate($expectedOutput, $templateFilePathname, $templateVars)
-    {
+    /**
+     * @dataProvider providesRenderedTemplateOutput
+     * @param array<string, mixed> $templateVars
+     */
+    public function testRenderReturnsTheRenderedOutputOfTheTemplate(
+        string $expectedOutput,
+        string $templateFilePathname,
+        array $templateVars
+    ): void {
         ob_start();
 
         try {
@@ -96,7 +103,7 @@ class TemplateProcessorTest extends AbstractTestCase
         }
     }
 
-    public function testRenderDoesNotRequireVars()
+    public function testRenderDoesNotRequireVars(): void
     {
         $output = (new TemplateProcessor())->render(
             $this->createFixturePathname('hello_world.php')
@@ -105,7 +112,7 @@ class TemplateProcessorTest extends AbstractTestCase
         $this->assertSame('Hello, World!', $output);
     }
 
-    public function testTemplateFilesDoNotHaveAccessToThis()
+    public function testTemplateFilesDoNotHaveAccessToThis(): void
     {
         $this->expectError();
         $this->expectErrorMessage('Using $this when not in object context');
@@ -115,13 +122,25 @@ class TemplateProcessorTest extends AbstractTestCase
         ;
     }
 
-    public function testRenderCanAcceptATemplatefileInsteadOfAPathname()
+    public function testRenderCanAcceptATemplatefileInsteadOfAPathname(): void
     {
         $templateFile = new TemplateFile($this->createFixturePathname('hello_world.php'));
 
         $output = (new TemplateProcessor())->render(
             $templateFile
         );
+
+        $this->assertSame('Hello, World!', $output);
+    }
+
+    public function testUsesTheTemplatesDirIfSet(): void
+    {
+        $templatesDir = $this->getFixturesDir();
+        $templateProcessor = new TemplateProcessor($templatesDir);
+
+        $this->assertSame($templatesDir, $templateProcessor->getTemplatesDir());
+
+        $output = $templateProcessor->render('hello_world.php');
 
         $this->assertSame('Hello, World!', $output);
     }
