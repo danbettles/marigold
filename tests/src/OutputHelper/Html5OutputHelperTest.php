@@ -13,6 +13,7 @@ use RangeException;
 use const false;
 use const true;
 
+// @todo Test that `createEl()`/`createElement()` calls `createAttributes()`.
 class Html5OutputHelperTest extends AbstractTestCase
 {
     public function testIsAXmloutputhelper()

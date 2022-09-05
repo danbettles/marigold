@@ -14,6 +14,7 @@ use stdClass;
 use const false;
 use const null;
 
+// @todo Test that `createEl()`/`createElement()` calls `createAttributes()`.
 class XmlOutputHelperTest extends AbstractTestCase
 {
     public function testIsAnOutputhelper()
