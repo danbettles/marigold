@@ -33,5 +33,11 @@
             "@app:lint",
             "@app:analyse"
         ]
+    },
+    "scripts-descriptions": {
+        "app:test": "Runs all automated tests.",
+        "app:lint": "Lints the PHP.",
+        "app:analyse": "Performs static analysis on the PHP.",
+        "app:check-quality": "Runs all automated tests; lints all the code; performs static analysis on the PHP."
     }
 }
