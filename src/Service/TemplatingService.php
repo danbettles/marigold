@@ -7,7 +7,7 @@ namespace DanBettles\Marigold\Service;
 use DanBettles\Marigold\OutputHelper\OutputHelperInterface;
 use DanBettles\Marigold\File\TemplateFile;
 use DanBettles\Marigold\ServiceFactory;
-use DanBettles\Marigold\TemplateProcessor;
+use DanBettles\Marigold\TemplateEngine;
 use RangeException;
 
 use function get_class;
@@ -91,7 +91,7 @@ class TemplatingService
             $augmentedVars['helper'] = $outputHelper;
         }
 
-        return (new TemplateProcessor())->render(
+        return (new TemplateEngine())->render(
             $templateFile,
             $augmentedVars
         );

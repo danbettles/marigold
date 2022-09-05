@@ -16,7 +16,7 @@ use function ob_start;
 use const DIRECTORY_SEPARATOR;
 use const null;
 
-class TemplateProcessor
+class TemplateEngine
 {
     /** @var string[] */
     private const VALID_FILE_EXTENSIONS = [

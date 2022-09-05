@@ -7,20 +7,20 @@ namespace DanBettles\Marigold\Tests;
 use DanBettles\Marigold\AbstractTestCase;
 use DanBettles\Marigold\Exception\FileTypeNotSupportedException;
 use DanBettles\Marigold\File\TemplateFile;
-use DanBettles\Marigold\TemplateProcessor;
+use DanBettles\Marigold\TemplateEngine;
 
 use function ob_get_length;
 use function ob_end_clean;
 use function ob_start;
 
-class TemplateProcessorTest extends AbstractTestCase
+class TemplateEngineTest extends AbstractTestCase
 {
     public function testRenderThrowsAnExceptionIfTheFileDoesNotAppearToContainPhp(): void
     {
         $this->expectException(FileTypeNotSupportedException::class);
         $this->expectExceptionMessage('The file-type `txt` is not supported.  Supported types: php; ');
 
-        (new TemplateProcessor())->render(
+        (new TemplateEngine())->render(
             $this->createFixturePathname('hello_world.txt'),
             []
         );
@@ -91,7 +91,7 @@ class TemplateProcessorTest extends AbstractTestCase
         ob_start();
 
         try {
-            $output = (new TemplateProcessor())->render(
+            $output = (new TemplateEngine())->render(
                 $templateFilePathname,
                 $templateVars
             );
@@ -105,7 +105,7 @@ class TemplateProcessorTest extends AbstractTestCase
 
     public function testRenderDoesNotRequireVars(): void
     {
-        $output = (new TemplateProcessor())->render(
+        $output = (new TemplateEngine())->render(
             $this->createFixturePathname('hello_world.php')
         );
 
@@ -117,7 +117,7 @@ class TemplateProcessorTest extends AbstractTestCase
         $this->expectError();
         $this->expectErrorMessage('Using $this when not in object context');
 
-        (new TemplateProcessor())
+        (new TemplateEngine())
             ->render($this->createFixturePathname('does_not_contain_var_this.php'))
         ;
     }
@@ -126,7 +126,7 @@ class TemplateProcessorTest extends AbstractTestCase
     {
         $templateFile = new TemplateFile($this->createFixturePathname('hello_world.php'));
 
-        $output = (new TemplateProcessor())->render(
+        $output = (new TemplateEngine())->render(
             $templateFile
         );
 
@@ -136,11 +136,11 @@ class TemplateProcessorTest extends AbstractTestCase
     public function testUsesTheTemplatesDirIfSet(): void
     {
         $templatesDir = $this->getFixturesDir();
-        $templateProcessor = new TemplateProcessor($templatesDir);
+        $engine = new TemplateEngine($templatesDir);
 
-        $this->assertSame($templatesDir, $templateProcessor->getTemplatesDir());
+        $this->assertSame($templatesDir, $engine->getTemplatesDir());
 
-        $output = $templateProcessor->render('hello_world.php');
+        $output = $engine->render('hello_world.php');
 
         $this->assertSame('Hello, World!', $output);
     }
