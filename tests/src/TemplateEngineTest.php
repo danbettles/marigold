@@ -144,4 +144,19 @@ class TemplateEngineTest extends AbstractTestCase
 
         $this->assertSame('Hello, World!', $output);
     }
+
+    public function testRenderCanAutomaticallyInsertTheRenderedOutputOfATemplateIntoALayout(): void
+    {
+        $templatesDir = $this->createFixturePathname(__FUNCTION__);
+        $engine = new TemplateEngine($templatesDir);
+
+        $output = $engine->render('content.html.php', [
+            'message' => 'Hello, World!',
+        ]);
+
+        $this->assertSame(<<<END
+        \$message: Hello, World!
+        \$__contentForLayout: <p>Hello, World!</p>
+        END, $output);
+    }
 }

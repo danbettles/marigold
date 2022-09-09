@@ -68,7 +68,9 @@ class TemplateEngine
         $__FILE__ = $templateFile->getPathname();
         $__VARS__ = $variables;
 
-        return (static function () use ($__FILE__, $__VARS__): string {
+        $__layout = null;
+
+        $output = (static function () use ($__FILE__, $__VARS__, &$__layout): string {
             ob_start();
 
             try {
@@ -85,6 +87,16 @@ class TemplateEngine
                 ob_end_clean();
             }
         })();
+
+        // We can't be specific enough in `phpstan.neon`, so ignore the troublesome line using the PHPStan annotation.
+        // @phpstan-ignore-next-line
+        if (null !== $__layout) {
+            $variables['__contentForLayout'] = $output;
+
+            return $this->render($__layout, $variables);
+        }
+
+        return $output;
     }
 
     private function setTemplatesDir(?string $dir): self

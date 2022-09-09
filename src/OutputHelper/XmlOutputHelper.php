@@ -93,7 +93,7 @@ class XmlOutputHelper implements OutputHelperInterface
             $content = $attributesOrContent;
         }
 
-        /** @phpstan-ignore-next-line */
+        // @phpstan-ignore-next-line
         if (!is_string($content) && null !== $content) {
             throw new InvalidArgumentException('The content is not a string/null.');
         }

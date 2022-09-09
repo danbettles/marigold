@@ -16,3 +16,7 @@ parameters:
             message: '#^Call to an undefined method DanBettles\\Marigold\\OutputHelper\\Html5OutputHelper::create\(\)\.$#'
             path: tests/src/OutputHelper/Html5OutputHelperTest.php
             count: 1
+        -
+            message: "#^Anonymous function has an unused use \\$__layout\\.$#"
+            count: 1
+            path: src/TemplateEngine.php
