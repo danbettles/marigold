@@ -67,7 +67,7 @@ class HttpResponse
         echo $this->getContent();
     }
 
-    private function setContent(string $content): self
+    public function setContent(string $content): self
     {
         $this->content = $content;
         return $this;
@@ -78,7 +78,7 @@ class HttpResponse
         return $this->content;
     }
 
-    private function setStatusCode(int $statusCode): self
+    public function setStatusCode(int $statusCode): self
     {
         $this->statusCode = $statusCode;
         return $this;

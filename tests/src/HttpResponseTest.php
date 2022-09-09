@@ -55,4 +55,17 @@ class HttpResponseTest extends AbstractTestCase
             'SERVER_PROTOCOL' => 'HTTP/1.1',
         ]);
     }
+
+    public function testPropertiesHaveSetters(): void
+    {
+        $getsStatusCode = new HttpResponse();
+        $getsStatusCode->setStatusCode(500);
+
+        $this->assertSame(500, $getsStatusCode->getStatusCode());
+
+        $getsContent = new HttpResponse();
+        $getsContent->setContent('Foo');
+
+        $this->assertSame('Foo', $getsContent->getContent());
+    }
 }
