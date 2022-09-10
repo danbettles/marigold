@@ -10,14 +10,14 @@ use RuntimeException;
 
 class FileNotFoundExceptionTest extends AbstractTestCase
 {
-    public function testIsARuntimeexception()
+    public function testIsARuntimeexception(): void
     {
         $this->assertTrue($this->getTestedClass()->isSubclassOf(RuntimeException::class));
     }
 
-    public function testCanBeThrown()
+    public function testCanBeThrown(): void
     {
-        $pathname = $this->createFixturePathname('file_that_does_not_exist.php');
+        $pathname = $this->createFixturePathname('non_existent.php');
 
         $this->expectException(FileNotFoundException::class);
         $this->expectExceptionMessage("The file `{$pathname}` does not exist.");

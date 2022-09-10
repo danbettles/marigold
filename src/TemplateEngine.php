@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DanBettles\Marigold;
 
+use DanBettles\Marigold\Exception\FileNotFoundException;
 use DanBettles\Marigold\Exception\FileTypeNotSupportedException;
 use DanBettles\Marigold\File\TemplateFile;
 
@@ -13,7 +14,6 @@ use function ob_end_clean;
 use function ob_get_contents;
 use function ob_start;
 
-use const DIRECTORY_SEPARATOR;
 use const null;
 
 class TemplateEngine
@@ -28,38 +28,47 @@ class TemplateEngine
         'phps',
     ];
 
-    private ?string $templatesDir;
+    private ?TemplateFileLoader $templateFileLoader;
 
-    public function __construct(string $templatesDir = null)
+    public function __construct(TemplateFileLoader $templateFileLoader = null)
     {
-        $this->setTemplatesDir($templatesDir);
-    }
-
-    /**
-     * @param string|TemplateFile $pathnameOrTemplateFile
-     */
-    private function createTemplateFile($pathnameOrTemplateFile): TemplateFile
-    {
-        if ($pathnameOrTemplateFile instanceof TemplateFile) {
-            return $pathnameOrTemplateFile;
-        }
-
-        $pathname = null === $this->getTemplatesDir()
-            ? $pathnameOrTemplateFile
-            : $this->getTemplatesDir() . DIRECTORY_SEPARATOR . $pathnameOrTemplateFile
-        ;
-
-        return new TemplateFile($pathname);
+        $this->setTemplateFileLoader($templateFileLoader);
     }
 
     /**
      * @param string|TemplateFile $pathnameOrTemplateFile
      * @param array<string, mixed> $variables
+     * @throws FileNotFoundException If the template file does not exist.
      * @throws FileTypeNotSupportedException If the file does not appear to contain PHP.
      */
     public function render($pathnameOrTemplateFile, array $variables = []): string
     {
-        $templateFile = $this->createTemplateFile($pathnameOrTemplateFile);
+        $templateFile = null;
+        $templateFilePathname = null;
+
+        if ($pathnameOrTemplateFile instanceof TemplateFile) {
+            $templateFile = $pathnameOrTemplateFile;
+            $templateFilePathname = $templateFile->getPathname();
+        } else {
+            if ($this->getTemplateFileLoader()) {
+                $templateFile = $this->getTemplateFileLoader()->findTemplate($pathnameOrTemplateFile);
+
+                $templateFilePathname = null === $templateFile
+                    ? $pathnameOrTemplateFile
+                    : $templateFile->getPathname()
+                ;
+            } else {
+                $templateFile = new TemplateFile($pathnameOrTemplateFile);
+                $templateFilePathname = $templateFile->getPathname();
+            }
+        }
+
+        if (
+            null === $templateFile
+            || !$templateFile->isFile()
+        ) {
+            throw new FileNotFoundException("The template file `{$templateFilePathname}` does not exist.");
+        }
 
         if (!in_array($templateFile->getExtension(), self::VALID_FILE_EXTENSIONS)) {
             throw new FileTypeNotSupportedException($templateFile->getExtension(), self::VALID_FILE_EXTENSIONS);
@@ -99,14 +108,14 @@ class TemplateEngine
         return $output;
     }
 
-    private function setTemplatesDir(?string $dir): self
+    private function setTemplateFileLoader(?TemplateFileLoader $loader): self
     {
-        $this->templatesDir = $dir;
+        $this->templateFileLoader = $loader;
         return $this;
     }
 
-    public function getTemplatesDir(): ?string
+    public function getTemplateFileLoader(): ?TemplateFileLoader
     {
-        return $this->templatesDir;
+        return $this->templateFileLoader;
     }
 }

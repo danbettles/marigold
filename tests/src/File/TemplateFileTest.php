@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace DanBettles\Marigold\Tests\File;
 
 use DanBettles\Marigold\AbstractTestCase;
-use DanBettles\Marigold\Exception\FileNotFoundException;
 use DanBettles\Marigold\File\FileInfo;
 use DanBettles\Marigold\File\TemplateFile;
-use PHPUnit\Framework\MockObject\MockObject;
+use RangeException;
+
+use function file_exists;
 
 use const null;
 
 class TemplateFileTest extends AbstractTestCase
 {
-    public function testIsAFileinfo()
+    public function testIsAFileinfo(): void
     {
         $this->assertTrue($this->getTestedClass()->isSubclassOf(FileInfo::class));
     }
@@ -50,35 +51,38 @@ class TemplateFileTest extends AbstractTestCase
     }
 
     /** @dataProvider providesExistentFileMetadata */
-    public function testIsConstructedWithThePathnameOfATemplate($ignore, $pathname)
+    public function testIsConstructedWithThePathnameOfATemplateFile($ignore, $pathname): void
     {
-        /** @var MockObject|TemplateFile */
-        $templateFile = $this->getMockForAbstractClass(TemplateFile::class, [
-            'filename' => $pathname,
-        ]);
+        $templateFile = new TemplateFile($pathname);
 
         $this->assertSame($pathname, $templateFile->getPathname());
     }
 
-    public function testConstructorThrowsAnExceptionIfTheFileDoesNotExist()
+    public function testCanBeConstructedFromThePathnameOfAFileThatDoesNotExist(): void
     {
-        $templateFilePathname = $this->createFixturePathname('file_that_does_not_exist');
+        $templateFilePathname = $this->createFixturePathname('non_existent.php');
 
-        $this->expectException(FileNotFoundException::class);
-        $this->expectExceptionMessage("The file `{$templateFilePathname}` does not exist.");
+        $this->assertFalse(file_exists($templateFilePathname));
 
-        $this->getMockForAbstractClass(TemplateFile::class, [
-            'filename' => $templateFilePathname,
-        ]);
+        new TemplateFile($templateFilePathname);
+    }
+
+    public function testThrowsAnExceptionIfThePathnameDoesNotPointAtAFile(): void
+    {
+        $dir = $this->getFixturesDir();
+
+        $this->expectException(RangeException::class);
+        $this->expectExceptionMessage("The filename `{$dir}` does not point at a file.");
+
+        new TemplateFile($dir);
     }
 
     /** @dataProvider providesExistentFileMetadata */
-    public function testGetoutputformatReturnsTheOutputFormatOfTheTemplate($expectedOutputFormat, $templateFilePathname)
-    {
-        /** @var MockObject|TemplateFile */
-        $templateFile = $this->getMockForAbstractClass(TemplateFile::class, [
-            'filename' => $templateFilePathname,
-        ]);
+    public function testGetoutputformatReturnsTheOutputFormatOfTheTemplate(
+        $expectedOutputFormat,
+        $templateFilePathname
+    ): void {
+        $templateFile = new TemplateFile($templateFilePathname);
 
         $this->assertSame($expectedOutputFormat, $templateFile->getOutputFormat());
     }

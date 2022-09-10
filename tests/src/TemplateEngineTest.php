@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace DanBettles\Marigold\Tests;
 
 use DanBettles\Marigold\AbstractTestCase;
+use DanBettles\Marigold\Exception\FileNotFoundException;
 use DanBettles\Marigold\Exception\FileTypeNotSupportedException;
 use DanBettles\Marigold\File\TemplateFile;
 use DanBettles\Marigold\TemplateEngine;
+use DanBettles\Marigold\TemplateFileLoader;
 
 use function ob_get_length;
 use function ob_end_clean;
@@ -15,6 +17,19 @@ use function ob_start;
 
 class TemplateEngineTest extends AbstractTestCase
 {
+    public function testRenderThrowsAnExceptionIfTheFileDoesNotExist(): void
+    {
+        $templateFilePathname = $this->createFixturePathname('non_existent.php');
+
+        $this->expectException(FileNotFoundException::class);
+        $this->expectExceptionMessage("The template file `{$templateFilePathname}` does not exist.");
+
+        (new TemplateEngine())->render(
+            $templateFilePathname,
+            []
+        );
+    }
+
     public function testRenderThrowsAnExceptionIfTheFileDoesNotAppearToContainPhp(): void
     {
         $this->expectException(FileTypeNotSupportedException::class);
@@ -133,22 +148,48 @@ class TemplateEngineTest extends AbstractTestCase
         $this->assertSame('Hello, World!', $output);
     }
 
-    public function testUsesTheTemplatesDirIfSet(): void
+    public function testRenderThrowsAnExceptionIfTheTemplatefilePointsAtAFileThatDoesNotExist(): void
     {
-        $templatesDir = $this->getFixturesDir();
-        $engine = new TemplateEngine($templatesDir);
+        $templateFilePathname = $this->createFixturePathname('non_existent.php');
+        $templateFile = new TemplateFile($templateFilePathname);
 
-        $this->assertSame($templatesDir, $engine->getTemplatesDir());
+        $this->expectException(FileNotFoundException::class);
+        $this->expectExceptionMessage("The template file `{$templateFilePathname}` does not exist.");
 
+        (new TemplateEngine())->render(
+            $templateFile,
+            []
+        );
+    }
+
+    public function testCanUseATemplatefileloader(): void
+    {
+        $loader = new TemplateFileLoader([$this->getFixturesDir()]);
+        $engine = new TemplateEngine($loader);
         $output = $engine->render('hello_world.php');
 
         $this->assertSame('Hello, World!', $output);
     }
 
+    public function testRenderThrowsAnExceptionIfTheTemplateFileLoadedUsingTheTemplatefileloaderDoesNotExist(): void
+    {
+        $templateFileBasename = 'non_existent.php';
+
+        $this->expectException(FileNotFoundException::class);
+        $this->expectExceptionMessage("The template file `{$templateFileBasename}` does not exist.");
+
+        $loader = new TemplateFileLoader([$this->getFixturesDir()]);
+
+        (new TemplateEngine($loader))->render(
+            $templateFileBasename
+        );
+    }
+
     public function testRenderCanAutomaticallyInsertTheRenderedOutputOfATemplateIntoALayout(): void
     {
         $templatesDir = $this->createFixturePathname(__FUNCTION__);
-        $engine = new TemplateEngine($templatesDir);
+        $loader = new TemplateFileLoader([$templatesDir]);
+        $engine = new TemplateEngine($loader);
 
         $output = $engine->render('content.html.php', [
             'message' => 'Hello, World!',

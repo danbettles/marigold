@@ -4,30 +4,31 @@ declare(strict_types=1);
 
 namespace DanBettles\Marigold\File;
 
-use DanBettles\Marigold\Exception\FileNotFoundException;
+use RangeException;
 
 use function array_slice;
 use function count;
+use function file_exists;
 use function strtolower;
 
 use const null;
 
-/**
- * The template file must exist.
- */
 class TemplateFile extends FileInfo
 {
     private ?string $outputFormat;
 
     /**
-     * @throws FileNotFoundException If the template file does not exist.
+     * @throws RangeException If the filename does not point at a file.
      */
     public function __construct(string $filename)
     {
         parent::__construct($filename);
 
-        if (!$this->isFile()) {
-            throw new FileNotFoundException($this->getPathname());
+        if (
+            file_exists($this->getPathname())
+            && !$this->isFile()
+        ) {
+            throw new RangeException("The filename `{$this->getPathname()}` does not point at a file.");
         }
 
         $maxExtensions = 2;
