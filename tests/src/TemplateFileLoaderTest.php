@@ -18,7 +18,7 @@ class TemplateFileLoaderTest extends AbstractTestCase
         $fixturesDir = $this->createFixturePathname(__FUNCTION__);
 
         $paths = [
-            "{$fixturesDir}/base",
+            "{$fixturesDir}/defaults",
             "{$fixturesDir}/overrides",
         ];
 
@@ -53,23 +53,23 @@ class TemplateFileLoaderTest extends AbstractTestCase
 
         $paths = [
             "{$fixturesDir}/overrides",
-            "{$fixturesDir}/base",
+            "{$fixturesDir}/defaults",
         ];
 
-        $overridesBeforeBaseLoader = new TemplateFileLoader($paths);
+        $overridesBeforeDefaultsLoader = new TemplateFileLoader($paths);
         /** @var TemplateFile */
-        $overrideTemplateFile = $overridesBeforeBaseLoader->findTemplate('hello_world.html.php');
+        $overrideTemplateFile = $overridesBeforeDefaultsLoader->findTemplate('hello_world.html.php');
 
         $this->assertInstanceOf(TemplateFile::class, $overrideTemplateFile);
         $this->assertSame("{$fixturesDir}/overrides/hello_world.html.php", $overrideTemplateFile->getPathname());
 
         $reversedPaths = array_reverse($paths);
 
-        $baseBeforeOverridesLoader = new TemplateFileLoader($reversedPaths);
-        $baseTemplateFile = $baseBeforeOverridesLoader->findTemplate('hello_world.html.php');
+        $defaultsBeforeOverridesLoader = new TemplateFileLoader($reversedPaths);
+        $defaultTemplateFile = $defaultsBeforeOverridesLoader->findTemplate('hello_world.html.php');
 
-        $this->assertInstanceOf(TemplateFile::class, $baseTemplateFile);
-        $this->assertSame("{$fixturesDir}/base/hello_world.html.php", $baseTemplateFile->getPathname());
+        $this->assertInstanceOf(TemplateFile::class, $defaultTemplateFile);
+        $this->assertSame("{$fixturesDir}/defaults/hello_world.html.php", $defaultTemplateFile->getPathname());
     }
 
     public function testFindtemplateReturnsNullIfTheTemplateFileDoesNotExist(): void
