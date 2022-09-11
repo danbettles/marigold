@@ -7,7 +7,6 @@ parameters:
         -
             message: '#^Variable \$\w+ might not be defined.$#'
             paths:
-                - tests/src/Service/TemplatingServiceTest/*
                 - tests/src/TemplateEngineTest/*
         -
             message: '#^Call to an undefined method DanBettles\\Marigold\\OutputHelper\\Html5OutputHelper::create[A-Z]#'
