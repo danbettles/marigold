@@ -66,6 +66,7 @@ class TemplateFileLoaderTest extends AbstractTestCase
         $reversedPaths = array_reverse($paths);
 
         $defaultsBeforeOverridesLoader = new TemplateFileLoader($reversedPaths);
+        /** @var TemplateFile */
         $defaultTemplateFile = $defaultsBeforeOverridesLoader->findTemplate('hello_world.html.php');
 
         $this->assertInstanceOf(TemplateFile::class, $defaultTemplateFile);

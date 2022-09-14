@@ -11,9 +11,14 @@ use function explode;
 
 class FileInfo extends SplFileInfo
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     private const BASENAME_SEPARATOR = '.';
 
+    /**
+     * @return string[]
+     */
     public function getExtensions(): array
     {
         $parts = explode(self::BASENAME_SEPARATOR, $this->getBasename());

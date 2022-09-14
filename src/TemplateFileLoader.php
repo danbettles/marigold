@@ -74,6 +74,9 @@ class TemplateFileLoader
         return $this;
     }
 
+    /**
+     * @return string[]
+     */
     public function getTemplateDirs(): array
     {
         return $this->templateDirs;

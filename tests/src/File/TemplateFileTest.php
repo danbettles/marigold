@@ -20,6 +20,7 @@ class TemplateFileTest extends AbstractTestCase
         $this->assertTrue($this->getTestedClass()->isSubclassOf(FileInfo::class));
     }
 
+    /** @return array<int, array<int, mixed>> */
     public function providesExistentFileMetadata(): array
     {
         return [
@@ -51,8 +52,10 @@ class TemplateFileTest extends AbstractTestCase
     }
 
     /** @dataProvider providesExistentFileMetadata */
-    public function testIsConstructedWithThePathnameOfATemplateFile($ignore, $pathname): void
-    {
+    public function testIsConstructedWithThePathnameOfATemplateFile(
+        ?string $ignore,
+        string $pathname
+    ): void {
         $templateFile = new TemplateFile($pathname);
 
         $this->assertSame($pathname, $templateFile->getPathname());
@@ -79,8 +82,8 @@ class TemplateFileTest extends AbstractTestCase
 
     /** @dataProvider providesExistentFileMetadata */
     public function testGetoutputformatReturnsTheOutputFormatOfTheTemplate(
-        $expectedOutputFormat,
-        $templateFilePathname
+        ?string $expectedOutputFormat,
+        string $templateFilePathname
     ): void {
         $templateFile = new TemplateFile($templateFilePathname);
 

@@ -165,8 +165,8 @@ class RouterTest extends AbstractTestCase
 
     /**
      * @dataProvider providesMatchedRoutes
-     * @param array<string, mixed> $expectedRoute
-     * @param array<int, array<string, mixed>> $routes
+     * @param array{path: string, action: mixed, parameters: string[]} $expectedRoute
+     * @param array<int, array{path: string, action: mixed}> $routes
      * @param array<string, string> $serverVars
      */
     public function testMatchAttemptsToFindAMatchingRoute(
@@ -216,7 +216,7 @@ class RouterTest extends AbstractTestCase
 
     /**
      * @dataProvider providesUnmatchableRoutes
-     * @param array<int, array<string, mixed>> $routes
+     * @param array<int, array{path: string, action: mixed}> $routes
      * @param array<string, string> $serverVars
      */
     public function testMatchReturnsNullIfThereIsNoMatchingRoute(

@@ -16,12 +16,15 @@ use function strtolower;
 
 use const null;
 
+/**
+ * @method string createEl(string $tagName, array<string, string|bool>|string $attributesOrContent, string|null $contentOrNothing = null)
+ */
 class Html5OutputHelper extends XmlOutputHelper
 {
     /**
      * (Element) tag-names by (element) type.
      *
-     * @var array
+     * @var array<string, array<int, string>>
      */
     private const TAG_NAMES_BY_TYPE = [
         'void' => [
@@ -43,6 +46,9 @@ class Html5OutputHelper extends XmlOutputHelper
 
     private ReflectionMethod $createEl;
 
+    /**
+     * @param array<string, string|bool> $attributes
+     */
     public function createAttributes(array $attributes): string
     {
         if (!$attributes) {
@@ -102,6 +108,7 @@ class Html5OutputHelper extends XmlOutputHelper
     }
 
     /**
+     * @param mixed[] $arguments
      * @throws BadMethodCallException If the called method does not exist.
      */
     public function __call(string $methodName, array $arguments): string
@@ -117,6 +124,7 @@ class Html5OutputHelper extends XmlOutputHelper
         $tagName = strtolower($matches[1]);
         array_unshift($arguments, $tagName);
 
+        /** @var string */
         return $this->getCreateEl()->invokeArgs($this, $arguments);
     }
 

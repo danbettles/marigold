@@ -14,19 +14,19 @@ use const DIRECTORY_SEPARATOR;
 
 class AbstractTestCaseTest extends AbstractTestCase
 {
-    public function testIsAbstract()
+    public function testIsAbstract(): void
     {
         $class = new ReflectionClass(AbstractTestCase::class);
 
         $this->assertTrue($class->isAbstract());
     }
 
-    public function testIsAPhpunitTestcase()
+    public function testIsAPhpunitTestcase(): void
     {
         $this->assertTrue(is_subclass_of(AbstractTestCase::class, TestCase::class));
     }
 
-    public function testGetfixturesdir()
+    public function testGetfixturesdir(): void
     {
         $self = new ReflectionClass(__CLASS__);
 
@@ -36,7 +36,7 @@ class AbstractTestCaseTest extends AbstractTestCase
         );
     }
 
-    public function testCreatefixturepathname()
+    public function testCreatefixturepathname(): void
     {
         $self = new ReflectionClass(__CLASS__);
 
@@ -46,7 +46,7 @@ class AbstractTestCaseTest extends AbstractTestCase
         );
     }
 
-    public function testGettestedclass()
+    public function testGettestedclass(): void
     {
         $testedClass = $this->getTestedClass();
 

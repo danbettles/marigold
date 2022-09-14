@@ -38,12 +38,12 @@ use const null;
 class Router
 {
     /**
-     * @var array<int, array<string, mixed>>
+     * @var array<int, array{path: string, action: mixed}>
      */
     private array $routes;
 
     /**
-     * @param array<int, array<string, mixed>> $routes
+     * @param array<int, array{path: string, action: mixed}> $routes
      */
     public function __construct(array $routes)
     {
@@ -56,15 +56,14 @@ class Router
     }
 
     /**
-     * @param array<int, array<string, mixed>> $routes
-     * @return array<int, array<string, mixed>>
+     * @param array<int, array{path: string, action: mixed}> $routes
+     * @return array<int, array{path: string, action: mixed}>
      */
     private function eliminateUnmatchableRoutes(string $path, array $routes): array
     {
         $numPathParts = $this->countPathParts($path);
 
         $filteredRoutes = array_filter($routes, function (array $route) use ($numPathParts): bool {
-            /** @var array<string, mixed> $route */
             return $numPathParts === $this->countPathParts($route['path']);
         });
 
@@ -81,7 +80,7 @@ class Router
 
     /**
      * @param array<string, string> $serverVars
-     * @return array<string, mixed>|null
+     * @return array{path: string, action: mixed, parameters: string[]}|null
      * @throws InvalidArgumentException If the request URI is invalid.
      */
     public function match(array $serverVars): ?array
@@ -142,7 +141,7 @@ class Router
     }
 
     /**
-     * @param array<int, array<string, mixed>> $routes
+     * @param array<int, array{path: string, action: mixed}> $routes
      */
     private function setRoutes(array $routes): self
     {
@@ -151,7 +150,7 @@ class Router
     }
 
     /**
-     * @return array<int, array<string, mixed>>
+     * @return array<int, array{path: string, action: mixed}>
      */
     public function getRoutes(): array
     {

@@ -17,7 +17,9 @@ class HttpResponse
     /** @var int */
     public const HTTP_INTERNAL_SERVER_ERROR = 500;
 
-    /** @var array<int, string> */
+    /**
+     * @var array<int, string>
+     */
     private const STATUS_TEXTS = [
         self::HTTP_OK => 'OK',
         self::HTTP_NOT_FOUND => 'Not Found',

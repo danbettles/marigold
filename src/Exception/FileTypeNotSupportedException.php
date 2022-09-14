@@ -13,6 +13,9 @@ use const null;
 
 class FileTypeNotSupportedException extends RuntimeException
 {
+    /**
+     * @param string[] $supportedTypes
+     */
     public function __construct(
         string $unsupportedType,
         array $supportedTypes = [],

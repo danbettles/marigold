@@ -18,7 +18,9 @@ use const null;
 
 class TemplateEngine
 {
-    /** @var string[] */
+    /**
+     * @var string[]
+     */
     private const VALID_FILE_EXTENSIONS = [
         'php',
         'phtml',

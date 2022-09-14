@@ -26,10 +26,14 @@ abstract class AbstractTestCase extends TestCase
 
     private string $fixturesDir;
 
+    /**
+     * @phpstan-var class-string
+     */
     private string $testedClassName;
 
     private ReflectionClass $testedClass;
 
+    // @phpstan-ignore-next-line
     public function __construct(
         ?string $name = null,
         array $data = [],
@@ -51,6 +55,7 @@ abstract class AbstractTestCase extends TestCase
         $namespaceParts = explode($namespaceSeparator, self::$testsNamespace);
         array_pop($namespaceParts);
         $namespaceParts[] = preg_replace('~Test$~', '', $relativeClassName);
+        /** @phpstan-var class-string */
         $testedClassName = implode($namespaceSeparator, $namespaceParts);
 
         $this->setTestedClassName($testedClassName);
@@ -71,11 +76,17 @@ abstract class AbstractTestCase extends TestCase
         return $this->getFixturesDir() . DIRECTORY_SEPARATOR . $basename;
     }
 
-    private function setTestedClassName(string $testedClassName): void
+    /**
+     * @phpstan-param class-string $className
+     */
+    private function setTestedClassName(string $className): void
     {
-        $this->testedClassName = $testedClassName;
+        $this->testedClassName = $className;
     }
 
+    /**
+     * @phpstan-return class-string
+     */
     private function getTestedClassName(): string
     {
         return $this->testedClassName;

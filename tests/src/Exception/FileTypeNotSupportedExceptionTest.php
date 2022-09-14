@@ -10,12 +10,12 @@ use RuntimeException;
 
 class FileTypeNotSupportedExceptionTest extends AbstractTestCase
 {
-    public function testIsARuntimeexception()
+    public function testIsARuntimeexception(): void
     {
         $this->assertTrue($this->getTestedClass()->isSubclassOf(RuntimeException::class));
     }
 
-    public function testCanBeThrownWithOnlyTheNameOfTheInvalidFileType()
+    public function testCanBeThrownWithOnlyTheNameOfTheInvalidFileType(): void
     {
         $this->expectException(FileTypeNotSupportedException::class);
         $this->expectExceptionMessage("The file-type `foo` is not supported.");
@@ -23,7 +23,7 @@ class FileTypeNotSupportedExceptionTest extends AbstractTestCase
         throw new FileTypeNotSupportedException('foo');
     }
 
-    public function testCanBeThrownWithAListOfSupportedTypes()
+    public function testCanBeThrownWithAListOfSupportedTypes(): void
     {
         $this->expectException(FileTypeNotSupportedException::class);
         $this->expectExceptionMessage('The file-type `foo` is not supported.  Supported types: bar; baz');

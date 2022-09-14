@@ -17,10 +17,19 @@ use const null;
 
 class ServiceFactory
 {
+    /**
+     * @var array<string, class-string|Closure>
+     */
     private array $config;
 
+    /**
+     * @var array<string, object>
+     */
     private array $services = [];
 
+    /**
+     * @param array<string, class-string|Closure> $config
+     */
     public function __construct(array $config)
     {
         $this->setConfig($config);
@@ -77,12 +86,18 @@ class ServiceFactory
         return $this->services[$id];
     }
 
+    /**
+     * @param array<string, class-string|Closure> $config
+     */
     private function setConfig(array $config): self
     {
         $this->config = $config;
         return $this;
     }
 
+    /**
+     * @return array<string, class-string|Closure> $config
+     */
     public function getConfig(): array
     {
         return $this->config;

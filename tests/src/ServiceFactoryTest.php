@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DanBettles\Marigold\Tests\Utils;
 
+use Closure;
 use DanBettles\Marigold\AbstractTestCase;
 use DanBettles\Marigold\ServiceFactory;
 use OutOfBoundsException;
@@ -12,7 +13,7 @@ use stdClass;
 
 class ServiceFactoryTest extends AbstractTestCase
 {
-    public function testIsInstantiable()
+    public function testIsInstantiable(): void
     {
         $config = [
             'foo' => stdClass::class,
@@ -23,6 +24,7 @@ class ServiceFactoryTest extends AbstractTestCase
         $this->assertEquals($config, $factory->getConfig());
     }
 
+    /** @return array<int, array<int, mixed>> */
     public function providesConfig(): array
     {
         return [
@@ -45,9 +47,16 @@ class ServiceFactoryTest extends AbstractTestCase
         ];
     }
 
-    /** @dataProvider providesConfig */
-    public function testGetReturnsTheServiceWithTheSpecifiedId($expectedClassName, $config, $id)
-    {
+    /**
+     * @dataProvider providesConfig
+     * @phpstan-param class-string $expectedClassName
+     * @param array<string, class-string|Closure> $config
+     */
+    public function testGetReturnsTheServiceWithTheSpecifiedId(
+        string $expectedClassName,
+        array $config,
+        string $id
+    ): void {
         $factory = new ServiceFactory($config);
 
         $foo = $factory->get($id);
@@ -58,7 +67,7 @@ class ServiceFactoryTest extends AbstractTestCase
         $this->assertSame($foo, $factory->get($id));
     }
 
-    public function testGetThrowsAnExceptionIfThereIsNoServiceWithTheSpecifiedId()
+    public function testGetThrowsAnExceptionIfThereIsNoServiceWithTheSpecifiedId(): void
     {
         $this->expectException(OutOfBoundsException::class);
         $this->expectExceptionMessage("There is no service with the ID `non_existent_service`.");
@@ -66,8 +75,9 @@ class ServiceFactoryTest extends AbstractTestCase
         (new ServiceFactory([]))->get('non_existent_service');
     }
 
-    public function testGetThrowsAnExceptionIfAServiceClassDoesNotExist()
+    public function testGetThrowsAnExceptionIfAServiceClassDoesNotExist(): void
     {
+        /** @phpstan-var class-string */
         $nonExistentClassName = __CLASS__ . '\\NonExistent';
 
         $this->expectException(RangeException::class);
@@ -80,7 +90,7 @@ class ServiceFactoryTest extends AbstractTestCase
         ;
     }
 
-    public function testGetThrowsAnExceptionIfAServiceFactoryClosureDoesNotReturnAnObject()
+    public function testGetThrowsAnExceptionIfAServiceFactoryClosureDoesNotReturnAnObject(): void
     {
         $this->expectException(RangeException::class);
         $this->expectExceptionMessage("The factory for service `closure` does not return an object.");
@@ -94,6 +104,7 @@ class ServiceFactoryTest extends AbstractTestCase
         ;
     }
 
+    /** @return array<int, array<int, mixed>> */
     public function providesInvalidConfig(): array
     {
         return [
@@ -118,16 +129,21 @@ class ServiceFactoryTest extends AbstractTestCase
         ];
     }
 
-    /** @dataProvider providesInvalidConfig */
-    public function testGetThrowsAnExceptionIfAServiceConfigurationDoesNotResolveToAnObject($invalidConfig, $id)
-    {
+    /**
+     * @dataProvider providesInvalidConfig
+     * @param array<string, class-string|Closure> $invalidConfig
+     */
+    public function testGetThrowsAnExceptionIfAServiceConfigurationDoesNotResolveToAnObject(
+        array $invalidConfig,
+        string $id
+    ): void {
         $this->expectException(RangeException::class);
         $this->expectExceptionMessage("The config for service `{$id}` is invalid: it must be a class-name or a closure.");
 
         (new ServiceFactory($invalidConfig))->get($id);
     }
 
-    public function testContainsReturnsTrueIfTheFactoryContainsTheServiceWithTheSpecifiedId()
+    public function testContainsReturnsTrueIfTheFactoryContainsTheServiceWithTheSpecifiedId(): void
     {
         $containsNonExistentService = (new ServiceFactory([]))->contains('nonExistentService');
 

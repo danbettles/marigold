@@ -16,11 +16,12 @@ use const true;
 // @todo Test that `createEl()`/`createElement()` calls `createAttributes()`.
 class Html5OutputHelperTest extends AbstractTestCase
 {
-    public function testIsAXmloutputhelper()
+    public function testIsAXmloutputhelper(): void
     {
         $this->assertTrue($this->getTestedClass()->isSubclassOf(XmlOutputHelper::class));
     }
 
+    /** @return array<int, array<int, mixed>> */
     public function providesArgsForVoidElements(): array
     {
         return [
@@ -94,14 +95,19 @@ class Html5OutputHelperTest extends AbstractTestCase
 
     /**
      * @dataProvider providesArgsForVoidElements
+     * @param array<string, string|bool> $attributes
      */
-    public function testCreateelCanCreateVoidElements($expected, $tagName, $attributes)
-    {
+    public function testCreateelCanCreateVoidElements(
+        string $expected,
+        string $tagName,
+        array $attributes
+    ): void {
         $helper = new Html5OutputHelper();
 
         $this->assertSame($expected, $helper->createEl($tagName, $attributes));
     }
 
+    /** @return array<int, array<int, mixed>> */
     public function providesArgsForElementsWithBooleanAttributes(): array
     {
         return [
@@ -120,15 +126,19 @@ class Html5OutputHelperTest extends AbstractTestCase
 
     /**
      * @dataProvider providesArgsForElementsWithBooleanAttributes
+     * @param array<string, string|bool> $attributes
      */
-    public function testCreateelCanCreateElementsWithBooleanAttributes($expected, $tagName, $attributes)
-    {
+    public function testCreateelCanCreateElementsWithBooleanAttributes(
+        string $expected,
+        string $tagName,
+        array $attributes
+    ): void {
         $helper = new Html5OutputHelper();
 
         $this->assertSame($expected, $helper->createEl($tagName, $attributes));
     }
 
-    public function testCreateelThrowsAnExceptionIfAnAttemptIsMadeToCreateAVoidElementWithContent()
+    public function testCreateelThrowsAnExceptionIfAnAttemptIsMadeToCreateAVoidElementWithContent(): void
     {
         $this->expectException(RangeException::class);
         $this->expectExceptionMessage('Content was passed: a void element may not have content.');
@@ -136,7 +146,7 @@ class Html5OutputHelperTest extends AbstractTestCase
         (new Html5OutputHelper())->createEl('br', 'foo');
     }
 
-    public function testCanCreateElementsMagically()
+    public function testCanCreateElementsMagically(): void
     {
         $helper = new Html5OutputHelper();
 
@@ -231,7 +241,7 @@ class Html5OutputHelperTest extends AbstractTestCase
         );
     }
 
-    public function testCallThrowsAnExceptionIfTheMethodDoesNotExist()
+    public function testCallThrowsAnExceptionIfTheMethodDoesNotExist(): void
     {
         $this->expectException(BadMethodCallException::class);
         $this->expectExceptionMessage('The method, `create`, does not exist.');
@@ -239,6 +249,7 @@ class Html5OutputHelperTest extends AbstractTestCase
         (new Html5OutputHelper())->create();
     }
 
+    /** @return array<int, array<int, mixed>> */
     public function providesAttributesStrings(): array
     {
         return [
@@ -255,9 +266,12 @@ class Html5OutputHelperTest extends AbstractTestCase
 
     /**
      * @dataProvider providesAttributesStrings
+     * @param array<string, string|bool> $input
      */
-    public function testCreateattributesCanCreateBooleanAttributes($expected, $input)
-    {
+    public function testCreateattributesCanCreateBooleanAttributes(
+        string $expected,
+        array $input
+    ): void {
         $helper = new Html5OutputHelper();
 
         $this->assertSame($expected, $helper->createAttributes($input));

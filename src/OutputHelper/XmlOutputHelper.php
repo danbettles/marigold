@@ -28,10 +28,14 @@ class XmlOutputHelper implements OutputHelperInterface
      */
     public function escape(string $string): string
     {
+        // PHPStan is wrong about this.  According to the PHP manual, `string|null` *is* acceptable.
+        /** @phpstan-var string */
+        $encoding = $this->getEncoding();
+
         return htmlspecialchars(
             $string,
             ENT_QUOTES | ENT_SUBSTITUTE | ENT_XML1,
-            $this->getEncoding(),
+            $encoding,
             false
         );
     }
@@ -42,6 +46,9 @@ class XmlOutputHelper implements OutputHelperInterface
         return $name . '="' . $this->escape($value) . '"';
     }
 
+    /**
+     * @param array<string, string> $attributes
+     */
     public function createAttributes(array $attributes): string
     {
         if (!$attributes) {
@@ -57,6 +64,9 @@ class XmlOutputHelper implements OutputHelperInterface
         return implode(' ', $pairs);
     }
 
+    /**
+     * @param array<string, string> $attributes
+     */
     protected function createElement(
         string $tagName,
         array $attributes,
@@ -76,7 +86,7 @@ class XmlOutputHelper implements OutputHelperInterface
 
     /**
      * @param string $tagName
-     * @param array|string|null $attributesOrContent
+     * @param array<string, string>|string|null $attributesOrContent
      * @param string|null $contentOrNothing
      * @throws InvalidArgumentException If the content is not a string/null.
      */
@@ -90,14 +100,16 @@ class XmlOutputHelper implements OutputHelperInterface
 
         if (!is_array($attributesOrContent)) {
             $attributes = [];
+            /** @var mixed */
             $content = $attributesOrContent;
         }
 
-        // @phpstan-ignore-next-line
         if (!is_string($content) && null !== $content) {
             throw new InvalidArgumentException('The content is not a string/null.');
         }
 
+        /** @var array $attributes */
+        /** @var string|null $content */
         return $this->createElement($tagName, $attributes, $content);
     }
 

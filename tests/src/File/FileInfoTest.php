@@ -10,11 +10,12 @@ use SplFileInfo;
 
 class FileInfoTest extends AbstractTestCase
 {
-    public function testIsASplfileinfo()
+    public function testIsASplfileinfo(): void
     {
         $this->assertTrue($this->getTestedClass()->isSubclassOf(SplFileInfo::class));
     }
 
+    /** @return array<int, array<int, mixed>> */
     public function providesExistentFileMetadata(): array
     {
         return [
@@ -51,20 +52,29 @@ class FileInfoTest extends AbstractTestCase
         ];
     }
 
-    /** @dataProvider providesExistentFileMetadata */
-    public function testGetextensionsReturnsAllExtensionsInTheFilename($ignore, $expectedExtensions, $pathname)
-    {
+    /**
+     * @dataProvider providesExistentFileMetadata
+     * @param string[] $expectedExtensions
+     */
+    public function testGetextensionsReturnsAllExtensionsInTheFilename(
+        string $ignore,
+        array $expectedExtensions,
+        string $pathname
+    ): void {
         $fileInfo = new FileInfo($pathname);
 
         $this->assertSame($expectedExtensions, $fileInfo->getExtensions());
     }
 
-    /** @dataProvider providesExistentFileMetadata */
+    /**
+     * @dataProvider providesExistentFileMetadata
+     * @param string[] $ignore
+     */
     public function testGetbasenameminusextensionReturnsTheBasenameMinusExtension(
-        $expectedBasename,
-        $ignore,
-        $pathname
-    ) {
+        string $expectedBasename,
+        array $ignore,
+        string $pathname
+    ): void {
         $fileInfo = new FileInfo($pathname);
 
         $this->assertSame($expectedBasename, $fileInfo->getBasenameMinusExtension());

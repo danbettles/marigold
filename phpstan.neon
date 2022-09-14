@@ -1,5 +1,6 @@
 parameters:
-    level: 5
+    level: max
+    checkGenericClassInNonGenericObjectType: false
     paths:
         - src
         - tests
