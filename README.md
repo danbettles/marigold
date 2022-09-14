@@ -6,5 +6,5 @@ Marigold is a small set of tools that aims to make building simple websites easi
 
 Marigold is good for:
 * Transitioning unstructured code to a framework, or simply making improvements to an unruly app.
-* Building basic websites using templates like [HTML5 UP](https://html5up.net/).
+* Building basic websites using templates like those at [HTML5 UP](https://html5up.net/).
 * Extending WordPress.
