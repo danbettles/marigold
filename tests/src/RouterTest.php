@@ -15,7 +15,7 @@ class RouterTest extends AbstractTestCase
         $routes = [
             [
                 'path' => '/posts',
-                'action' => ['foo', 'bar'],
+                'action' => ['FooBar', 'baz'],
             ],
         ];
 
@@ -31,17 +31,17 @@ class RouterTest extends AbstractTestCase
             [
                 [
                     'path' => '/',
-                    'action' => ['foo', 'bar'],
+                    'action' => ['FooBar', 'baz'],
                     'parameters' => [],
                 ],
                 [
                     [
                         'path' => '/',
-                        'action' => ['foo', 'bar'],
+                        'action' => ['FooBar', 'baz'],
                     ],
                     [
                         'path' => '/path',
-                        'action' => ['baz', 'qux'],
+                        'action' => ['QuxQuux', 'corge'],
                     ],
                 ],
                 ['REQUEST_URI' => '/'],
@@ -50,17 +50,17 @@ class RouterTest extends AbstractTestCase
             [
                 [
                     'path' => '/path',
-                    'action' => ['foo', 'bar'],
+                    'action' => ['FooBar', 'baz'],
                     'parameters' => [],
                 ],
                 [
                     [
                         'path' => '/path',
-                        'action' => ['foo', 'bar'],
+                        'action' => ['FooBar', 'baz'],
                     ],
                     [
                         'path' => '/path/',
-                        'action' => ['baz', 'qux'],
+                        'action' => ['QuxQuux', 'corge'],
                     ],
                 ],
                 ['REQUEST_URI' => '/path?arg=value'],
@@ -69,17 +69,17 @@ class RouterTest extends AbstractTestCase
             [
                 [
                     'path' => '/path',
-                    'action' => ['foo', 'bar'],
+                    'action' => ['FooBar', 'baz'],
                     'parameters' => [],
                 ],
                 [
                     [
                         'path' => '/path/',  // Still isn't a match.
-                        'action' => ['baz', 'qux'],
+                        'action' => ['QuxQuux', 'corge'],
                     ],
                     [
                         'path' => '/path',
-                        'action' => ['foo', 'bar'],
+                        'action' => ['FooBar', 'baz'],
                     ],
                 ],
                 ['REQUEST_URI' => '/path?arg=value'],
@@ -88,17 +88,17 @@ class RouterTest extends AbstractTestCase
             [
                 [
                     'path' => '/posts/{postId}',
-                    'action' => ['baz', 'qux'],
+                    'action' => ['QuxQuux', 'corge'],
                     'parameters' => ['postId' => 'the-quick-brown-fox'],
                 ],
                 [
                     [
                         'path' => '/posts',
-                        'action' => ['foo', 'bar'],
+                        'action' => ['FooBar', 'baz'],
                     ],
                     [
                         'path' => '/posts/{postId}',
-                        'action' => ['baz', 'qux'],
+                        'action' => ['QuxQuux', 'corge'],
                     ],
                 ],
                 ['REQUEST_URI' => '/posts/the-quick-brown-fox?foo=bar'],
@@ -107,17 +107,17 @@ class RouterTest extends AbstractTestCase
             [
                 [
                     'path' => '/posts/{postId}/',
-                    'action' => ['baz', 'qux'],
+                    'action' => ['QuxQuux', 'corge'],
                     'parameters' => ['postId' => 'the-quick-brown-fox'],
                 ],
                 [
                     [
                         'path' => '/posts/{postId}',
-                        'action' => ['foo', 'bar'],
+                        'action' => ['FooBar', 'baz'],
                     ],
                     [
                         'path' => '/posts/{postId}/',
-                        'action' => ['baz', 'qux'],
+                        'action' => ['QuxQuux', 'corge'],
                     ],
                 ],
                 ['REQUEST_URI' => '/posts/the-quick-brown-fox/'],
@@ -126,17 +126,17 @@ class RouterTest extends AbstractTestCase
             [
                 [
                     'path' => '/posts/{id}',
-                    'action' => ['foo', 'bar'],
+                    'action' => ['FooBar', 'baz'],
                     'parameters' => ['id' => 'the-quick-brown-fox'],
                 ],
                 [
                     [
                         'path' => '/posts/{id}',
-                        'action' => ['foo', 'bar'],
+                        'action' => ['FooBar', 'baz'],
                     ],
                     [
                         'path' => '/posts/{slug}',
-                        'action' => ['baz', 'qux'],
+                        'action' => ['QuxQuux', 'corge'],
                     ],
                 ],
                 ['REQUEST_URI' => '/posts/the-quick-brown-fox'],
@@ -145,17 +145,17 @@ class RouterTest extends AbstractTestCase
             [
                 [
                     'path' => '/posts/the-quick-brown-fox',
-                    'action' => ['baz', 'qux'],
+                    'action' => ['QuxQuux', 'corge'],
                     'parameters' => [],
                 ],
                 [
                     [
                         'path' => '/posts/{postId}',
-                        'action' => ['foo', 'bar'],
+                        'action' => ['FooBar', 'baz'],
                     ],
                     [
                         'path' => '/posts/the-quick-brown-fox',
-                        'action' => ['baz', 'qux'],
+                        'action' => ['QuxQuux', 'corge'],
                     ],
                 ],
                 ['REQUEST_URI' => '/posts/the-quick-brown-fox'],
@@ -189,11 +189,11 @@ class RouterTest extends AbstractTestCase
                 [
                     [
                         'path' => '/posts',
-                        'action' => ['foo', 'bar'],
+                        'action' => ['FooBar', 'baz'],
                     ],
                     [
                         'path' => '/posts/{postId}',
-                        'action' => ['baz', 'qux'],
+                        'action' => ['QuxQuux', 'corge'],
                     ],
                 ],
                 ['REQUEST_URI' => '/posts/'],  // (Trailing slash.)
@@ -202,11 +202,11 @@ class RouterTest extends AbstractTestCase
                 [
                     [
                         'path' => '/posts',
-                        'action' => ['foo', 'bar'],
+                        'action' => ['FooBar', 'baz'],
                     ],
                     [
                         'path' => '/posts/{postId}',
-                        'action' => ['baz', 'qux'],
+                        'action' => ['QuxQuux', 'corge'],
                     ],
                 ],
                 ['REQUEST_URI' => '/posts/the-quick-brown-fox/'],  // (Trailing slash.)
@@ -265,5 +265,36 @@ class RouterTest extends AbstractTestCase
         (new Router([]))
             ->match($serverVars)
         ;
+    }
+
+    public function testGeneratepathGeneratesAUrlPath(): void
+    {
+        $routes = [
+            'fooBar' => [
+                'path' => '/foo/{fooId}/bar/{barId}',
+                'action' => ['FooBar', 'baz'],
+            ],
+        ];
+
+        $path = (new Router($routes))->generatePath('fooBar', [
+            'fooId' => 123,
+            'barId' => '456',
+        ]);
+
+        $this->assertSame('/foo/123/bar/456', $path);
+    }
+
+    public function testGeneratepathDoesNotRequireParameterValues(): void
+    {
+        $routes = [
+            'posts' => [
+                'path' => '/posts',
+                'action' => ['FooBar', 'baz'],
+            ],
+        ];
+
+        $path = (new Router($routes))->generatePath('posts');
+
+        $this->assertSame('/posts', $path);
     }
 }
