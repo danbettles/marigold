@@ -99,8 +99,7 @@ class TemplateEngine
             }
         })();
 
-        // We can't be specific enough in `phpstan.neon`, so ignore the troublesome line using the PHPStan annotation.
-        // @phpstan-ignore-next-line
+        /** @var string|null $__layout */
         if (null !== $__layout) {
             $variables['__contentForLayout'] = $output;
 
