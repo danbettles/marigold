@@ -7,11 +7,11 @@ namespace DanBettles\Marigold\Tests\TemplateEngine;
 use DanBettles\Marigold\AbstractTestCase;
 use DanBettles\Marigold\Exception\FileNotFoundException;
 use DanBettles\Marigold\Php;
+use DanBettles\Marigold\ServiceFactory;
 use DanBettles\Marigold\TemplateEngine\Engine;
 use DanBettles\Marigold\TemplateEngine\OutputFacade;
 use DanBettles\Marigold\TemplateEngine\TemplateFile;
 use DanBettles\Marigold\TemplateEngine\TemplateFileLoader;
-use ReflectionMethod;
 use SplFileInfo;
 
 use function array_keys;
@@ -29,6 +29,19 @@ class EngineTest extends AbstractTestCase
 
         $this->assertSame($php, $engine->getPhp());
         $this->assertSame($loader, $engine->getTemplateFileLoader());
+    }
+
+    public function testConstructorAcceptsAServiceFactoryForGlobals(): void
+    {
+        $serviceFactory = new ServiceFactory([]);
+
+        $engine = new Engine(
+            new Php(),
+            new TemplateFileLoader([$this->getFixturesDir()]),
+            $serviceFactory
+        );
+
+        $this->assertSame($serviceFactory, $engine->getGlobals());
     }
 
     /**
@@ -50,6 +63,8 @@ class EngineTest extends AbstractTestCase
 
         $expectedOutput = 'Hello, Dan!';
 
+        $globalsStub = $this->createStub(ServiceFactory::class);
+
         $phpMock = $this
             ->getMockBuilder(Php::class)
             ->onlyMethods(['executeFile'])
@@ -62,11 +77,12 @@ class EngineTest extends AbstractTestCase
             ->method('executeFile')
             ->with(
                 $templateFilePathname,
-                $this->callback(function ($variables) use ($templateVars) {
+                $this->callback(function ($variables) use ($templateVars, $globalsStub) {
                     return is_array($variables)
-                        && ['input', 'output'] == array_keys($variables)
+                        && ['input', 'output', 'globals'] == array_keys($variables)
                         && $templateVars === $variables['input']
                         && $variables['output'] instanceof OutputFacade
+                        && $globalsStub === $variables['globals']
                     ;
                 }),
                 null
@@ -96,7 +112,7 @@ class EngineTest extends AbstractTestCase
 
         /** @var Php $phpMock */
         /** @var TemplateFileLoader $loaderMock */
-        $actualOutput = (new Engine($phpMock, $loaderMock))
+        $actualOutput = (new Engine($phpMock, $loaderMock, $globalsStub))
             ->render(
                 $templateFileBasename,
                 $templateVars
@@ -160,9 +176,9 @@ class EngineTest extends AbstractTestCase
         ;
     }
 
-    public function testVarsDoNotHaveToBePassedToRender(): void
+    public function testVarsNeedNotBePassedToRender(): void
     {
-        $renderMethod = new ReflectionMethod(Engine::class, 'render');
+        $renderMethod = $this->getTestedClass()->getMethod('render');
         $variablesParam = $renderMethod->getParameters()[1];
 
         $this->assertTrue($variablesParam->isOptional());
@@ -213,7 +229,7 @@ class EngineTest extends AbstractTestCase
 
     public function testCreateReturnsANewInstance(): void
     {
-        $createMethod = new ReflectionMethod(Engine::class, 'create');
+        $createMethod = $this->getTestedClass()->getMethod('create');
 
         $this->assertTrue($createMethod->isPublic());
         $this->assertTrue($createMethod->isStatic());

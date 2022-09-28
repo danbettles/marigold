@@ -7,7 +7,6 @@ namespace DanBettles\Marigold\Tests;
 use DanBettles\Marigold\AbstractTestCase;
 use DanBettles\Marigold\Exception\FileNotFoundException;
 use DanBettles\Marigold\Php;
-use ReflectionMethod;
 
 use const null;
 
@@ -15,10 +14,10 @@ class PhpTest extends AbstractTestCase
 {
     public function testExecutefileIsAnInstanceMethod(): void
     {
-        $executeFile = new ReflectionMethod(Php::class, 'executeFile');
+        $executeFileMethod = $this->getTestedClass()->getMethod('executeFile');
 
-        $this->assertTrue($executeFile->isPublic());
-        $this->assertFalse($executeFile->isStatic());
+        $this->assertTrue($executeFileMethod->isPublic());
+        $this->assertFalse($executeFileMethod->isStatic());
     }
 
     public function testExecutefileExecutesAPhpFileAndReturnsTheReturnValue(): void

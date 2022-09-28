@@ -9,7 +9,6 @@ use DanBettles\Marigold\Php;
 use DanBettles\Marigold\TemplateEngine\Engine;
 use DanBettles\Marigold\TemplateEngine\OutputFacade;
 use DanBettles\Marigold\TemplateEngine\TemplateFileLoader;
-use ReflectionMethod;
 use SplFileInfo;
 
 class OutputFacadeTest extends AbstractTestCase
@@ -106,9 +105,9 @@ class OutputFacadeTest extends AbstractTestCase
         $this->assertSame($facade, $something);
     }
 
-    public function testVarsDoNotHaveToBePassedToWrapwith(): void
+    public function testVarsNeedNotBePassedToWrapwith(): void
     {
-        $wrapwithMethod = new ReflectionMethod(OutputFacade::class, 'wrapWith');
+        $wrapwithMethod = $this->getTestedClass()->getMethod('wrapWith');
         $variablesParam = $wrapwithMethod->getParameters()[2];
 
         $this->assertTrue($variablesParam->isOptional());

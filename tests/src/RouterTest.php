@@ -284,7 +284,7 @@ class RouterTest extends AbstractTestCase
         $this->assertSame('/foo/123/bar/456', $path);
     }
 
-    public function testParameterValuesDoNotHaveToBePassedToGeneratepath(): void
+    public function testParameterValuesNeedNotBePassedToGeneratepath(): void
     {
         $routes = [
             'posts' => [

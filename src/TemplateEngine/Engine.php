@@ -6,6 +6,7 @@ namespace DanBettles\Marigold\TemplateEngine;
 
 use DanBettles\Marigold\Exception\FileNotFoundException;
 use DanBettles\Marigold\Php;
+use DanBettles\Marigold\ServiceFactory;
 use SplFileInfo;
 
 use function array_replace;
@@ -18,13 +19,17 @@ class Engine
 
     private TemplateFileLoader $templateFileLoader;
 
+    private ?ServiceFactory $globals;
+
     public function __construct(
         Php $php,
-        TemplateFileLoader $templateFileLoader
+        TemplateFileLoader $templateFileLoader,
+        ServiceFactory $globals = null
     ) {
         $this
             ->setPhp($php)
             ->setTemplateFileLoader($templateFileLoader)
+            ->setGlobals($globals)
         ;
     }
 
@@ -52,14 +57,20 @@ class Engine
 
         $output = new OutputFacade($this);
 
+        $augmentedVariables = [
+            'input' => $variables,
+            'output' => $output,
+        ];
+
+        if ($this->getGlobals()) {
+            $augmentedVariables['globals'] = $this->getGlobals();
+        }
+
         $renderedOutput = null;
 
         $this->getPhp()->executeFile(
             $templateFile->getPathname(),
-            [
-                'input' => $variables,
-                'output' => $output,
-            ],
+            $augmentedVariables,
             $renderedOutput
         );
 
@@ -76,9 +87,7 @@ class Engine
                 ($wrapperTargetVarName) => $renderedOutput,
             ]);
 
-            return (new self($this->getPhp(), $this->getTemplateFileLoader()))
-                ->render($wrapperPathnameOrTemplateFile, $wrapperVariables)
-            ;
+            return (clone $this)->render($wrapperPathnameOrTemplateFile, $wrapperVariables);
         }
 
         return $renderedOutput;
@@ -104,6 +113,17 @@ class Engine
     public function getTemplateFileLoader(): TemplateFileLoader
     {
         return $this->templateFileLoader;
+    }
+
+    private function setGlobals(?ServiceFactory $globals): self
+    {
+        $this->globals = $globals;
+        return $this;
+    }
+
+    public function getGlobals(): ?ServiceFactory
+    {
+        return $this->globals;
     }
 
     /**
