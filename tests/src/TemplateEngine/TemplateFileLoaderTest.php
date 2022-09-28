@@ -8,7 +8,6 @@ use DanBettles\Marigold\AbstractTestCase;
 use DanBettles\Marigold\TemplateEngine\TemplateFile;
 use DanBettles\Marigold\TemplateEngine\TemplateFileLoader;
 use InvalidArgumentException;
-use RangeException;
 use SplFileInfo;
 
 use function array_reverse;
@@ -32,10 +31,9 @@ class TemplateFileLoaderTest extends AbstractTestCase
         $this->assertEquals($paths, $loader->getTemplateDirs());
     }
 
-    // @todo Review this.
     public function testThrowsAnExceptionIfTheArrayOfDirectoryPathsIsEmpty(): void
     {
-        $this->expectException(RangeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('The array of directory paths is empty.');
 
         new TemplateFileLoader([]);
@@ -45,7 +43,7 @@ class TemplateFileLoaderTest extends AbstractTestCase
     {
         $nonExistentDir = $this->createFixturePathname(__FUNCTION__ . '/non_existent/');
 
-        $this->expectException(RangeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("The directory `{$nonExistentDir}` does not exist.");
 
         new TemplateFileLoader([

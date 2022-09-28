@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DanBettles\Marigold;
 
 use InvalidArgumentException;
+use OutOfBoundsException;
 
 use function array_combine;
 use function array_filter;
@@ -81,12 +82,13 @@ class Router
     /**
      * @param array<string, string> $serverVars
      * @return array{path: string, action: mixed, parameters: string[]}|null
+     * @throws OutOfBoundsException If there is no request URI in the server vars.
      * @throws InvalidArgumentException If the request URI is invalid.
      */
     public function match(array $serverVars): ?array
     {
         if (!array_key_exists('REQUEST_URI', $serverVars)) {
-            throw new InvalidArgumentException('There is no request URI in the server vars.');
+            throw new OutOfBoundsException('There is no request URI in the server vars.');
         }
 
         $requestUri = $serverVars['REQUEST_URI'];

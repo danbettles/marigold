@@ -7,6 +7,7 @@ namespace DanBettles\Marigold\Tests;
 use DanBettles\Marigold\AbstractTestCase;
 use DanBettles\Marigold\Router;
 use InvalidArgumentException;
+use OutOfBoundsException;
 
 class RouterTest extends AbstractTestCase
 {
@@ -245,7 +246,7 @@ class RouterTest extends AbstractTestCase
 
     public function testMatchThrowsAnExceptionIfTheServerVarsDoNotContainTheRequestUri(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(OutOfBoundsException::class);
         $this->expectExceptionMessage('There is no request URI in the server vars.');
 
         (new Router([]))

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace DanBettles\Marigold\TemplateEngine;
 
 use InvalidArgumentException;
-use RangeException;
 use SplFileInfo;
 
 use function is_dir;
@@ -69,12 +68,12 @@ class TemplateFileLoader
     }
 
     /**
-     * @throws RangeException If the directory does not exist.
+     * @throws InvalidArgumentException If the directory does not exist.
      */
     private function addTemplateDir(string $dir): self
     {
         if (!is_dir($dir)) {
-            throw new RangeException("The directory `{$dir}` does not exist.");
+            throw new InvalidArgumentException("The directory `{$dir}` does not exist.");
         }
 
         $this->templateDirs[] = $dir;
@@ -84,12 +83,13 @@ class TemplateFileLoader
 
     /**
      * @param string[] $dirs
-     * @throws RangeException If the array of directory paths is empty.
+     * @throws InvalidArgumentException If the array of directory paths is empty.
      */
     private function setTemplateDirs(array $dirs): self
     {
         if (!$dirs) {
-            throw new RangeException('The array of directory paths is empty.');
+            // @todo Really throw an exception?  Is this really a problem?
+            throw new InvalidArgumentException('The array of directory paths is empty.');
         }
 
         $this->templateDirs = [];

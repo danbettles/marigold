@@ -8,7 +8,7 @@ use BadMethodCallException;
 use DanBettles\Marigold\AbstractTestCase;
 use DanBettles\Marigold\OutputHelper\Html5OutputHelper;
 use DanBettles\Marigold\OutputHelper\XmlOutputHelper;
-use RangeException;
+use InvalidArgumentException;
 
 use const false;
 use const true;
@@ -140,7 +140,7 @@ class Html5OutputHelperTest extends AbstractTestCase
 
     public function testCreateelThrowsAnExceptionIfAnAttemptIsMadeToCreateAVoidElementWithContent(): void
     {
-        $this->expectException(RangeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Content was passed: a void element may not have content.');
 
         (new Html5OutputHelper())->createEl('br', 'foo');
