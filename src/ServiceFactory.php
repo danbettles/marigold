@@ -18,7 +18,7 @@ use const null;
 class ServiceFactory
 {
     /**
-     * @var array<string, class-string|Closure>
+     * @phpstan-var array<string, class-string|Closure>
      */
     private array $config;
 
@@ -28,7 +28,7 @@ class ServiceFactory
     private array $services = [];
 
     /**
-     * @param array<string, class-string|Closure> $config
+     * @phpstan-param array<string, class-string|Closure> $config
      */
     public function __construct(array $config)
     {
@@ -87,7 +87,7 @@ class ServiceFactory
     }
 
     /**
-     * @param array<string, class-string|Closure> $config
+     * @phpstan-param array<string, class-string|Closure> $config
      */
     private function setConfig(array $config): self
     {
@@ -96,7 +96,7 @@ class ServiceFactory
     }
 
     /**
-     * @return array<string, class-string|Closure> $config
+     * @phpstan-return array<string, class-string|Closure> $config
      */
     public function getConfig(): array
     {

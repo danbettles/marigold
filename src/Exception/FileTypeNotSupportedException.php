@@ -11,6 +11,7 @@ use function implode;
 
 use const null;
 
+// @todo Remove this?
 class FileTypeNotSupportedException extends RuntimeException
 {
     /**

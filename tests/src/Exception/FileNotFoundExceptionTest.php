@@ -17,7 +17,7 @@ class FileNotFoundExceptionTest extends AbstractTestCase
 
     public function testCanBeThrown(): void
     {
-        $pathname = $this->createFixturePathname('non_existent.php');
+        $pathname = $this->createFixturePathname('non_existent.file');
 
         $this->expectException(FileNotFoundException::class);
         $this->expectExceptionMessage("The file `{$pathname}` does not exist.");

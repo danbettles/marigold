@@ -6,10 +6,6 @@ parameters:
         - tests
     ignoreErrors:
         -
-            message: '#^Variable \$\w+ might not be defined.$#'
-            paths:
-                - tests/src/TemplateEngineTest/*
-        -
             message: '#^Call to an undefined method DanBettles\\Marigold\\OutputHelper\\Html5OutputHelper::create[A-Z]#'
             path: tests/src/OutputHelper/Html5OutputHelperTest.php
         -
@@ -17,6 +13,8 @@ parameters:
             path: tests/src/OutputHelper/Html5OutputHelperTest.php
             count: 1
         -
-            message: "#^Anonymous function has an unused use \\$__layout\\.$#"
-            count: 1
-            path: src/TemplateEngine.php
+            message: '#^Variable \$\w+ might not be defined.$#'
+            path: tests/src/PhpTest/*
+        -
+            message: '#^Variable \$\w+ might not be defined.$#'
+            path: tests/src/TemplateEngine/EngineTest/*

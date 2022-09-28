@@ -50,7 +50,7 @@ class ServiceFactoryTest extends AbstractTestCase
     /**
      * @dataProvider providesConfig
      * @phpstan-param class-string $expectedClassName
-     * @param array<string, class-string|Closure> $config
+     * @phpstan-param array<string, class-string|Closure> $config
      */
     public function testGetReturnsTheServiceWithTheSpecifiedId(
         string $expectedClassName,
@@ -70,7 +70,7 @@ class ServiceFactoryTest extends AbstractTestCase
     public function testGetThrowsAnExceptionIfThereIsNoServiceWithTheSpecifiedId(): void
     {
         $this->expectException(OutOfBoundsException::class);
-        $this->expectExceptionMessage("There is no service with the ID `non_existent_service`.");
+        $this->expectExceptionMessage('There is no service with the ID `non_existent_service`.');
 
         (new ServiceFactory([]))->get('non_existent_service');
     }
@@ -93,7 +93,7 @@ class ServiceFactoryTest extends AbstractTestCase
     public function testGetThrowsAnExceptionIfAServiceFactoryClosureDoesNotReturnAnObject(): void
     {
         $this->expectException(RangeException::class);
-        $this->expectExceptionMessage("The factory for service `closure` does not return an object.");
+        $this->expectExceptionMessage('The factory for service `closure` does not return an object.');
 
         (new ServiceFactory([
             'closure' => function () {
@@ -131,7 +131,7 @@ class ServiceFactoryTest extends AbstractTestCase
 
     /**
      * @dataProvider providesInvalidConfig
-     * @param array<string, class-string|Closure> $invalidConfig
+     * @phpstan-param array<string, class-string|Closure> $invalidConfig
      */
     public function testGetThrowsAnExceptionIfAServiceConfigurationDoesNotResolveToAnObject(
         array $invalidConfig,

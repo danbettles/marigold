@@ -18,7 +18,7 @@ class FileTypeNotSupportedExceptionTest extends AbstractTestCase
     public function testCanBeThrownWithOnlyTheNameOfTheInvalidFileType(): void
     {
         $this->expectException(FileTypeNotSupportedException::class);
-        $this->expectExceptionMessage("The file-type `foo` is not supported.");
+        $this->expectExceptionMessage('The file-type `foo` is not supported.');
 
         throw new FileTypeNotSupportedException('foo');
     }

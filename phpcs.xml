@@ -5,11 +5,6 @@
     <file>src/</file>
     <file>tests/</file>
 
-    <!-- Ignore fixtures. -->
-    <exclude-pattern>\/FileInfoTest\/.*?$</exclude-pattern>
-    <exclude-pattern>\/TemplateFileTest\/.*?$</exclude-pattern>
-    <exclude-pattern>\/TemplateEngineTest\/.*?$</exclude-pattern>
-
     <arg name="extensions" value="php"/>
     <arg value="p"/>
     <arg name="colors"/>
