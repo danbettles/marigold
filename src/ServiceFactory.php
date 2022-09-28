@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace DanBettles\Marigold;
 
 use Closure;
+use InvalidArgumentException;
 use OutOfBoundsException;
-use RangeException;
 
 use function array_key_exists;
 use function class_exists;
@@ -49,9 +49,9 @@ class ServiceFactory
      * Gets a service by its ID.
      *
      * @throws OutOfBoundsException If the service does not exist.
-     * @throws RangeException If the service class does not exist.
-     * @throws RangeException If the factory for the service does not return an object.
-     * @throws RangeException If the config for the service is invalid.
+     * @throws InvalidArgumentException If the service class does not exist.
+     * @throws InvalidArgumentException If the factory for the service does not return an object.
+     * @throws InvalidArgumentException If the config for the service is invalid.
      */
     public function get(string $id): object
     {
@@ -60,24 +60,26 @@ class ServiceFactory
         }
 
         if (!array_key_exists($id, $this->services)) {
-            $classNameOrClosure = $this->getConfig()[$id];
+            $resolvesToObject = $this->getConfig()[$id];
 
             $service = null;
 
-            if (is_string($classNameOrClosure)) {
-                if (!class_exists($classNameOrClosure)) {
-                    throw new RangeException("The class for service `{$id}`, `{$classNameOrClosure}`, does not exist.");
+            if (is_string($resolvesToObject)) {
+                if (!class_exists($resolvesToObject)) {
+                    throw new InvalidArgumentException("The class for service `{$id}`, `{$resolvesToObject}`, does not exist.");
                 }
 
-                $service = new $classNameOrClosure();
-            } elseif ($classNameOrClosure instanceof Closure) {
-                $service = $classNameOrClosure();
+                $service = new $resolvesToObject();
+            } elseif ($resolvesToObject instanceof Closure) {
+                $service = $resolvesToObject();
 
                 if (!is_object($service)) {
-                    throw new RangeException("The factory for service `{$id}` does not return an object.");
+                    throw new InvalidArgumentException("The factory for service `{$id}` does not return an object.");
                 }
+            } elseif (is_object($resolvesToObject)) {
+                $service = $resolvesToObject;
             } else {
-                throw new RangeException("The config for service `{$id}` is invalid: it must be a class-name or a closure.");
+                throw new InvalidArgumentException("The config for service `{$id}` is invalid: it must be a class-name, closure, or an object.");
             }
 
             $this->services[$id] = $service;

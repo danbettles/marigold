@@ -7,8 +7,8 @@ namespace DanBettles\Marigold\Tests\Utils;
 use Closure;
 use DanBettles\Marigold\AbstractTestCase;
 use DanBettles\Marigold\ServiceFactory;
+use InvalidArgumentException;
 use OutOfBoundsException;
-use RangeException;
 use stdClass;
 
 class ServiceFactoryTest extends AbstractTestCase
@@ -41,6 +41,13 @@ class ServiceFactoryTest extends AbstractTestCase
                     'foo' => function () {
                         return new stdClass();
                     },
+                ],
+                'foo',
+            ],
+            [
+                stdClass::class,
+                [
+                    'foo' => new stdClass(),
                 ],
                 'foo',
             ],
@@ -80,7 +87,7 @@ class ServiceFactoryTest extends AbstractTestCase
         /** @phpstan-var class-string */
         $nonExistentClassName = __CLASS__ . '\\NonExistent';
 
-        $this->expectException(RangeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("The class for service `class_name`, `{$nonExistentClassName}`, does not exist.");
 
         (new ServiceFactory([
@@ -92,7 +99,7 @@ class ServiceFactoryTest extends AbstractTestCase
 
     public function testGetThrowsAnExceptionIfAServiceFactoryClosureDoesNotReturnAnObject(): void
     {
-        $this->expectException(RangeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('The factory for service `closure` does not return an object.');
 
         (new ServiceFactory([
@@ -137,8 +144,8 @@ class ServiceFactoryTest extends AbstractTestCase
         array $invalidConfig,
         string $id
     ): void {
-        $this->expectException(RangeException::class);
-        $this->expectExceptionMessage("The config for service `{$id}` is invalid: it must be a class-name or a closure.");
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("The config for service `{$id}` is invalid: it must be a class-name, closure, or an object.");
 
         (new ServiceFactory($invalidConfig))->get($id);
     }
