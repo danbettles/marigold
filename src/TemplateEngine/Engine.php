@@ -24,7 +24,7 @@ class Engine
     public function __construct(
         Php $php,
         TemplateFileLoader $templateFileLoader,
-        ServiceFactory $globals = null
+        ?ServiceFactory $globals = null
     ) {
         $this
             ->setPhp($php)
@@ -129,8 +129,14 @@ class Engine
     /**
      * Factory method, for convenience.
      */
-    public static function create(TemplateFileLoader $loader): self
-    {
-        return new self(new Php(), $loader);
+    public static function create(
+        TemplateFileLoader $loader,
+        ServiceFactory $globals = null
+    ): self {
+        return new self(
+            new Php(),
+            $loader,
+            $globals
+        );
     }
 }

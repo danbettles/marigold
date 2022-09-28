@@ -234,19 +234,23 @@ class EngineTest extends AbstractTestCase
         $this->assertTrue($createMethod->isPublic());
         $this->assertTrue($createMethod->isStatic());
 
-        $loaderMock = $this
-            ->getMockBuilder(TemplateFileLoader::class)
-            ->disableOriginalConstructor()
-            ->getMock()
-        ;
+        $loaderMock = $this->createStub(TemplateFileLoader::class);
+        $globalsMock = $this->createStub(ServiceFactory::class);
 
-        /** @var TemplateFileLoader $loaderMock */
-        $templateEngine = Engine::create($loaderMock);
+        $templateEngine = Engine::create($loaderMock, $globalsMock);
 
         $this->assertInstanceOf(Engine::class, $templateEngine);
-
         $this->assertInstanceOf(Php::class, $templateEngine->getPhp());
         $this->assertSame($loaderMock, $templateEngine->getTemplateFileLoader());
+        $this->assertSame($globalsMock, $templateEngine->getGlobals());
+    }
+
+    public function testGlobalsNeedNotBePassedToCreate(): void
+    {
+        $createMethod = $this->getTestedClass()->getMethod('create');
+        $globalsParam = $createMethod->getParameters()[1];
+
+        $this->assertTrue($globalsParam->isOptional());
     }
 
     public function testTemplatesCanIncludeOtherFiles(): void
