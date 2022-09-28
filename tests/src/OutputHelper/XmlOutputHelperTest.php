@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace DanBettles\Marigold\Tests\OutputHelper;
 
 use DanBettles\Marigold\AbstractTestCase;
-use DanBettles\Marigold\OutputHelper\OutputHelperInterface;
 use DanBettles\Marigold\OutputHelper\XmlOutputHelper;
 use InvalidArgumentException;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -17,11 +16,6 @@ use const null;
 // @todo Test that `createEl()`/`createElement()` calls `createAttributes()`.
 class XmlOutputHelperTest extends AbstractTestCase
 {
-    public function testIsAnOutputhelper(): void
-    {
-        $this->assertTrue($this->getTestedClass()->implementsInterface(OutputHelperInterface::class));
-    }
-
     public function testGetencodingReturnsTheEncodingSetUsingSetencoding(): void
     {
         $helper = new XmlOutputHelper();

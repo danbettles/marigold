@@ -19,7 +19,7 @@ use const null;
  *
  * Will automatically escape attribute values but won't touch anything else.
  */
-class XmlOutputHelper implements OutputHelperInterface
+class XmlOutputHelper
 {
     private ?string $encoding = null;
 
