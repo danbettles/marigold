@@ -28,7 +28,7 @@ class TemplateFileLoaderTest extends AbstractTestCase
 
         $loader = new TemplateFileLoader($paths);
 
-        $this->assertEquals($paths, $loader->getTemplateDirs());
+        $this->assertSame($paths, $loader->getTemplateDirs());
     }
 
     public function testThrowsAnExceptionIfTheArrayOfDirectoryPathsIsEmpty(): void

@@ -7,7 +7,7 @@ namespace DanBettles\Marigold\Tests\TemplateEngine;
 use DanBettles\Marigold\AbstractTestCase;
 use DanBettles\Marigold\Exception\FileNotFoundException;
 use DanBettles\Marigold\Php;
-use DanBettles\Marigold\ServiceFactory;
+use DanBettles\Marigold\Registry;
 use DanBettles\Marigold\TemplateEngine\Engine;
 use DanBettles\Marigold\TemplateEngine\OutputFacade;
 use DanBettles\Marigold\TemplateEngine\TemplateFile;
@@ -31,17 +31,17 @@ class EngineTest extends AbstractTestCase
         $this->assertSame($loader, $engine->getTemplateFileLoader());
     }
 
-    public function testConstructorAcceptsAServiceFactoryForGlobals(): void
+    public function testConstructorAcceptsARegistryForGlobals(): void
     {
-        $serviceFactory = new ServiceFactory([]);
+        $registry = new Registry();
 
         $engine = new Engine(
             new Php(),
             new TemplateFileLoader([$this->getFixturesDir()]),
-            $serviceFactory
+            $registry
         );
 
-        $this->assertSame($serviceFactory, $engine->getGlobals());
+        $this->assertSame($registry, $engine->getGlobals());
     }
 
     /**
@@ -63,7 +63,7 @@ class EngineTest extends AbstractTestCase
 
         $expectedOutput = 'Hello, Dan!';
 
-        $globalsStub = $this->createStub(ServiceFactory::class);
+        $globalsStub = $this->createStub(Registry::class);
 
         $phpMock = $this
             ->getMockBuilder(Php::class)
@@ -235,7 +235,7 @@ class EngineTest extends AbstractTestCase
         $this->assertTrue($createMethod->isStatic());
 
         $loaderMock = $this->createStub(TemplateFileLoader::class);
-        $globalsMock = $this->createStub(ServiceFactory::class);
+        $globalsMock = $this->createStub(Registry::class);
 
         $templateEngine = Engine::create($loaderMock, $globalsMock);
 

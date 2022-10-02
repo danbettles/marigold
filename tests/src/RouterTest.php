@@ -22,7 +22,7 @@ class RouterTest extends AbstractTestCase
 
         $router = new Router($routes);
 
-        $this->assertEquals($routes, $router->getRoutes());
+        $this->assertSame($routes, $router->getRoutes());
     }
 
     /** @return array<int, array<int, mixed>> */
@@ -179,7 +179,7 @@ class RouterTest extends AbstractTestCase
             ->match($serverVars)
         ;
 
-        $this->assertEquals($expectedRoute, $route);
+        $this->assertSame($expectedRoute, $route);
     }
 
     /** @return array<int, array<int, mixed>> */

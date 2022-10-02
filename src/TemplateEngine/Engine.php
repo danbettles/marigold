@@ -6,7 +6,7 @@ namespace DanBettles\Marigold\TemplateEngine;
 
 use DanBettles\Marigold\Exception\FileNotFoundException;
 use DanBettles\Marigold\Php;
-use DanBettles\Marigold\ServiceFactory;
+use DanBettles\Marigold\Registry;
 use SplFileInfo;
 
 use function array_replace;
@@ -19,12 +19,12 @@ class Engine
 
     private TemplateFileLoader $templateFileLoader;
 
-    private ?ServiceFactory $globals;
+    private ?Registry $globals;
 
     public function __construct(
         Php $php,
         TemplateFileLoader $templateFileLoader,
-        ?ServiceFactory $globals = null
+        ?Registry $globals = null
     ) {
         $this
             ->setPhp($php)
@@ -115,13 +115,13 @@ class Engine
         return $this->templateFileLoader;
     }
 
-    private function setGlobals(?ServiceFactory $globals): self
+    private function setGlobals(?Registry $globals): self
     {
         $this->globals = $globals;
         return $this;
     }
 
-    public function getGlobals(): ?ServiceFactory
+    public function getGlobals(): ?Registry
     {
         return $this->globals;
     }
@@ -131,7 +131,7 @@ class Engine
      */
     public static function create(
         TemplateFileLoader $loader,
-        ServiceFactory $globals = null
+        Registry $globals = null
     ): self {
         return new self(
             new Php(),
