@@ -20,7 +20,7 @@ class HttpResponse
     /**
      * @var array<int, string>
      */
-    private const STATUS_TEXTS = [
+    public const STATUS_TEXTS = [
         self::HTTP_OK => 'OK',
         self::HTTP_NOT_FOUND => 'Not Found',
         self::HTTP_INTERNAL_SERVER_ERROR => 'Internal Server Error',
