@@ -6,6 +6,10 @@ parameters:
         - tests
     ignoreErrors:
         -
+            message: '#^Variable \$\w+ might not be defined.$#'
+            path: tests/src/AbstractActionTest/*
+            count: 1
+        -
             message: '#^Call to an undefined method DanBettles\\Marigold\\OutputHelper\\Html5OutputHelper::create[A-Z]#'
             path: tests/src/OutputHelper/Html5OutputHelperTest.php
         -

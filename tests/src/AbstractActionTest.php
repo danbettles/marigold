@@ -6,11 +6,12 @@ namespace DanBettles\Marigold\Tests;
 
 use DanBettles\Marigold\AbstractAction;
 use DanBettles\Marigold\AbstractTestCase;
+use DanBettles\Marigold\Exception\NotFoundHttpException;
 use DanBettles\Marigold\HttpRequest;
 use DanBettles\Marigold\HttpResponse;
 use DanBettles\Marigold\TemplateEngine\Engine;
+use DanBettles\Marigold\TemplateEngine\TemplateFileLoader;
 use ReflectionNamedType;
-use ReflectionType;
 
 class AbstractActionTest extends AbstractTestCase
 {
@@ -52,5 +53,44 @@ class AbstractActionTest extends AbstractTestCase
 
         $this->assertInstanceOf(ReflectionNamedType::class, $returnType);
         $this->assertSame(HttpResponse::class, $returnType->getName());
+    }
+
+    public function testRenderExecutesATemplateFileAndReturnsAnHttpResponse(): void
+    {
+        $fixturesDir = $this->createFixturePathname(__FUNCTION__);
+        $templateFileLoader = new TemplateFileLoader([$fixturesDir]);
+        $templateEngine = Engine::create($templateFileLoader);
+
+        $action = new class ($templateEngine) extends AbstractAction
+        {
+            public function __invoke(HttpRequest $request): HttpResponse
+            {
+                return $this->render('error.php', [
+                    'name' => 'Dave',
+                ], 418);
+            }
+        };
+
+        $response = $action(HttpRequest::fromGlobals());
+
+        $this->assertInstanceOf(HttpResponse::class, $response);
+        $this->assertSame(418, $response->getStatusCode());
+        $this->assertSame("I'm sorry, Dave, I'm afraid I can't do that.", $response->getContent());
+    }
+
+    public function testCreatenotfoundexceptionCreatesANotFoundHttpexception(): void
+    {
+        $this->expectException(NotFoundHttpException::class);
+        $this->expectExceptionMessage('404 Not Found: something');
+
+        $templateEngineStub = $this->createStub(Engine::class);
+
+        (new class ($templateEngineStub) extends AbstractAction
+        {
+            public function __invoke(HttpRequest $request): HttpResponse
+            {
+                throw $this->createNotFoundException('something');
+            }
+        })(HttpRequest::fromGlobals());
     }
 }
