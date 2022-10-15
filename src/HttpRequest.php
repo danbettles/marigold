@@ -25,6 +25,13 @@ class HttpRequest
     public array $server;
 
     /**
+     * Somewhere to store additional information about the request.
+     *
+     * @var array<string, mixed>
+     */
+    public array $attributes;
+
+    /**
      * @param array<string, string> $query
      * @param array<string, string> $request
      * @param array<string, string> $server
@@ -37,6 +44,7 @@ class HttpRequest
         $this->query = $query;
         $this->request = $request;
         $this->server = $server;
+        $this->attributes = [];
     }
 
     public static function fromGlobals(): self

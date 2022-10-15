@@ -13,9 +13,10 @@ class HttpRequestTest extends AbstractTestCase
     {
         $request = new HttpRequest($_GET, $_POST, $_SERVER);
 
-        $this->assertSame($request->query, $_GET);
-        $this->assertSame($request->request, $_POST);
-        $this->assertSame($request->server, $_SERVER);
+        $this->assertSame($_GET, $request->query);
+        $this->assertSame($_POST, $request->request);
+        $this->assertSame($_SERVER, $request->server);
+        $this->assertSame([], $request->attributes);
     }
 
     public function testFromglobalsCreatesANewInstance(): void
@@ -23,8 +24,9 @@ class HttpRequestTest extends AbstractTestCase
         $request = HttpRequest::fromGlobals();
 
         $this->assertInstanceOf(HttpRequest::class, $request);
-        $this->assertSame($request->query, $_GET);
-        $this->assertSame($request->request, $_POST);
-        $this->assertSame($request->server, $_SERVER);
+        $this->assertSame($_GET, $request->query);
+        $this->assertSame($_POST, $request->request);
+        $this->assertSame($_SERVER, $request->server);
+        $this->assertSame([], $request->attributes);
     }
 }
