@@ -80,21 +80,23 @@ class Router
     }
 
     /**
-     * @param array<string, string> $serverVars
      * @return array{path: string, action: mixed, parameters: string[]}|null
      * @throws OutOfBoundsException If there is no request URI in the server vars.
      * @throws InvalidArgumentException If the request URI is invalid.
      */
-    public function match(array $serverVars): ?array
+    public function match(HttpRequest $request): ?array
     {
-        if (!array_key_exists('REQUEST_URI', $serverVars)) {
+        if (!array_key_exists('REQUEST_URI', $request->server)) {
             throw new OutOfBoundsException('There is no request URI in the server vars.');
         }
 
-        $requestUri = $serverVars['REQUEST_URI'];
-
         $requestUriParts = null;
-        $requestUriIsValid = (bool) preg_match('~^(?P<path>/.*?)(\?.*)?$~', $requestUri, $requestUriParts);
+
+        $requestUriIsValid = (bool) preg_match(
+            '~^(?P<path>/.*?)(\?.*)?$~',
+            $request->server['REQUEST_URI'],
+            $requestUriParts
+        );
 
         if (!$requestUriIsValid) {
             throw new InvalidArgumentException('The request URI is invalid.');

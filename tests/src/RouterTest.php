@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DanBettles\Marigold\Tests;
 
 use DanBettles\Marigold\AbstractTestCase;
+use DanBettles\Marigold\HttpRequest;
 use DanBettles\Marigold\Router;
 use InvalidArgumentException;
 use OutOfBoundsException;
@@ -23,6 +24,12 @@ class RouterTest extends AbstractTestCase
         $router = new Router($routes);
 
         $this->assertSame($routes, $router->getRoutes());
+    }
+
+    /** @param array<string, string> $serverVars */
+    private function createHttpRequest(array $serverVars): HttpRequest
+    {
+        return new HttpRequest([], [], $serverVars);
     }
 
     /** @return array<int, array<int, mixed>> */
@@ -45,7 +52,7 @@ class RouterTest extends AbstractTestCase
                         'action' => ['QuxQuux', 'corge'],
                     ],
                 ],
-                ['REQUEST_URI' => '/'],
+                $this->createHttpRequest(['REQUEST_URI' => '/']),
             ],
             // #1: Trailing slashes are significant:
             [
@@ -64,7 +71,7 @@ class RouterTest extends AbstractTestCase
                         'action' => ['QuxQuux', 'corge'],
                     ],
                 ],
-                ['REQUEST_URI' => '/path?arg=value'],
+                $this->createHttpRequest(['REQUEST_URI' => '/path?arg=value']),
             ],
             // #2: Trailing slashes are significant:
             [
@@ -83,7 +90,7 @@ class RouterTest extends AbstractTestCase
                         'action' => ['FooBar', 'baz'],
                     ],
                 ],
-                ['REQUEST_URI' => '/path?arg=value'],
+                $this->createHttpRequest(['REQUEST_URI' => '/path?arg=value']),
             ],
             // Placeholders:
             [
@@ -102,7 +109,7 @@ class RouterTest extends AbstractTestCase
                         'action' => ['QuxQuux', 'corge'],
                     ],
                 ],
-                ['REQUEST_URI' => '/posts/the-quick-brown-fox?foo=bar'],
+                $this->createHttpRequest(['REQUEST_URI' => '/posts/the-quick-brown-fox?foo=bar']),
             ],
             // Trailing slashes are significant:
             [
@@ -121,7 +128,7 @@ class RouterTest extends AbstractTestCase
                         'action' => ['QuxQuux', 'corge'],
                     ],
                 ],
-                ['REQUEST_URI' => '/posts/the-quick-brown-fox/'],
+                $this->createHttpRequest(['REQUEST_URI' => '/posts/the-quick-brown-fox/']),
             ],
             // The order of routes is important:
             [
@@ -140,7 +147,7 @@ class RouterTest extends AbstractTestCase
                         'action' => ['QuxQuux', 'corge'],
                     ],
                 ],
-                ['REQUEST_URI' => '/posts/the-quick-brown-fox'],
+                $this->createHttpRequest(['REQUEST_URI' => '/posts/the-quick-brown-fox']),
             ],
             // However, exact matches are prioritised:
             [
@@ -159,7 +166,7 @@ class RouterTest extends AbstractTestCase
                         'action' => ['QuxQuux', 'corge'],
                     ],
                 ],
-                ['REQUEST_URI' => '/posts/the-quick-brown-fox'],
+                $this->createHttpRequest(['REQUEST_URI' => '/posts/the-quick-brown-fox']),
             ],
         ];
     }
@@ -168,15 +175,14 @@ class RouterTest extends AbstractTestCase
      * @dataProvider providesMatchedRoutes
      * @param array{path: string, action: mixed, parameters: string[]} $expectedRoute
      * @param array<int, array{path: string, action: mixed}> $routes
-     * @param array<string, string> $serverVars
      */
     public function testMatchAttemptsToFindAMatchingRoute(
         array $expectedRoute,
         array $routes,
-        array $serverVars
+        HttpRequest $request
     ): void {
         $route = (new Router($routes))
-            ->match($serverVars)
+            ->match($request)
         ;
 
         $this->assertSame($expectedRoute, $route);
@@ -197,7 +203,7 @@ class RouterTest extends AbstractTestCase
                         'action' => ['QuxQuux', 'corge'],
                     ],
                 ],
-                ['REQUEST_URI' => '/posts/'],  // (Trailing slash.)
+                $this->createHttpRequest(['REQUEST_URI' => '/posts/']),  // (Trailing slash.)
             ],
             [
                 [
@@ -210,7 +216,7 @@ class RouterTest extends AbstractTestCase
                         'action' => ['QuxQuux', 'corge'],
                     ],
                 ],
-                ['REQUEST_URI' => '/posts/the-quick-brown-fox/'],  // (Trailing slash.)
+                $this->createHttpRequest(['REQUEST_URI' => '/posts/the-quick-brown-fox/']),  // (Trailing slash.)
             ],
         ];
     }
@@ -218,17 +224,26 @@ class RouterTest extends AbstractTestCase
     /**
      * @dataProvider providesUnmatchableRoutes
      * @param array<int, array{path: string, action: mixed}> $routes
-     * @param array<string, string> $serverVars
      */
     public function testMatchReturnsNullIfThereIsNoMatchingRoute(
         array $routes,
-        array $serverVars
+        HttpRequest $request
     ): void {
         $route = (new Router($routes))
-            ->match($serverVars)
+            ->match($request)
         ;
 
         $this->assertNull($route);
+    }
+
+    public function testMatchThrowsAnExceptionIfTheRequestDoesNotContainTheRequestUri(): void
+    {
+        $this->expectException(OutOfBoundsException::class);
+        $this->expectExceptionMessage('There is no request URI in the server vars.');
+
+        (new Router([]))
+            ->match($this->createHttpRequest([]))
+        ;
     }
 
     /** @return array<int, array<int, mixed>> */
@@ -236,35 +251,22 @@ class RouterTest extends AbstractTestCase
     {
         return [
             [
-                ['REQUEST_URI' => ''],
+                $this->createHttpRequest(['REQUEST_URI' => '']),
             ],
             [
-                ['REQUEST_URI' => '$&**^£(*&£*&'],
+                $this->createHttpRequest(['REQUEST_URI' => '$&**^£(*&£*&']),
             ],
         ];
     }
 
-    public function testMatchThrowsAnExceptionIfTheServerVarsDoNotContainTheRequestUri(): void
-    {
-        $this->expectException(OutOfBoundsException::class);
-        $this->expectExceptionMessage('There is no request URI in the server vars.');
-
-        (new Router([]))
-            ->match([])
-        ;
-    }
-
-    /**
-     * @dataProvider providesInvalidRequestUris
-     * @param array<string, string> $serverVars
-     */
-    public function testMatchThrowsAnExceptionIfTheRequestUriIsInvalid(array $serverVars): void
+    /** @dataProvider providesInvalidRequestUris */
+    public function testMatchThrowsAnExceptionIfTheRequestUriIsInvalid(HttpRequest $request): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('The request URI is invalid.');
 
         (new Router([]))
-            ->match($serverVars)
+            ->match($request)
         ;
     }
 
