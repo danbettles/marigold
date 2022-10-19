@@ -88,7 +88,6 @@ class TemplateFileLoader
     private function setTemplateDirs(array $dirs): self
     {
         if (!$dirs) {
-            // @todo Really throw an exception?  Is this really a problem?
             throw new InvalidArgumentException('The array of directory paths is empty.');
         }
 
