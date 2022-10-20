@@ -47,7 +47,7 @@ class HttpRequest
         $this->attributes = [];
     }
 
-    public static function fromGlobals(): self
+    public static function createFromGlobals(): self
     {
         return new self($_GET, $_POST, $_SERVER);
     }

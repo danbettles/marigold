@@ -19,9 +19,9 @@ class HttpRequestTest extends AbstractTestCase
         $this->assertSame([], $request->attributes);
     }
 
-    public function testFromglobalsCreatesANewInstance(): void
+    public function testCreatefromglobalsCreatesANewInstance(): void
     {
-        $request = HttpRequest::fromGlobals();
+        $request = HttpRequest::createFromGlobals();
 
         $this->assertInstanceOf(HttpRequest::class, $request);
         $this->assertSame($_GET, $request->query);

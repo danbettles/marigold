@@ -71,7 +71,7 @@ class AbstractActionTest extends AbstractTestCase
             }
         };
 
-        $response = $action(HttpRequest::fromGlobals());
+        $response = $action(HttpRequest::createFromGlobals());
 
         $this->assertInstanceOf(HttpResponse::class, $response);
         $this->assertSame(418, $response->getStatusCode());
@@ -91,6 +91,6 @@ class AbstractActionTest extends AbstractTestCase
             {
                 throw $this->createNotFoundException('something');
             }
-        })(HttpRequest::fromGlobals());
+        })(HttpRequest::createFromGlobals());
     }
 }
