@@ -13,12 +13,120 @@ use InvalidArgumentException;
 use const false;
 use const true;
 
-// @todo Test that `createEl()`/`createElement()` calls `createAttributes()`.
 class Html5OutputHelperTest extends AbstractTestCase
 {
     public function testIsAXmloutputhelper(): void
     {
         $this->assertTrue($this->getTestedClass()->isSubclassOf(XmlOutputHelper::class));
+    }
+
+    /** @return array<int, array<int, mixed>> */
+    public function providesAttributesStrings(): array
+    {
+        return [
+            [
+                'value="1" checked',
+                ['value' => '1', 'checked' => true],
+            ],
+            [
+                '',
+                ['checked' => false],
+            ],
+            [
+                '',
+                [],
+            ],
+            [
+                'foo="bar"',
+                ['foo' => 'bar'],
+            ],
+            [
+                'foo="bar" baz="qux"',
+                ['foo' => 'bar', 'baz' => 'qux'],
+            ],
+            [  // Values are automatically escaped.
+                'foo="&amp;&quot;&apos;&lt;&gt;"',
+                ['foo' => '&"\'<>'],
+            ],
+            [  // Escaped values are not double encoded.
+                'foo="&amp;&quot;&apos;&lt;&gt;"',
+                ['foo' => '&amp;&quot;&apos;&lt;&gt;'],
+            ],
+            [  // Integers are permitted.
+                'foo="123"',
+                ['foo' => 123],
+            ],
+            [  // Floats are permitted.
+                'foo="12.3"',
+                ['foo' => 12.3],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider providesAttributesStrings
+     * @param array<string, string|int|float|bool> $input
+     */
+    public function testCreateattributesCanCreateBooleanAttributes(
+        string $expected,
+        array $input
+    ): void {
+        $helper = new Html5OutputHelper();
+
+        $this->assertSame($expected, $helper->createAttributes($input));
+    }
+
+    /** @return array<int, array<int, mixed>> */
+    public function providesBooleanAttributesWithInvalidNames(): array
+    {
+        return [
+            [
+                '',
+                ['' => true],
+            ],
+            [
+                'foo!',
+                ['foo!' => true],
+            ],
+            [
+                'one two',
+                ['one two' => true],
+            ],
+            [
+                'xml',
+                ['xml' => true],
+            ],
+            [
+                'XML',
+                ['XML' => true],
+            ],
+            [
+                '1-for-all',
+                ['1-for-all' => true],
+            ],
+            [
+                '-foo',
+                ['-foo' => true],
+            ],
+            [
+                '.foo',
+                ['.foo' => true],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider providesBooleanAttributesWithInvalidNames
+     * @phpstan-param array<string, string|int|float|bool> $attrsWithInvalidNames (Using the valid type to silence PHPStan.)
+     */
+    public function testCreateattributesThrowsAnExceptionIfABooleanAttributeNameIsInvalid(
+        string $invalidName,
+        array $attrsWithInvalidNames
+    ): void {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("The attribute name `{$invalidName}` is invalid.");
+
+        (new Html5OutputHelper())->createAttributes($attrsWithInvalidNames);
     }
 
     /** @return array<int, array<int, mixed>> */
@@ -95,7 +203,7 @@ class Html5OutputHelperTest extends AbstractTestCase
 
     /**
      * @dataProvider providesArgsForVoidElements
-     * @param array<string, string|bool> $attributes
+     * @param array<string, string|int|float|bool> $attributes
      */
     public function testCreateelCanCreateVoidElements(
         string $expected,
@@ -107,35 +215,25 @@ class Html5OutputHelperTest extends AbstractTestCase
         $this->assertSame($expected, $helper->createEl($tagName, $attributes));
     }
 
-    /** @return array<int, array<int, mixed>> */
-    public function providesArgsForElementsWithBooleanAttributes(): array
+    public function testCreateelUsesCreateattributes(): void
     {
-        return [
-            [
-                '<input type="checkbox" checked>',
-                'input',
-                ['type' => 'checkbox', 'checked' => true]
-            ],
-            [
-                '<input type="checkbox">',
-                'input',
-                ['type' => 'checkbox', 'checked' => false]
-            ],
-        ];
-    }
+        $helperMock = $this
+            ->getMockBuilder(Html5OutputHelper::class)
+            ->onlyMethods(['createAttributes'])
+            ->getMock()
+        ;
 
-    /**
-     * @dataProvider providesArgsForElementsWithBooleanAttributes
-     * @param array<string, string|bool> $attributes
-     */
-    public function testCreateelCanCreateElementsWithBooleanAttributes(
-        string $expected,
-        string $tagName,
-        array $attributes
-    ): void {
-        $helper = new Html5OutputHelper();
+        $helperMock
+            ->expects($this->once())
+            ->method('createAttributes')
+            ->with($this->equalTo(['checked' => true]))
+            ->willReturn('checked')
+        ;
 
-        $this->assertSame($expected, $helper->createEl($tagName, $attributes));
+        /** @var Html5OutputHelper $helperMock */
+        $voidElWithBooleanAttr = $helperMock->createEl('input', ['checked' => true]);
+
+        $this->assertSame('<input checked>', $voidElWithBooleanAttr);
     }
 
     public function testCreateelThrowsAnExceptionIfAnAttemptIsMadeToCreateAVoidElementWithContent(): void
@@ -148,97 +246,26 @@ class Html5OutputHelperTest extends AbstractTestCase
 
     public function testCanCreateElementsMagically(): void
     {
-        $helper = new Html5OutputHelper();
+        $helperMock = $this
+            ->getMockBuilder(Html5OutputHelper::class)
+            ->onlyMethods(['createEl'])
+            ->getMock()
+        ;
 
-        $this->assertSame(
-            '<area foo="bar">',
-            $helper->createArea(['foo' => 'bar'])
-        );
+        $helperMock
+            ->expects($this->once())
+            ->method('createEl')
+            ->with(
+                $this->equalTo('input'),
+                $this->equalTo(['checked' => true])
+            )
+            ->willReturn('<input checked>')
+        ;
 
-        $this->assertSame(
-            '<base>',
-            $helper->createBase()
-        );
+        /** @var Html5OutputHelper $helperMock */
+        $voidElWithBooleanAttr = $helperMock->createInput(['checked' => true]);
 
-        $this->assertSame(
-            '<br>',
-            $helper->createBr()
-        );
-
-        $this->assertSame(
-            '<col>',
-            $helper->createCol()
-        );
-
-        $this->assertSame(
-            '<embed>',
-            $helper->createEmbed()
-        );
-
-        $this->assertSame(
-            '<hr>',
-            $helper->createHr()
-        );
-
-        $this->assertSame(
-            '<img>',
-            $helper->createImg()
-        );
-
-        $this->assertSame(
-            '<input>',
-            $helper->createInput()
-        );
-
-        $this->assertSame(
-            '<link>',
-            $helper->createLink()
-        );
-
-        $this->assertSame(
-            '<meta>',
-            $helper->createMeta()
-        );
-
-        $this->assertSame(
-            '<source>',
-            $helper->createSource()
-        );
-
-        $this->assertSame(
-            '<track>',
-            $helper->createTrack()
-        );
-
-        $this->assertSame(
-            '<wbr>',
-            $helper->createWbr()
-        );
-
-        $this->assertSame(
-            '<p>Lorem ipsum dolor.</p>',
-            $helper->createP('Lorem ipsum dolor.')
-        );
-
-        $this->assertSame(
-            '<p class="text-muted">Lorem ipsum dolor.</p>',
-            $helper->createP(['class' => 'text-muted'], 'Lorem ipsum dolor.')
-        );
-
-        $this->assertSame(
-            '<img src="pretty.jpg" alt="A pretty picture">',
-            $helper->createImg(['src' => 'pretty.jpg', 'alt' => 'A pretty picture'])
-        );
-
-        $this->assertSame(
-            '<input type="checkbox" checked>',
-            $helper->createInput(['type' => 'checkbox', 'checked' => true])
-        );
-
-        $this->assertSame(
-            '<input type="checkbox">',
-            $helper->createInput(['type' => 'checkbox', 'checked' => false])
-        );
+        $this->assertSame('<input checked>', $voidElWithBooleanAttr);
     }
 
     public function testCallThrowsAnExceptionIfTheMethodDoesNotExist(): void
@@ -247,33 +274,5 @@ class Html5OutputHelperTest extends AbstractTestCase
         $this->expectExceptionMessage('The method, `create`, does not exist.');
 
         (new Html5OutputHelper())->create();
-    }
-
-    /** @return array<int, array<int, mixed>> */
-    public function providesAttributesStrings(): array
-    {
-        return [
-            [
-                'value="1" checked',
-                ['value' => '1', 'checked' => true],
-            ],
-            [
-                '',
-                ['checked' => false],
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider providesAttributesStrings
-     * @param array<string, string|bool> $input
-     */
-    public function testCreateattributesCanCreateBooleanAttributes(
-        string $expected,
-        array $input
-    ): void {
-        $helper = new Html5OutputHelper();
-
-        $this->assertSame($expected, $helper->createAttributes($input));
     }
 }

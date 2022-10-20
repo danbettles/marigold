@@ -6,7 +6,6 @@ namespace DanBettles\Marigold\OutputHelper;
 
 use BadMethodCallException;
 use InvalidArgumentException;
-use ReflectionMethod;
 
 use function array_unshift;
 use function in_array;
@@ -15,9 +14,11 @@ use function preg_match;
 use function strtolower;
 
 use const null;
+use const true;
 
 /**
- * @method string createEl(string $tagName, array<string, string|bool>|string $attributesOrContent, string|null $contentOrNothing = null)
+ * @method string createAttributes(array<string, string|int|float|bool> $attributes)
+ * @method string createEl(string $tagName, array<string, string|int|float|bool>|string|int|float|null $attributesOrContent = [], string|int|float|null $contentOrNothing = null)
  */
 class Html5OutputHelper extends XmlOutputHelper
 {
@@ -27,6 +28,7 @@ class Html5OutputHelper extends XmlOutputHelper
      * @var array<string, array<int, string>>
      */
     private const TAG_NAMES_BY_TYPE = [
+        // See https://html.spec.whatwg.org/multipage/syntax.html#void-elements
         'void' => [
             'area',
             'base',
@@ -44,41 +46,25 @@ class Html5OutputHelper extends XmlOutputHelper
         ],
     ];
 
-    private ReflectionMethod $createEl;
-
     /**
-     * @param array<string, string|bool> $attributes
+     * @throws InvalidArgumentException If the name is invalid.
+     * @param string|int|float|bool $value
      */
-    public function createAttributes(array $attributes): string
+    protected function createAttribute(string $name, $value): string
     {
-        if (!$attributes) {
-            return '';
-        }
-
-        $pairs = [];
-
-        foreach ($attributes as $name => $value) {
-            $pair = null;
-
-            if (is_bool($value)) {
-                // See https://meiert.com/en/blog/boolean-attributes-of-html/
-                // @todo Validate attribute name.
-                if ($value) {
-                    $pair = $name;
-                }
-            } else {
-                $pair = $this->createAttribute($name, $value);
+        if (is_bool($value)) {
+            if (!$this->validateXmlName($name)) {
+                throw new InvalidArgumentException("The attribute name `{$name}` is invalid.");
             }
 
-            if (null !== $pair) {
-                $pairs[] = $pair;
-            }
+            // See https://meiert.com/en/blog/boolean-attributes-of-html/
+            return true === $value
+                ? $name
+                : ''
+            ;
         }
 
-        return $pairs
-            ? implode(' ', $pairs)
-            : ''
-        ;
+        return parent::createAttribute($name, $value);
     }
 
     /**
@@ -87,10 +73,10 @@ class Html5OutputHelper extends XmlOutputHelper
     protected function createElement(
         string $tagName,
         array $attributes,
-        ?string $content
+        $content
     ): string {
-        // See https://html.spec.whatwg.org/multipage/syntax.html#void-elements
         if (in_array($tagName, self::TAG_NAMES_BY_TYPE['void'])) {
+            // See https://html.spec.whatwg.org/multipage/syntax.html#elements-2:void-elements-4
             if (null !== $content) {
                 throw new InvalidArgumentException('Content was passed: a void element may not have content.');
             }
@@ -124,16 +110,7 @@ class Html5OutputHelper extends XmlOutputHelper
         $tagName = strtolower($matches[1]);
         array_unshift($arguments, $tagName);
 
-        /** @var string */
-        return $this->getCreateEl()->invokeArgs($this, $arguments);
-    }
-
-    private function getCreateEl(): ReflectionMethod
-    {
-        if (!isset($this->createEl)) {
-            $this->createEl = new ReflectionMethod(__CLASS__, 'createEl');
-        }
-
-        return $this->createEl;
+        /** @phpstan-ignore-next-line */
+        return $this->createEl(...$arguments);
     }
 }

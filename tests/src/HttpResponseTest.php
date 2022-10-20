@@ -6,7 +6,6 @@ namespace DanBettles\Marigold\Tests;
 
 use DanBettles\Marigold\AbstractTestCase;
 use DanBettles\Marigold\HttpResponse;
-use PHPUnit\Framework\MockObject\MockObject;
 
 class HttpResponseTest extends AbstractTestCase
 {
@@ -33,7 +32,6 @@ class HttpResponseTest extends AbstractTestCase
     {
         $this->expectOutputString('An unexpected error occurred.');
 
-        /** @var MockObject */
         $responseMock = $this
             ->getMockBuilder(HttpResponse::class)
             ->onlyMethods(['sendHeader'])

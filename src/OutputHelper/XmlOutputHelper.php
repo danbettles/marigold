@@ -9,7 +9,12 @@ use InvalidArgumentException;
 use function htmlspecialchars;
 use function implode;
 use function is_array;
+use function is_float;
+use function is_int;
 use function is_string;
+use function preg_match;
+use function strtolower;
+use function substr;
 
 use const false;
 use const null;
@@ -40,14 +45,55 @@ class XmlOutputHelper
         );
     }
 
-    // @todo Validate attribute name.
-    protected function createAttribute(string $name, string $value): string
+    /**
+     * See https://docstore.mik.ua/orelly/xml/xmlnut/ch02_04.htm
+     */
+    protected function validateXmlName(string $name): bool
     {
-        return $name . '="' . $this->escape($value) . '"';
+        if ('' === $name) {
+            return false;
+        }
+
+        if ('xml' === strtolower(substr($name, 0, 3))) {
+            return false;
+        }
+
+        return (bool) preg_match('~^[a-zA-Z_][a-zA-Z0-9_\-.:]*$~', $name);
     }
 
     /**
-     * @param array<string, string> $attributes
+     * @param mixed $value
+     */
+    private function validateValue($value): bool
+    {
+        // There is only one way that values of these types can be represented as a string.  Boolean variables are not
+        // permitted because there are numerous ways to represent their value.
+        return is_string($value)
+            || is_int($value)
+            || is_float($value)
+        ;
+    }
+
+    /**
+     * @param string|int|float $value
+     * @throws InvalidArgumentException If the name is invalid.
+     * @throws InvalidArgumentException If the type of the value is invalid.
+     */
+    protected function createAttribute(string $name, $value): string
+    {
+        if (!$this->validateXmlName($name)) {
+            throw new InvalidArgumentException("The attribute name `{$name}` is invalid.");
+        }
+
+        if (!$this->validateValue($value)) {
+            throw new InvalidArgumentException("The type of attribute `{$name}` is invalid.");
+        }
+
+        return $name . '="' . $this->escape((string) $value) . '"';
+    }
+
+    /**
+     * @param array<string, string|int|float> $attributes
      */
     public function createAttributes(array $attributes): string
     {
@@ -58,19 +104,27 @@ class XmlOutputHelper
         $pairs = [];
 
         foreach ($attributes as $name => $value) {
-            $pairs[] = $this->createAttribute($name, $value);
+            $pair = $this->createAttribute($name, $value);
+
+            if ('' !== $pair) {
+                $pairs[] = $pair;
+            }
         }
 
-        return implode(' ', $pairs);
+        return $pairs
+            ? implode(' ', $pairs)
+            : ''
+        ;
     }
 
     /**
      * @param array<string, string> $attributes
+     * @param string|int|float|null $content
      */
     protected function createElement(
         string $tagName,
         array $attributes,
-        ?string $content
+        $content
     ): string {
         $attributesStr = $this->createAttributes($attributes);
 
@@ -86,9 +140,9 @@ class XmlOutputHelper
 
     /**
      * @param string $tagName
-     * @param array<string, string>|string|null $attributesOrContent
-     * @param string|null $contentOrNothing
-     * @throws InvalidArgumentException If the content is not a string/null.
+     * @param array<string, string>|string|int|float|null $attributesOrContent
+     * @param string|int|float|null $contentOrNothing
+     * @throws InvalidArgumentException If the type of the content is invalid.
      */
     public function createEl(
         string $tagName,
@@ -104,8 +158,10 @@ class XmlOutputHelper
             $content = $attributesOrContent;
         }
 
-        if (!is_string($content) && null !== $content) {
-            throw new InvalidArgumentException('The content is not a string/null.');
+        $contentIsValid = $this->validateValue($content) || null === $content;
+
+        if (!$contentIsValid) {
+            throw new InvalidArgumentException('The type of the content is invalid.');
         }
 
         /** @var array $attributes */
