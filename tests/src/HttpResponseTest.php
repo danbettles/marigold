@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DanBettles\Marigold\Tests;
 
 use DanBettles\Marigold\AbstractTestCase;
+use DanBettles\Marigold\HttpRequest;
 use DanBettles\Marigold\HttpResponse;
 
 class HttpResponseTest extends AbstractTestCase
@@ -48,10 +49,12 @@ class HttpResponseTest extends AbstractTestCase
             ->with('HTTP/1.1 500 Internal Server Error')
         ;
 
-        /** @var HttpResponse $responseMock */
-        $responseMock->send([
+        $request = new HttpRequest([], [], [
             'SERVER_PROTOCOL' => 'HTTP/1.1',
         ]);
+
+        /** @var HttpResponse $responseMock */
+        $responseMock->send($request);
     }
 
     public function testPropertiesHaveSetters(): void

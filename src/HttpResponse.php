@@ -50,13 +50,10 @@ class HttpResponse
         header($header);
     }
 
-    /**
-     * @param array<string, string> $serverVars
-     */
-    public function send(array $serverVars): void
+    public function send(HttpRequest $request): void
     {
         $statusHeader = (
-            ($serverVars['SERVER_PROTOCOL'] ?? 'HTTP/1.0')
+            ($request->server['SERVER_PROTOCOL'] ?? 'HTTP/1.0')
             . ' '
             . (string) $this->getStatusCode()
             . ' '
