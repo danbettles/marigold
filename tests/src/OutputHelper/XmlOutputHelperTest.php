@@ -205,7 +205,7 @@ class XmlOutputHelperTest extends AbstractTestCase
         array $attributesWithInvalidNames
     ): void {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("The attribute name `{$invalidName}` is invalid.");
+        $this->expectExceptionMessage("Attribute name `{$invalidName}` is invalid.");
 
         (new XmlOutputHelper())->createAttributes($attributesWithInvalidNames);
     }

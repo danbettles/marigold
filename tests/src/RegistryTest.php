@@ -163,7 +163,7 @@ class RegistryTest extends AbstractTestCase
     public function testAddThrowsAnExceptionIfTheIdAlreadyExists(Registry $registry, string $duplicateId): void
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage("The ID `{$duplicateId}` already exists.");
+        $this->expectExceptionMessage("The ID, `{$duplicateId}`, already exists.");
 
         $registry->add($duplicateId, 'anything');
     }
@@ -172,7 +172,7 @@ class RegistryTest extends AbstractTestCase
     public function testAddfactoryThrowsAnExceptionIfTheIdAlreadyExists(Registry $registry, string $duplicateId): void
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage("The ID `{$duplicateId}` already exists.");
+        $this->expectExceptionMessage("The ID, `{$duplicateId}`, already exists.");
 
         $registry->addFactory($duplicateId, function () {
         });
@@ -271,7 +271,7 @@ class RegistryTest extends AbstractTestCase
         $elementId = 'nonExistentElement';
 
         $this->expectException(OutOfBoundsException::class);
-        $this->expectExceptionMessage("The element `{$elementId}` does not exist.");
+        $this->expectExceptionMessage("The element, `{$elementId}`, does not exist.");
 
         (new Registry())->get($elementId);
     }

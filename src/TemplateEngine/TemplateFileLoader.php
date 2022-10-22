@@ -73,7 +73,7 @@ class TemplateFileLoader
     private function addTemplateDir(string $dir): self
     {
         if (!is_dir($dir)) {
-            throw new InvalidArgumentException("The directory `{$dir}` does not exist.");
+            throw new InvalidArgumentException("Directory `{$dir}` does not exist.");
         }
 
         $this->templateDirs[] = $dir;

@@ -124,7 +124,7 @@ class Html5OutputHelperTest extends AbstractTestCase
         array $attrsWithInvalidNames
     ): void {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("The attribute name `{$invalidName}` is invalid.");
+        $this->expectExceptionMessage("Attribute name `{$invalidName}` is invalid.");
 
         (new Html5OutputHelper())->createAttributes($attrsWithInvalidNames);
     }

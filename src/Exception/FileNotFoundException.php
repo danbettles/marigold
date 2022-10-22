@@ -16,7 +16,7 @@ class FileNotFoundException extends RuntimeException
         int $code = 0,
         ?Throwable $previous = null
     ) {
-        $message = "The file `{$pathname}` does not exist.";
+        $message = "File `{$pathname}` does not exist.";
 
         parent::__construct($message, $code, $previous);
     }

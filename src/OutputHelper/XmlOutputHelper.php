@@ -82,7 +82,7 @@ class XmlOutputHelper
     protected function createAttribute(string $name, $value): string
     {
         if (!$this->validateXmlName($name)) {
-            throw new InvalidArgumentException("The attribute name `{$name}` is invalid.");
+            throw new InvalidArgumentException("Attribute name `{$name}` is invalid.");
         }
 
         if (!$this->validateValue($value)) {

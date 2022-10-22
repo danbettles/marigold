@@ -54,7 +54,7 @@ class Html5OutputHelper extends XmlOutputHelper
     {
         if (is_bool($value)) {
             if (!$this->validateXmlName($name)) {
-                throw new InvalidArgumentException("The attribute name `{$name}` is invalid.");
+                throw new InvalidArgumentException("Attribute name `{$name}` is invalid.");
             }
 
             // See https://meiert.com/en/blog/boolean-attributes-of-html/

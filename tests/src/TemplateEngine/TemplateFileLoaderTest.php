@@ -44,7 +44,7 @@ class TemplateFileLoaderTest extends AbstractTestCase
         $nonExistentDir = $this->createFixturePathname(__FUNCTION__ . '/non_existent/');
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("The directory `{$nonExistentDir}` does not exist.");
+        $this->expectExceptionMessage("Directory `{$nonExistentDir}` does not exist.");
 
         new TemplateFileLoader([
             $nonExistentDir,

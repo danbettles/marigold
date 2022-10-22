@@ -94,7 +94,7 @@ class Registry
     public function add(string $id, $value): self
     {
         if ($this->contains($id)) {
-            throw new RuntimeException("The ID `{$id}` already exists.");
+            throw new RuntimeException("The ID, `{$id}`, already exists.");
         }
 
         return $this->setElement($id, $value);
@@ -107,7 +107,7 @@ class Registry
     public function addFactory(string $id, $factory): self
     {
         if ($this->contains($id)) {
-            throw new RuntimeException("The ID `{$id}` already exists.");
+            throw new RuntimeException("The ID, `{$id}`, already exists.");
         }
 
         return $this->setFactory($id, $factory);
@@ -152,6 +152,6 @@ class Registry
             return $this->getElements()[$id];
         }
 
-        throw new OutOfBoundsException("The element `{$id}` does not exist.");
+        throw new OutOfBoundsException("The element, `{$id}`, does not exist.");
     }
 }
