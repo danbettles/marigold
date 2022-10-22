@@ -10,9 +10,11 @@ use OutOfBoundsException;
 use function array_combine;
 use function array_filter;
 use function array_intersect_key;
+use function array_keys;
 use function array_key_exists;
 use function count;
 use function explode;
+use function implode;
 use function preg_match;
 use function preg_match_all;
 use function strpos;
@@ -34,13 +36,22 @@ use const null;
  *     ],
  * ]
  *
- * The key of a route is its 'ID'.  `action` can be anything: the name of a method; a callable; whatever.
+ * The key of a route is its 'ID'.  `action` can be anything: the name of a method; a callable; whatever's appropriate
+ * for the app.
  *
  * A matched route, the return value of `match()`, will have an additional element, `parameters`, containing the values
  * of any parameters found in the path.
  */
 class Router
 {
+    /**
+     * @var array{path: null, action: null}>
+     */
+    private const EMPTY_ROUTE = [
+        'path' => null,
+        'action' => null,
+    ];
+
     /**
      * @var array<string|int, array{path: string, action: mixed}>
      */
@@ -154,20 +165,31 @@ class Router
     /**
      * @param string|int $routeId
      * @param array<string, string|int> $parameters
-     * @todo Validation.
+     * @throws OutOfBoundsException If the route does not exist.
+     * @throws InvalidArgumentException If parameter values were missing.
      */
     public function generatePath($routeId, array $parameters = []): string
     {
+        if (!array_key_exists($routeId, $this->getRoutes())) {
+            throw new OutOfBoundsException("The route, `{$routeId}`, does not exist.");
+        }
+
         $route = $this->getRoutes()[$routeId];
         $path = $route['path'];
 
-        if (!$parameters) {
+        $placeholders = $this->getRoutePlaceholders($routeId);
+
+        if (!$placeholders) {
             return $path;
         }
 
-        $placeholders = $this->getRoutePlaceholders($routeId);
-
         $filteredParameters = array_intersect_key($parameters, $placeholders);
+
+        if (count($placeholders) !== count($filteredParameters)) {
+            throw new InvalidArgumentException(
+                'Parameter values were missing.  Required: ' . implode(', ', array_keys($placeholders)) . '.'
+            );
+        }
 
         foreach ($placeholders as $parameterName => $placeholder) {
             $path = str_replace($placeholder, (string) $filteredParameters[$parameterName], $path);
@@ -178,10 +200,33 @@ class Router
 
     /**
      * @param array<string|int, array{path: string, action: mixed}> $routes
+     * @throws InvalidArgumentException If there are no routes.
+     * @throws InvalidArgumentException If a route is missing elements.
      */
     private function setRoutes(array $routes): self
     {
-        $this->routes = $routes;
+        if (!$routes) {
+            throw new InvalidArgumentException('There are no routes.');
+        }
+
+        $numExpectedRouteEls = count(self::EMPTY_ROUTE);
+
+        foreach ($routes as $id => $route) {
+            $filteredRoute = array_intersect_key($route, self::EMPTY_ROUTE);
+
+            // In reality, some routes may not be what we were hoping for, hence why we need to adjust PHPStan's
+            // expectations.
+            /** @phpstan-var mixed[] $filteredRoute */
+            if ($numExpectedRouteEls !== count($filteredRoute)) {
+                throw new InvalidArgumentException(
+                    "Route `{$id}` is missing elements.  Required: " . implode(', ', array_keys(self::EMPTY_ROUTE)) . '.'
+                );
+            }
+
+            /** @var array{path: string, action: mixed} $filteredRoute */
+            $this->routes[$id] = $filteredRoute;
+        }
+
         return $this;
     }
 
@@ -208,6 +253,7 @@ class Router
 
             /** @var array<string, string> */
             $placeholders = $matched
+                // name => placeholder
                 ? array_combine($matches[1], $matches[0])
                 : []
             ;

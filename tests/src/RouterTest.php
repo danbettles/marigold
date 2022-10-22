@@ -12,10 +12,28 @@ use OutOfBoundsException;
 
 class RouterTest extends AbstractTestCase
 {
+    // ###> Factory methods ###
+    /** @param array<string, string> $serverVars */
+    private function createHttpRequest(array $serverVars): HttpRequest
+    {
+        return new HttpRequest([], [], $serverVars);
+    }
+
+    private function createRouterWithPostsRoute(): Router
+    {
+        return new Router([
+            'posts' => [
+                'path' => '/posts',
+                'action' => ['FooBar', 'baz'],
+            ],
+        ]);
+    }
+    // ###< Factory methods ###
+
     public function testIsInstantiable(): void
     {
         $routes = [
-            [
+            'posts' => [
                 'path' => '/posts',
                 'action' => ['FooBar', 'baz'],
             ],
@@ -26,14 +44,68 @@ class RouterTest extends AbstractTestCase
         $this->assertSame($routes, $router->getRoutes());
     }
 
-    /** @param array<string, string> $serverVars */
-    private function createHttpRequest(array $serverVars): HttpRequest
+    public function testThrowsAnExceptionIfThereAreNoRoutes(): void
     {
-        return new HttpRequest([], [], $serverVars);
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('There are no routes.');
+
+        new Router([]);
     }
 
     /** @return array<int, array<int, mixed>> */
-    public function providesMatchedRoutes(): array
+    public function providesRoutesContainingInvalid(): array
+    {
+        return [
+            [
+                'invalid',
+                [
+                    'invalid' => [
+                        // `path` missing.
+                        'action' => ['Foo', 'bar'],
+                    ],
+                ],
+            ],
+            [
+                'invalid',
+                [
+                    'invalid' => [
+                        'path' => '/something',
+                        // `action` missing.
+                    ],
+                ],
+            ],
+            [
+                'invalid',
+                [
+                    'valid' => [
+                        'path' => '/something',
+                        'action' => ['Foo', 'bar'],
+                    ],
+                    'invalid' => [
+                        // `path` missing.
+                        'action' => ['Foo', 'bar'],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider providesRoutesContainingInvalid
+     * @param array<int, array{path: string, action: mixed}> $routesContainingInvalid (Using the valid type to silence PHPStan.)
+     */
+    public function testThrowsAnExceptionIfARouteIsInvalid(
+        string $invalidRouteId,
+        array $routesContainingInvalid
+    ): void {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Route `{$invalidRouteId}` is missing elements.  Required: path, action.");
+
+        new Router($routesContainingInvalid);
+    }
+
+    /** @return array<int, array<int, mixed>> */
+    public function providesMatchableRoutes(): array
     {
         return [
             [
@@ -172,7 +244,7 @@ class RouterTest extends AbstractTestCase
     }
 
     /**
-     * @dataProvider providesMatchedRoutes
+     * @dataProvider providesMatchableRoutes
      * @param array{path: string, action: mixed, parameters: string[]} $expectedRoute
      * @param array<int, array{path: string, action: mixed}> $routes
      */
@@ -223,13 +295,13 @@ class RouterTest extends AbstractTestCase
 
     /**
      * @dataProvider providesUnmatchableRoutes
-     * @param array<int, array{path: string, action: mixed}> $routes
+     * @param array<int, array{path: string, action: mixed}> $unmatchableRoutes
      */
     public function testMatchReturnsNullIfThereIsNoMatchingRoute(
-        array $routes,
+        array $unmatchableRoutes,
         HttpRequest $request
     ): void {
-        $route = (new Router($routes))
+        $route = (new Router($unmatchableRoutes))
             ->match($request)
         ;
 
@@ -241,7 +313,8 @@ class RouterTest extends AbstractTestCase
         $this->expectException(OutOfBoundsException::class);
         $this->expectExceptionMessage('There is no request URI in the server vars.');
 
-        (new Router([]))
+        $this
+            ->createRouterWithPostsRoute()
             ->match($this->createHttpRequest([]))
         ;
     }
@@ -265,7 +338,8 @@ class RouterTest extends AbstractTestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('The request URI is invalid.');
 
-        (new Router([]))
+        $this
+            ->createRouterWithPostsRoute()
             ->match($request)
         ;
     }
@@ -299,5 +373,79 @@ class RouterTest extends AbstractTestCase
         $path = (new Router($routes))->generatePath('posts');
 
         $this->assertSame('/posts', $path);
+    }
+
+    public function testGeneratepathThrowsAnExceptionIfThePathDoesNotExist(): void
+    {
+        $this->expectException(OutOfBoundsException::class);
+        $this->expectExceptionMessage('The route, `nonExistent`, does not exist.');
+
+        $this
+            ->createRouterWithPostsRoute()
+            ->generatePath('nonExistent')
+        ;
+    }
+
+    /** @return array<int, array<int, mixed>> */
+    public function providesIncompleteArgsForGeneratepath(): array
+    {
+        return [
+            [
+                [
+                    'fooBar' => [
+                        'path' => '/foo/{fooId}/bar/{barId}',
+                        'action' => ['FooBar', 'baz'],
+                    ],
+                ],
+                'fooBar',
+                [],
+            ],
+            [
+                [
+                    'fooBar' => [
+                        'path' => '/foo/{fooId}/bar/{barId}',
+                        'action' => ['FooBar', 'baz'],
+                    ],
+                ],
+                'fooBar',
+                ['irrelevant' => 'foo'],
+            ],
+            [
+                [
+                    'fooBar' => [
+                        'path' => '/foo/{fooId}/bar/{barId}',
+                        'action' => ['FooBar', 'baz'],
+                    ],
+                ],
+                'fooBar',
+                ['fooId' => 'foo'],
+            ],
+            [
+                [
+                    'fooBar' => [
+                        'path' => '/foo/{fooId}/bar/{barId}',
+                        'action' => ['FooBar', 'baz'],
+                    ],
+                ],
+                'fooBar',
+                ['fooId' => 'foo', 'bar' => 'baz'],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider providesIncompleteArgsForGeneratepath
+     * @param array<string|int, array{path: string, action: mixed}> $routes
+     * @param array<string, string|int> $parameters
+     */
+    public function testGeneratepathThrowsAnExceptionIfInsufficientParametersWerePassed(
+        array $routes,
+        string $routeName,
+        array $parameters
+    ): void {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Parameter values were missing.  Required: ');
+
+        (new Router($routes))->generatePath($routeName, $parameters);
     }
 }
