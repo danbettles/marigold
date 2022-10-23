@@ -7,6 +7,9 @@ namespace DanBettles\Marigold;
 use DanBettles\Marigold\Exception\NotFoundHttpException;
 use DanBettles\Marigold\TemplateEngine\Engine;
 
+/**
+ * Takes an HTTP request and creates an appropriate response.
+ */
 abstract class AbstractAction
 {
     private Engine $templateEngine;
