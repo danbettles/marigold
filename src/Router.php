@@ -30,14 +30,15 @@ use const null;
  * An array of routes looks like:
  *
  * [
- *     'posts' => [
+ *     [
+ *       'id' => 'showBlogPost',
  *       'path' => '/posts/{postId}',
- *       'action' => ['foo', 'bar'],
+ *       'action' => ['FooBar', 'baz'],
  *     ],
+ *     // ...
  * ]
  *
- * The key of a route is its 'ID'.  `action` can be anything: the name of a method; a callable; whatever's appropriate
- * for the app.
+ * `action` can be anything: the name of a method; a callable; whatever's appropriate for the app.
  *
  * A matched route, the return value of `match()`, will have an additional element, `parameters`, containing the values
  * of any parameters found in the path.
@@ -45,25 +46,26 @@ use const null;
 class Router
 {
     /**
-     * @var array{path: null, action: null}>
+     * @var array{id: null, path: null, action: null}
      */
     private const EMPTY_ROUTE = [
+        'id' => null,
         'path' => null,
         'action' => null,
     ];
 
     /**
-     * @var array<string|int, array{path: string, action: mixed}>
+     * @var array<string, array{id: string, path: string, action: mixed}>
      */
     private array $routes;
 
     /**
-     * @var array<string|int, array<string, string>>
+     * @var array<string, array<string, string>>
      */
     private array $placeholdersByRouteId = [];
 
     /**
-     * @param array<string|int, array{path: string, action: mixed}> $routes
+     * @param array<array{id: string, path: string, action: mixed}> $routes
      */
     public function __construct(array $routes)
     {
@@ -76,8 +78,8 @@ class Router
     }
 
     /**
-     * @param array<string|int, array{path: string, action: mixed}> $routes
-     * @return array<string|int, array{path: string, action: mixed}>
+     * @param array<string, array{id: string, path: string, action: mixed}> $routes
+     * @return array<string, array{id: string, path: string, action: mixed}>
      */
     private function eliminateUnmatchableRoutes(string $path, array $routes): array
     {
@@ -91,7 +93,21 @@ class Router
     }
 
     /**
-     * @return array{path: string, action: mixed, parameters: string[]}|null
+     * @param array{id: string, path: string, action: mixed} $baseRoute
+     * @param array<string, string> $parameters
+     * @return array{id: string, path: string, action: mixed, parameters: array<string, string>}
+     */
+    private function createMatchedRoute(
+        array $baseRoute,
+        array $parameters = []
+    ): array {
+        $baseRoute['parameters'] = $parameters;
+
+        return $baseRoute;
+    }
+
+    /**
+     * @return array{id: string, path: string, action: mixed, parameters: array<string, string>}|null
      * @throws OutOfBoundsException If there is no request URI in the server vars.
      * @throws InvalidArgumentException If the request URI is invalid.
      */
@@ -126,9 +142,7 @@ class Router
             }
 
             if ($path === $route['path']) {
-                $route['parameters'] = [];
-
-                return $route;
+                return $this->createMatchedRoute($route);
             }
         }
 
@@ -154,21 +168,21 @@ class Router
                 continue;
             }
 
-            $route['parameters'] = array_filter($pathParameterMatches, '\is_string', ARRAY_FILTER_USE_KEY);
-
-            return $route;
+            return $this->createMatchedRoute(
+                $route,
+                array_filter($pathParameterMatches, '\is_string', ARRAY_FILTER_USE_KEY)
+            );
         }
 
         return null;
     }
 
     /**
-     * @param string|int $routeId
      * @param array<string, string|int> $parameters
      * @throws OutOfBoundsException If the route does not exist.
      * @throws InvalidArgumentException If parameter values were missing.
      */
-    public function generatePath($routeId, array $parameters = []): string
+    public function generatePath(string $routeId, array $parameters = []): string
     {
         if (!array_key_exists($routeId, $this->getRoutes())) {
             throw new OutOfBoundsException("The route, `{$routeId}`, does not exist.");
@@ -199,7 +213,7 @@ class Router
     }
 
     /**
-     * @param array<string|int, array{path: string, action: mixed}> $routes
+     * @param array<array{id: string, path: string, action: mixed}> $routes
      * @throws InvalidArgumentException If there are no routes.
      * @throws InvalidArgumentException If a route is missing elements.
      */
@@ -211,7 +225,7 @@ class Router
 
         $numExpectedRouteEls = count(self::EMPTY_ROUTE);
 
-        foreach ($routes as $id => $route) {
+        foreach ($routes as $i => $route) {
             $filteredRoute = array_intersect_key($route, self::EMPTY_ROUTE);
 
             // In reality, some routes may not be what we were hoping for, hence why we need to adjust PHPStan's
@@ -219,19 +233,21 @@ class Router
             /** @phpstan-var mixed[] $filteredRoute */
             if ($numExpectedRouteEls !== count($filteredRoute)) {
                 throw new InvalidArgumentException(
-                    "Route `{$id}` is missing elements.  Required: " . implode(', ', array_keys(self::EMPTY_ROUTE)) . '.'
+                    "The route at index `{$i}` is missing elements.  " .
+                    'Required: ' . implode(', ', array_keys(self::EMPTY_ROUTE)) . '.'
                 );
             }
 
-            /** @var array{path: string, action: mixed} $filteredRoute */
-            $this->routes[$id] = $filteredRoute;
+            $routeId = $route['id'];
+            /** @var array{id: string, path: string, action: mixed} $filteredRoute */
+            $this->routes[$routeId] = $filteredRoute;
         }
 
         return $this;
     }
 
     /**
-     * @return array<string|int, array{path: string, action: mixed}>
+     * @return array<string, array{id: string, path: string, action: mixed}>
      */
     public function getRoutes(): array
     {
@@ -239,10 +255,9 @@ class Router
     }
 
     /**
-     * @param string|int $routeId
      * @return array<string, string>
      */
-    private function getRoutePlaceholders($routeId): array
+    private function getRoutePlaceholders(string $routeId): array
     {
         if (!array_key_exists($routeId, $this->placeholdersByRouteId)) {
             $route = $this->getRoutes()[$routeId];

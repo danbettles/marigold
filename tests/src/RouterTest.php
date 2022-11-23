@@ -22,9 +22,10 @@ class RouterTest extends AbstractTestCase
     private function createRouterWithPostsRoute(): Router
     {
         return new Router([
-            'posts' => [
+            [
+                'id' => 'blogPostsIndex',
                 'path' => '/posts',
-                'action' => ['FooBar', 'baz'],
+                'action' => 'anything',
             ],
         ]);
     }
@@ -32,16 +33,23 @@ class RouterTest extends AbstractTestCase
 
     public function testIsInstantiable(): void
     {
-        $routes = [
-            'posts' => [
-                'path' => '/posts',
-                'action' => ['FooBar', 'baz'],
-            ],
+        $route = [
+            'id' => 'blogPostsIndex',
+            'path' => '/posts',
+            'action' => 'anything',
         ];
 
-        $router = new Router($routes);
+        $actualRoutes = [
+            $route,
+        ];
 
-        $this->assertSame($routes, $router->getRoutes());
+        $expectedRoutes = [
+            ($route['id']) => $route,
+        ];
+
+        $router = new Router($actualRoutes);
+
+        $this->assertSame($expectedRoutes, $router->getRoutes());
     }
 
     public function testThrowsAnExceptionIfThereAreNoRoutes(): void
@@ -57,33 +65,37 @@ class RouterTest extends AbstractTestCase
     {
         return [
             [
-                'invalid',
+                0,
                 [
-                    'invalid' => [
+                    [
+                        'id' => 'invalid',
                         // `path` missing.
-                        'action' => ['Foo', 'bar'],
+                        'action' => 'anything',
                     ],
                 ],
             ],
             [
-                'invalid',
+                0,
                 [
-                    'invalid' => [
+                    [
+                        'id' => 'invalid',
                         'path' => '/something',
                         // `action` missing.
                     ],
                 ],
             ],
             [
-                'invalid',
+                1,
                 [
-                    'valid' => [
+                    [
+                        'id' => 'valid',
                         'path' => '/something',
-                        'action' => ['Foo', 'bar'],
+                        'action' => 'anything',
                     ],
-                    'invalid' => [
+                    [
+                        'id' => 'invalid',
                         // `path` missing.
-                        'action' => ['Foo', 'bar'],
+                        'action' => 'anything',
                     ],
                 ],
             ],
@@ -92,14 +104,14 @@ class RouterTest extends AbstractTestCase
 
     /**
      * @dataProvider providesRoutesContainingInvalid
-     * @param array<int, array{path: string, action: mixed}> $routesContainingInvalid (Using the valid type to silence PHPStan.)
+     * @param array<array{id: string, path: string, action: mixed}> $routesContainingInvalid (Using the valid type to silence PHPStan.)
      */
     public function testThrowsAnExceptionIfARouteIsInvalid(
-        string $invalidRouteId,
+        int $routeIndex,
         array $routesContainingInvalid
     ): void {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Route `{$invalidRouteId}` is missing elements.  Required: path, action.");
+        $this->expectExceptionMessage("The route at index `{$routeIndex}` is missing elements.  Required: id, path, action.");
 
         new Router($routesContainingInvalid);
     }
@@ -110,18 +122,21 @@ class RouterTest extends AbstractTestCase
         return [
             [
                 [
+                    'id' => 'homepage',
                     'path' => '/',
-                    'action' => ['FooBar', 'baz'],
+                    'action' => 'anything',
                     'parameters' => [],
                 ],
                 [
                     [
+                        'id' => 'homepage',
                         'path' => '/',
-                        'action' => ['FooBar', 'baz'],
+                        'action' => 'anything',
                     ],
                     [
-                        'path' => '/path',
-                        'action' => ['QuxQuux', 'corge'],
+                        'id' => 'articlesIndex',
+                        'path' => '/articles',
+                        'action' => 'anything',
                     ],
                 ],
                 $this->createHttpRequest(['REQUEST_URI' => '/']),
@@ -129,116 +144,134 @@ class RouterTest extends AbstractTestCase
             // #1: Trailing slashes are significant:
             [
                 [
-                    'path' => '/path',
-                    'action' => ['FooBar', 'baz'],
+                    'id' => 'pageCalledArticles',
+                    'path' => '/articles',
+                    'action' => 'anything',
                     'parameters' => [],
                 ],
                 [
                     [
-                        'path' => '/path',
-                        'action' => ['FooBar', 'baz'],
+                        'id' => 'pageCalledArticles',
+                        'path' => '/articles',
+                        'action' => 'anything',
                     ],
                     [
-                        'path' => '/path/',
-                        'action' => ['QuxQuux', 'corge'],
+                        'id' => 'articlesIndex',
+                        'path' => '/articles/',
+                        'action' => 'anything',
                     ],
                 ],
-                $this->createHttpRequest(['REQUEST_URI' => '/path?arg=value']),
+                $this->createHttpRequest(['REQUEST_URI' => '/articles?name=value']),
             ],
             // #2: Trailing slashes are significant:
             [
                 [
-                    'path' => '/path',
-                    'action' => ['FooBar', 'baz'],
+                    'id' => 'pageCalledArticles',
+                    'path' => '/articles',
+                    'action' => 'anything',
                     'parameters' => [],
                 ],
                 [
-                    [
-                        'path' => '/path/',  // Still isn't a match.
-                        'action' => ['QuxQuux', 'corge'],
+                    [  // Still isn't a match.
+                        'id' => 'articlesIndex',
+                        'path' => '/articles/',
+                        'action' => 'anything',
                     ],
                     [
-                        'path' => '/path',
-                        'action' => ['FooBar', 'baz'],
+                        'id' => 'pageCalledArticles',
+                        'path' => '/articles',
+                        'action' => 'anything',
                     ],
                 ],
-                $this->createHttpRequest(['REQUEST_URI' => '/path?arg=value']),
+                $this->createHttpRequest(['REQUEST_URI' => '/articles?name=value']),
             ],
             // Placeholders:
             [
                 [
-                    'path' => '/posts/{postId}',
-                    'action' => ['QuxQuux', 'corge'],
-                    'parameters' => ['postId' => 'the-quick-brown-fox'],
-                ],
-                [
-                    [
-                        'path' => '/posts',
-                        'action' => ['FooBar', 'baz'],
-                    ],
-                    [
-                        'path' => '/posts/{postId}',
-                        'action' => ['QuxQuux', 'corge'],
-                    ],
-                ],
-                $this->createHttpRequest(['REQUEST_URI' => '/posts/the-quick-brown-fox?foo=bar']),
-            ],
-            // Trailing slashes are significant:
-            [
-                [
-                    'path' => '/posts/{postId}/',
-                    'action' => ['QuxQuux', 'corge'],
-                    'parameters' => ['postId' => 'the-quick-brown-fox'],
-                ],
-                [
-                    [
-                        'path' => '/posts/{postId}',
-                        'action' => ['FooBar', 'baz'],
-                    ],
-                    [
-                        'path' => '/posts/{postId}/',
-                        'action' => ['QuxQuux', 'corge'],
-                    ],
-                ],
-                $this->createHttpRequest(['REQUEST_URI' => '/posts/the-quick-brown-fox/']),
-            ],
-            // The order of routes is important:
-            [
-                [
-                    'path' => '/posts/{id}',
-                    'action' => ['FooBar', 'baz'],
+                    'id' => 'showArticle',
+                    'path' => '/articles/{id}',
+                    'action' => 'anything',
                     'parameters' => ['id' => 'the-quick-brown-fox'],
                 ],
                 [
                     [
-                        'path' => '/posts/{id}',
-                        'action' => ['FooBar', 'baz'],
+                        'id' => 'articlesIndex',
+                        'path' => '/articles',
+                        'action' => 'anything',
                     ],
                     [
-                        'path' => '/posts/{slug}',
-                        'action' => ['QuxQuux', 'corge'],
+                        'id' => 'showArticle',
+                        'path' => '/articles/{id}',
+                        'action' => 'anything',
                     ],
                 ],
-                $this->createHttpRequest(['REQUEST_URI' => '/posts/the-quick-brown-fox']),
+                $this->createHttpRequest(['REQUEST_URI' => '/articles/the-quick-brown-fox?foo=bar']),
             ],
-            // However, exact matches are prioritised:
+            // Trailing slashes are significant:
             [
                 [
-                    'path' => '/posts/the-quick-brown-fox',
-                    'action' => ['QuxQuux', 'corge'],
+                    'id' => 'showArticleWithTrailingSlash',
+                    'path' => '/articles/{id}/',
+                    'action' => 'anything',
+                    'parameters' => ['id' => 'the-quick-brown-fox'],
+                ],
+                [
+                    [
+                        'id' => 'showArticle',
+                        'path' => '/articles/{id}',
+                        'action' => 'anything',
+                    ],
+                    [
+                        'id' => 'showArticleWithTrailingSlash',
+                        'path' => '/articles/{id}/',
+                        'action' => 'anything',
+                    ],
+                ],
+                $this->createHttpRequest(['REQUEST_URI' => '/articles/the-quick-brown-fox/']),
+            ],
+            // The order of routes is important:
+            [
+                [
+                    'id' => 'showArticleById',
+                    'path' => '/articles/{id}',
+                    'action' => 'anything',
+                    'parameters' => ['id' => 'the-quick-brown-fox'],
+                ],
+                [
+                    [
+                        'id' => 'showArticleById',
+                        'path' => '/articles/{id}',
+                        'action' => 'anything',
+                    ],
+                    [
+                        'id' => 'showArticleBySlug',
+                        'path' => '/articles/{slug}',
+                        'action' => 'anything',
+                    ],
+                ],
+                $this->createHttpRequest(['REQUEST_URI' => '/articles/the-quick-brown-fox']),
+            ],
+            // *However*, exact matches are prioritised:
+            [
+                [
+                    'id' => 'theQuickBrownFox',
+                    'path' => '/articles/the-quick-brown-fox',
+                    'action' => 'anything',
                     'parameters' => [],
                 ],
                 [
                     [
-                        'path' => '/posts/{postId}',
-                        'action' => ['FooBar', 'baz'],
+                        'id' => 'showArticle',
+                        'path' => '/articles/{id}',
+                        'action' => 'anything',
                     ],
                     [
-                        'path' => '/posts/the-quick-brown-fox',
-                        'action' => ['QuxQuux', 'corge'],
+                        'id' => 'theQuickBrownFox',
+                        'path' => '/articles/the-quick-brown-fox',
+                        'action' => 'anything',
                     ],
                 ],
-                $this->createHttpRequest(['REQUEST_URI' => '/posts/the-quick-brown-fox']),
+                $this->createHttpRequest(['REQUEST_URI' => '/articles/the-quick-brown-fox']),
             ],
         ];
     }
@@ -246,7 +279,7 @@ class RouterTest extends AbstractTestCase
     /**
      * @dataProvider providesMatchableRoutes
      * @param array{path: string, action: mixed, parameters: string[]} $expectedRoute
-     * @param array<int, array{path: string, action: mixed}> $routes
+     * @param array<array{id: string, path: string, action: mixed}> $routes
      */
     public function testMatchAttemptsToFindAMatchingRoute(
         array $expectedRoute,
@@ -267,12 +300,14 @@ class RouterTest extends AbstractTestCase
             [
                 [
                     [
+                        'id' => 'blogPostsIndex',
                         'path' => '/posts',
-                        'action' => ['FooBar', 'baz'],
+                        'action' => 'anything',
                     ],
                     [
+                        'id' => 'showBlogPost',
                         'path' => '/posts/{postId}',
-                        'action' => ['QuxQuux', 'corge'],
+                        'action' => 'anything',
                     ],
                 ],
                 $this->createHttpRequest(['REQUEST_URI' => '/posts/']),  // (Trailing slash.)
@@ -280,12 +315,14 @@ class RouterTest extends AbstractTestCase
             [
                 [
                     [
+                        'id' => 'blogPostsIndex',
                         'path' => '/posts',
-                        'action' => ['FooBar', 'baz'],
+                        'action' => 'anything',
                     ],
                     [
+                        'id' => 'showBlogPost',
                         'path' => '/posts/{postId}',
-                        'action' => ['QuxQuux', 'corge'],
+                        'action' => 'anything',
                     ],
                 ],
                 $this->createHttpRequest(['REQUEST_URI' => '/posts/the-quick-brown-fox/']),  // (Trailing slash.)
@@ -295,7 +332,7 @@ class RouterTest extends AbstractTestCase
 
     /**
      * @dataProvider providesUnmatchableRoutes
-     * @param array<int, array{path: string, action: mixed}> $unmatchableRoutes
+     * @param array<array{id: string, path: string, action: mixed}> $unmatchableRoutes
      */
     public function testMatchReturnsNullIfThereIsNoMatchingRoute(
         array $unmatchableRoutes,
@@ -347,9 +384,10 @@ class RouterTest extends AbstractTestCase
     public function testGeneratepathGeneratesAUrlPath(): void
     {
         $routes = [
-            'fooBar' => [
+            [
+                'id' => 'fooBar',
                 'path' => '/foo/{fooId}/bar/{barId}',
-                'action' => ['FooBar', 'baz'],
+                'action' => 'anything',
             ],
         ];
 
@@ -364,13 +402,14 @@ class RouterTest extends AbstractTestCase
     public function testParameterValuesNeedNotBePassedToGeneratepath(): void
     {
         $routes = [
-            'posts' => [
+            [
+                'id' => 'blogPostsIndex',
                 'path' => '/posts',
-                'action' => ['FooBar', 'baz'],
+                'action' => 'anything',
             ],
         ];
 
-        $path = (new Router($routes))->generatePath('posts');
+        $path = (new Router($routes))->generatePath('blogPostsIndex');
 
         $this->assertSame('/posts', $path);
     }
@@ -392,9 +431,10 @@ class RouterTest extends AbstractTestCase
         return [
             [
                 [
-                    'fooBar' => [
+                    [
+                        'id' => 'fooBar',
                         'path' => '/foo/{fooId}/bar/{barId}',
-                        'action' => ['FooBar', 'baz'],
+                        'action' => 'anything',
                     ],
                 ],
                 'fooBar',
@@ -402,9 +442,10 @@ class RouterTest extends AbstractTestCase
             ],
             [
                 [
-                    'fooBar' => [
+                    [
+                        'id' => 'fooBar',
                         'path' => '/foo/{fooId}/bar/{barId}',
-                        'action' => ['FooBar', 'baz'],
+                        'action' => 'anything',
                     ],
                 ],
                 'fooBar',
@@ -412,9 +453,10 @@ class RouterTest extends AbstractTestCase
             ],
             [
                 [
-                    'fooBar' => [
+                    [
+                        'id' => 'fooBar',
                         'path' => '/foo/{fooId}/bar/{barId}',
-                        'action' => ['FooBar', 'baz'],
+                        'action' => 'anything',
                     ],
                 ],
                 'fooBar',
@@ -422,9 +464,10 @@ class RouterTest extends AbstractTestCase
             ],
             [
                 [
-                    'fooBar' => [
+                    [
+                        'id' => 'fooBar',
                         'path' => '/foo/{fooId}/bar/{barId}',
-                        'action' => ['FooBar', 'baz'],
+                        'action' => 'anything',
                     ],
                 ],
                 'fooBar',
@@ -435,7 +478,7 @@ class RouterTest extends AbstractTestCase
 
     /**
      * @dataProvider providesIncompleteArgsForGeneratepath
-     * @param array<string|int, array{path: string, action: mixed}> $routes
+     * @param array<array{id: string, path: string, action: mixed}> $routes
      * @param array<string, string|int> $parameters
      */
     public function testGeneratepathThrowsAnExceptionIfInsufficientParametersWerePassed(
