@@ -126,7 +126,7 @@ class Registry
 
         // A closure:
 
-        $service = $factory();
+        $service = $factory($this);
 
         if (!is_object($service)) {
             throw new RuntimeException("The factory for `{$id}` does not return an object.");

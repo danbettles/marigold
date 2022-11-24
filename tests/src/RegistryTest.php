@@ -290,4 +290,18 @@ class RegistryTest extends AbstractTestCase
             ->get($elementId)
         ;
     }
+
+    public function testFactoriesArePassedTheRegistryInstance(): void
+    {
+        $registry = new Registry();
+
+        $registry
+            ->addFactory('foo', function ($shouldBeTheRegistry) use ($registry) {
+                $this->assertSame($registry, $shouldBeTheRegistry);
+
+                return new stdClass();
+            })
+            ->get('foo')
+        ;
+    }
 }

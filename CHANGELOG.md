@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 No unreleased changes.
 
+## [2.1.0] - 2022-11-24
+
+### Added
+
+- In `Registry`, factory closures are passed the `Registry` instance.
+
 ## [2.0.0] - 2022-11-23
 
 ### Changed
@@ -28,7 +34,8 @@ No unreleased changes.
 
 First stable release.
 
-[unreleased]: https://github.com/danbettles/marigold/compare/v2.0.0...HEAD
+[unreleased]: https://github.com/danbettles/marigold/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/danbettles/marigold/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/danbettles/marigold/compare/v1.0.1...v2.0.0
 [1.0.1]: https://github.com/danbettles/marigold/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/danbettles/marigold/releases/tag/v1.0.0
