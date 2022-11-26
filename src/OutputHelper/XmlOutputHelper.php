@@ -93,7 +93,7 @@ class XmlOutputHelper
     }
 
     /**
-     * @param array<string, string|int|float> $attributes
+     * @param array<string,string|int|float> $attributes
      */
     public function createAttributes(array $attributes): string
     {
@@ -118,7 +118,7 @@ class XmlOutputHelper
     }
 
     /**
-     * @param array<string, string> $attributes
+     * @param array<string,string> $attributes
      * @param string|int|float|null $content
      */
     protected function createElement(
@@ -140,7 +140,7 @@ class XmlOutputHelper
 
     /**
      * @param string $tagName
-     * @param array<string, string>|string|int|float|null $attributesOrContent
+     * @param array<string,string>|string|int|float|null $attributesOrContent
      * @param string|int|float|null $contentOrNothing
      * @throws InvalidArgumentException If the type of the content is invalid.
      */

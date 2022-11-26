@@ -17,15 +17,15 @@ use const null;
 use const true;
 
 /**
- * @method string createAttributes(array<string, string|int|float|bool> $attributes)
- * @method string createEl(string $tagName, array<string, string|int|float|bool>|string|int|float|null $attributesOrContent = [], string|int|float|null $contentOrNothing = null)
+ * @method string createAttributes(array<string,string|int|float|bool> $attributes)
+ * @method string createEl(string $tagName, array<string,string|int|float|bool>|string|int|float|null $attributesOrContent = [], string|int|float|null $contentOrNothing = null)
  */
 class Html5OutputHelper extends XmlOutputHelper
 {
     /**
      * (Element) tag-names by (element) type.
      *
-     * @var array<string, array<int, string>>
+     * @var array<string,array<int,string>>
      */
     private const TAG_NAMES_BY_TYPE = [
         // See https://html.spec.whatwg.org/multipage/syntax.html#void-elements

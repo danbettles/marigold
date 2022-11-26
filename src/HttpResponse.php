@@ -18,7 +18,7 @@ class HttpResponse
     public const HTTP_INTERNAL_SERVER_ERROR = 500;
 
     /**
-     * @var array<int, string>
+     * @var array<int,string>
      */
     public const STATUS_TEXTS = [
         self::HTTP_OK => 'OK',

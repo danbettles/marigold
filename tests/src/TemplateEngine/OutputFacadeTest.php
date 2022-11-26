@@ -24,7 +24,7 @@ class OutputFacadeTest extends AbstractTestCase
         $this->assertNull($facade->getWrapperArgs());
     }
 
-    /** @return array<int, array<int, mixed>> */
+    /** @return array<int,array<int,mixed>> */
     public function providesTheRenderedOutputOfFiles(): array
     {
         return [
@@ -58,7 +58,7 @@ class OutputFacadeTest extends AbstractTestCase
      * - and `OutputFacade::include()` returns the unadulterated output from `Engine::render()`.
      *
      * @dataProvider providesTheRenderedOutputOfFiles
-     * @param array{0: string|SplFileInfo, 1?: mixed[]} $args
+     * @param array{0:string|SplFileInfo,1?:mixed[]} $args
      */
     public function testIncludeReturnsTheRenderedOutputOfTheFile(
         string $expectedOutput,

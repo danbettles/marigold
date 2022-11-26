@@ -46,7 +46,7 @@ use const null;
 class Router
 {
     /**
-     * @var array{id: null, path: null, action: null}
+     * @var array{id:null,path:null,action:null}
      */
     private const EMPTY_ROUTE = [
         'id' => null,
@@ -55,17 +55,17 @@ class Router
     ];
 
     /**
-     * @var array<string, array{id: string, path: string, action: mixed}>
+     * @var array<string,array{id:string,path:string,action:mixed}>
      */
     private array $routes;
 
     /**
-     * @var array<string, array<string, string>>
+     * @var array<string,array<string,string>>
      */
     private array $placeholdersByRouteId = [];
 
     /**
-     * @param array<array{id: string, path: string, action: mixed}> $routes
+     * @param array<array{id:string,path:string,action:mixed}> $routes
      */
     public function __construct(array $routes)
     {
@@ -78,8 +78,8 @@ class Router
     }
 
     /**
-     * @param array<string, array{id: string, path: string, action: mixed}> $routes
-     * @return array<string, array{id: string, path: string, action: mixed}>
+     * @param array<string,array{id:string,path:string,action:mixed}> $routes
+     * @return array<string,array{id:string,path:string,action:mixed}>
      */
     private function eliminateUnmatchableRoutes(string $path, array $routes): array
     {
@@ -93,9 +93,9 @@ class Router
     }
 
     /**
-     * @param array{id: string, path: string, action: mixed} $baseRoute
-     * @param array<string, string> $parameters
-     * @return array{id: string, path: string, action: mixed, parameters: array<string, string>}
+     * @param array{id:string,path:string,action:mixed} $baseRoute
+     * @param array<string,string> $parameters
+     * @return array{id:string,path:string,action:mixed,parameters:array<string,string>}
      */
     private function createMatchedRoute(
         array $baseRoute,
@@ -107,7 +107,7 @@ class Router
     }
 
     /**
-     * @return array{id: string, path: string, action: mixed, parameters: array<string, string>}|null
+     * @return array{id:string,path:string,action:mixed,parameters:array<string,string>}|null
      * @throws OutOfBoundsException If there is no request URI in the server vars.
      * @throws InvalidArgumentException If the request URI is invalid.
      */
@@ -178,7 +178,7 @@ class Router
     }
 
     /**
-     * @param array<string, string|int> $parameters
+     * @param array<string,string|int> $parameters
      * @throws OutOfBoundsException If the route does not exist.
      * @throws InvalidArgumentException If parameter values were missing.
      */
@@ -213,7 +213,7 @@ class Router
     }
 
     /**
-     * @param array<array{id: string, path: string, action: mixed}> $routes
+     * @param array<array{id:string,path:string,action:mixed}> $routes
      * @throws InvalidArgumentException If there are no routes.
      * @throws InvalidArgumentException If a route is missing elements.
      */
@@ -239,7 +239,7 @@ class Router
             }
 
             $routeId = $route['id'];
-            /** @var array{id: string, path: string, action: mixed} $filteredRoute */
+            /** @var array{id:string,path:string,action:mixed} $filteredRoute */
             $this->routes[$routeId] = $filteredRoute;
         }
 
@@ -247,7 +247,7 @@ class Router
     }
 
     /**
-     * @return array<string, array{id: string, path: string, action: mixed}>
+     * @return array<string,array{id:string,path:string,action:mixed}>
      */
     public function getRoutes(): array
     {
@@ -255,7 +255,7 @@ class Router
     }
 
     /**
-     * @return array<string, string>
+     * @return array<string,string>
      */
     private function getRoutePlaceholders(string $routeId): array
     {
@@ -266,7 +266,7 @@ class Router
             $matches = null;
             $matched = (bool) preg_match_all("~\{($placeholderNamePattern)\}~", $route['path'], $matches);
 
-            /** @var array<string, string> */
+            /** @var array<string,string> */
             $placeholders = $matched
                 // name => placeholder
                 ? array_combine($matches[1], $matches[0])

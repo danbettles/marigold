@@ -15,7 +15,7 @@ class OutputFacade
     private Engine $engine;
 
     /**
-     * @var array{int: string|SplFileInfo, int: string, int: mixed[]}|null
+     * @var array{int:string|SplFileInfo,int:string,int:mixed[]}|null
      */
     private ?array $wrapperArgs;
 
@@ -29,7 +29,7 @@ class OutputFacade
 
     /**
      * @param string|SplFileInfo $pathnameOrFileInfo
-     * @param array<string, mixed> $variables
+     * @param array<string,mixed> $variables
      */
     public function include(
         $pathnameOrFileInfo,
@@ -50,7 +50,7 @@ class OutputFacade
     }
 
     /**
-     * @param array{int: string|SplFileInfo, int: string, int: mixed[]}|null $args
+     * @param array{int:string|SplFileInfo,int:string,int:mixed[]}|null $args
      */
     private function setWrapperArgs(?array $args): self
     {
@@ -60,14 +60,14 @@ class OutputFacade
 
     /**
      * @param string|SplFileInfo $pathnameOrFileInfo
-     * @param array<string, mixed> $variables
+     * @param array<string,mixed> $variables
      */
     public function wrapWith(
         $pathnameOrFileInfo,
         string $targetVarName,
         array $variables = []
     ): self {
-        /** @var array{int: string|SplFileInfo, int: string, int: mixed[]} */
+        /** @var array{int:string|SplFileInfo,int:string,int:mixed[]} */
         $wrapperArgs = func_get_args();
         return $this->setWrapperArgs($wrapperArgs);
     }
@@ -76,7 +76,7 @@ class OutputFacade
      * Alias for `wrapWith()`.
      *
      * @param string|SplFileInfo $pathnameOrFileInfo
-     * @param array<string, mixed> $variables
+     * @param array<string,mixed> $variables
      */
     public function insertInto(
         $pathnameOrFileInfo,
@@ -87,7 +87,7 @@ class OutputFacade
     }
 
     /**
-     * @return array{int: string|SplFileInfo, int: string, int: mixed[]}|null
+     * @return array{int:string|SplFileInfo,int:string,int:mixed[]}|null
      */
     public function getWrapperArgs(): ?array
     {

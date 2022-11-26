@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 namespace DanBettles\Marigold;
 
-use Closure;
 use InvalidArgumentException;
 use OutOfBoundsException;
 use RuntimeException;
 
 use function array_key_exists;
 use function class_exists;
+use function is_callable;
 use function is_object;
 use function is_string;
 
 class Registry
 {
     /**
-     * @var array<string, mixed>
+     * @var array<string,mixed>
      */
     private array $elements = [];
 
     /**
-     * @var array<string, string|Closure>
+     * @var array<string,string|callable>
      */
     private array $factories = [];
 
@@ -36,7 +36,7 @@ class Registry
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string,mixed>
      */
     public function getElements(): array
     {
@@ -44,17 +44,17 @@ class Registry
     }
 
     /**
-     * @param mixed $factory
-     * @throws InvalidArgumentException If the factory is invalid.
+     * @param string|callable $factory
+     * @throws InvalidArgumentException If the factory is neither a class-name nor a callable.
      */
     private function setFactory(string $id, $factory): self
     {
         $factoryIsValid = (is_string($factory) && class_exists($factory))
-            || $factory instanceof Closure
+            || is_callable($factory)
         ;
 
         if (!$factoryIsValid) {
-            throw new InvalidArgumentException('The factory is invalid.');
+            throw new InvalidArgumentException('The factory is neither a class-name nor a callable.');
         }
 
         $this->factories[$id] = $factory;
@@ -63,7 +63,7 @@ class Registry
     }
 
     /**
-     * @return array<string, string|Closure>
+     * @return array<string,string|callable>
      */
     public function getFactories(): array
     {
@@ -101,7 +101,7 @@ class Registry
     }
 
     /**
-     * @param string|Closure $factory
+     * @param string|callable $factory
      * @throws RuntimeException If the ID already exists.
      */
     public function addFactory(string $id, $factory): self
@@ -124,7 +124,7 @@ class Registry
             return new $factory();
         }
 
-        // A closure:
+        // A callable:
 
         $service = $factory($this);
 

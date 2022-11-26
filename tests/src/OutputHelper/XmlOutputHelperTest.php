@@ -26,7 +26,7 @@ class XmlOutputHelperTest extends AbstractTestCase
         $this->assertSame($helper, $something);
     }
 
-    /** @return array<int, array<int, mixed>> */
+    /** @return array<int,array<int,mixed>> */
     public function providesEscapedStrings(): array
     {
         return [
@@ -82,7 +82,7 @@ class XmlOutputHelperTest extends AbstractTestCase
         $this->assertNotSame($sourceUtf8Str, $helperMock->escape($sourceUtf8Str));
     }
 
-    /** @return array<int, array<int, mixed>> */
+    /** @return array<int,array<int,mixed>> */
     public function providesAttributesStrings(): array
     {
         return [
@@ -119,7 +119,7 @@ class XmlOutputHelperTest extends AbstractTestCase
 
     /**
      * @dataProvider providesAttributesStrings
-     * @param array<string, string|int|float> $input
+     * @param array<string,string|int|float> $input
      */
     public function testCreateattributesCreatesAnAttributesStringFromAnArrayOfKeyValuePairs(
         string $expected,
@@ -157,7 +157,7 @@ class XmlOutputHelperTest extends AbstractTestCase
         $this->assertSame('foo="bar" baz="qux"', $attributesStr);
     }
 
-    /** @return array<int, array<int, mixed>> */
+    /** @return array<int,array<int,mixed>> */
     public function providesAttributesWithInvalidNames(): array
     {
         return [
@@ -198,7 +198,7 @@ class XmlOutputHelperTest extends AbstractTestCase
 
     /**
      * @dataProvider providesAttributesWithInvalidNames
-     * @phpstan-param array<string, string|int|float> $attributesWithInvalidNames (Using the valid type to silence PHPStan.)
+     * @phpstan-param array<string,string|int|float> $attributesWithInvalidNames (Using the valid type to silence PHPStan.)
      */
     public function testCreateattributesThrowsAnExceptionIfAnAttributeNameIsInvalid(
         string $invalidName,
@@ -210,7 +210,7 @@ class XmlOutputHelperTest extends AbstractTestCase
         (new XmlOutputHelper())->createAttributes($attributesWithInvalidNames);
     }
 
-    /** @return array<int, array<int, mixed>> */
+    /** @return array<int,array<int,mixed>> */
     public function providesAttributesWithInvalidValues(): array
     {
         return [
@@ -235,7 +235,7 @@ class XmlOutputHelperTest extends AbstractTestCase
 
     /**
      * @dataProvider providesAttributesWithInvalidValues
-     * @phpstan-param array<string, string|int|float> $attributesWithInvalidValues (Using the valid type to silence PHPStan.)
+     * @phpstan-param array<string,string|int|float> $attributesWithInvalidValues (Using the valid type to silence PHPStan.)
      */
     public function testCreateattributesThrowsAnExceptionIfTheTypeOfAnAttributeValueIsInvalid(
         string $invalidAttrName,
@@ -309,7 +309,7 @@ class XmlOutputHelperTest extends AbstractTestCase
         );
     }
 
-    /** @return array<int, array<int, mixed>> */
+    /** @return array<int,array<int,mixed>> */
     public function providesInvalidContent(): array
     {
         return [

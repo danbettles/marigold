@@ -13,7 +13,7 @@ use OutOfBoundsException;
 class RouterTest extends AbstractTestCase
 {
     // ###> Factory methods ###
-    /** @param array<string, string> $serverVars */
+    /** @param array<string,string> $serverVars */
     private function createHttpRequest(array $serverVars): HttpRequest
     {
         return new HttpRequest([], [], $serverVars);
@@ -60,7 +60,7 @@ class RouterTest extends AbstractTestCase
         new Router([]);
     }
 
-    /** @return array<int, array<int, mixed>> */
+    /** @return array<int,array<int,mixed>> */
     public function providesRoutesContainingInvalid(): array
     {
         return [
@@ -104,7 +104,7 @@ class RouterTest extends AbstractTestCase
 
     /**
      * @dataProvider providesRoutesContainingInvalid
-     * @param array<array{id: string, path: string, action: mixed}> $routesContainingInvalid (Using the valid type to silence PHPStan.)
+     * @param array<array{id:string,path:string,action:mixed}> $routesContainingInvalid (Using the valid type to silence PHPStan.)
      */
     public function testThrowsAnExceptionIfARouteIsInvalid(
         int $routeIndex,
@@ -116,7 +116,7 @@ class RouterTest extends AbstractTestCase
         new Router($routesContainingInvalid);
     }
 
-    /** @return array<int, array<int, mixed>> */
+    /** @return array<int,array<int,mixed>> */
     public function providesMatchableRoutes(): array
     {
         return [
@@ -278,8 +278,8 @@ class RouterTest extends AbstractTestCase
 
     /**
      * @dataProvider providesMatchableRoutes
-     * @param array{path: string, action: mixed, parameters: string[]} $expectedRoute
-     * @param array<array{id: string, path: string, action: mixed}> $routes
+     * @param array{path:string,action:mixed,parameters:string[]} $expectedRoute
+     * @param array<array{id:string,path:string,action:mixed}> $routes
      */
     public function testMatchAttemptsToFindAMatchingRoute(
         array $expectedRoute,
@@ -293,7 +293,7 @@ class RouterTest extends AbstractTestCase
         $this->assertSame($expectedRoute, $route);
     }
 
-    /** @return array<int, array<int, mixed>> */
+    /** @return array<int,array<int,mixed>> */
     public function providesUnmatchableRoutes(): array
     {
         return [
@@ -332,7 +332,7 @@ class RouterTest extends AbstractTestCase
 
     /**
      * @dataProvider providesUnmatchableRoutes
-     * @param array<array{id: string, path: string, action: mixed}> $unmatchableRoutes
+     * @param array<array{id:string,path:string,action:mixed}> $unmatchableRoutes
      */
     public function testMatchReturnsNullIfThereIsNoMatchingRoute(
         array $unmatchableRoutes,
@@ -356,7 +356,7 @@ class RouterTest extends AbstractTestCase
         ;
     }
 
-    /** @return array<int, array<int, mixed>> */
+    /** @return array<int,array<int,mixed>> */
     public function providesInvalidRequestUris(): array
     {
         return [
@@ -425,7 +425,7 @@ class RouterTest extends AbstractTestCase
         ;
     }
 
-    /** @return array<int, array<int, mixed>> */
+    /** @return array<int,array<int,mixed>> */
     public function providesIncompleteArgsForGeneratepath(): array
     {
         return [
@@ -478,8 +478,8 @@ class RouterTest extends AbstractTestCase
 
     /**
      * @dataProvider providesIncompleteArgsForGeneratepath
-     * @param array<array{id: string, path: string, action: mixed}> $routes
-     * @param array<string, string|int> $parameters
+     * @param array<array{id:string,path:string,action:mixed}> $routes
+     * @param array<string,string|int> $parameters
      */
     public function testGeneratepathThrowsAnExceptionIfInsufficientParametersWerePassed(
         array $routes,

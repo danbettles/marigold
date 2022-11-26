@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace DanBettles\Marigold\Tests;
 
-use Closure;
 use DanBettles\Marigold\AbstractTestCase;
 use DanBettles\Marigold\Registry;
 use InvalidArgumentException;
@@ -24,7 +23,7 @@ class RegistryTest extends AbstractTestCase
         $this->assertSame([], $registry->getElements());
     }
 
-    /** @return array<int, array<int, mixed>> */
+    /** @return array<int,array<int,mixed>> */
     public function providesElements(): array
     {
         return [
@@ -51,7 +50,7 @@ class RegistryTest extends AbstractTestCase
 
     /**
      * @dataProvider providesElements
-     * @param array<string, mixed> $expectedElements
+     * @param array<string,mixed> $expectedElements
      * @param mixed $elementValue
      */
     public function testAddAddsAnElement(
@@ -79,39 +78,43 @@ class RegistryTest extends AbstractTestCase
         ], $registry->getElements());
     }
 
-    /** @return array<int, array<int, mixed>> */
+    public function doNothing(): void
+    {
+    }
+
+    /** @return array<int,array<int,mixed>> */
     public function providesFactories(): array
     {
         return [
             [
-                stdClass::class,
                 [
                     'foo',
                     stdClass::class,
                 ],
-                'foo',
             ],
             [
-                stdClass::class,
                 [
                     'bar',
                     function () {
                         return new stdClass();
                     },
                 ],
-                'bar',
+            ],
+            [
+                [
+                    'bar',
+                    [$this, 'doNothing'],
+                ],
             ],
         ];
     }
 
     /**
      * @dataProvider providesFactories
-     * @param array{string, string|Closure} $addFactoryArgs
+     * @param array{string,string|callable} $addFactoryArgs
      */
-    public function testAddfactoryAddsAFactory(
-        string $ignore,
-        array $addFactoryArgs
-    ): void {
+    public function testAddfactoryAddsAFactory(array $addFactoryArgs): void
+    {
         $registry = new Registry();
         $something = $registry->addFactory(...$addFactoryArgs);
 
@@ -141,7 +144,7 @@ class RegistryTest extends AbstractTestCase
         ], $registry->getFactories());
     }
 
-    /** @return array<int, array<int, mixed>> */
+    /** @return array<int,array<int,mixed>> */
     public function providesLoadedRegistries(): array
     {
         return [
@@ -178,7 +181,7 @@ class RegistryTest extends AbstractTestCase
         });
     }
 
-    /** @return array<int, array<int, mixed>> */
+    /** @return array<int,array<int,mixed>> */
     public function providesInvalidFactories(): array
     {
         return [
@@ -204,10 +207,10 @@ class RegistryTest extends AbstractTestCase
     public function testAddfactoryThrowsAnExceptionIfTheFactoryIsInvalid($invalidFactory): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('The factory is invalid.');
+        $this->expectExceptionMessage('The factory is neither a class-name nor a callable.');
 
         $registry = new Registry();
-        /** @phpstan-var string|Closure $invalidFactory */
+        /** @phpstan-var string|callable $invalidFactory */
         $registry->addFactory('validId', $invalidFactory);
     }
 
@@ -228,7 +231,7 @@ class RegistryTest extends AbstractTestCase
         $this->assertSame($expected, $registry->get('foo'));
     }
 
-    /** @return array<int, array<int, mixed>> */
+    /** @return array<int,array<int,mixed>> */
     public function providesRegistriesContainingFactories(): array
     {
         return [
@@ -276,7 +279,7 @@ class RegistryTest extends AbstractTestCase
         (new Registry())->get($elementId);
     }
 
-    public function testGetThrowsAnExceptionIfTheFactoryClosureDoesNotReturnAnObject(): void
+    public function testGetThrowsAnExceptionIfTheFactoryCallableDoesNotReturnAnObject(): void
     {
         $elementId = 'doesNotReturnAnObject';
 

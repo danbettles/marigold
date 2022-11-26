@@ -23,7 +23,7 @@ class TemplateFileTest extends AbstractTestCase
         $this->assertTrue($this->getTestedClass()->isSubclassOf(FileInfo::class));
     }
 
-    /** @return array<int, array<int, mixed>> */
+    /** @return array<int,array<int,mixed>> */
     public function providesExistentFileMetadata(): array
     {
         return [
@@ -73,7 +73,7 @@ class TemplateFileTest extends AbstractTestCase
         new TemplateFile($templateFilePathname);
     }
 
-    /** @return array<int, array<int, mixed>> */
+    /** @return array<int,array<int,mixed>> */
     public function providesValidTemplateFiles(): array
     {
         $validTemplateFiles = array_map(function (array $args): array {

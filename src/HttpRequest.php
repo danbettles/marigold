@@ -10,31 +10,31 @@ namespace DanBettles\Marigold;
 class HttpRequest
 {
     /**
-     * @var array<string, string>
+     * @var array<string,string>
      */
     public array $query;
 
     /**
-     * @var array<string, string>
+     * @var array<string,string>
      */
     public array $request;
 
     /**
-     * @var array<string, string>
+     * @var array<string,string>
      */
     public array $server;
 
     /**
      * Somewhere to store additional information about the request.
      *
-     * @var array<string, mixed>
+     * @var array<string,mixed>
      */
     public array $attributes;
 
     /**
-     * @param array<string, string> $query
-     * @param array<string, string> $request
-     * @param array<string, string> $server
+     * @param array<string,string> $query
+     * @param array<string,string> $request
+     * @param array<string,string> $server
      */
     public function __construct(
         array $query,

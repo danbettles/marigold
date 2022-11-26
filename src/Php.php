@@ -17,7 +17,7 @@ use const null;
 class Php
 {
     /**
-     * @param array<string, mixed> $context
+     * @param array<string,mixed> $context
      * @return mixed
      * @throws FileNotFoundException If the PHP file does not exist.
      */

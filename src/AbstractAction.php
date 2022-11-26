@@ -20,7 +20,7 @@ abstract class AbstractAction
     }
 
     /**
-     * @param array<string, mixed> $variables
+     * @param array<string,mixed> $variables
      */
     protected function render(
         string $templateFileBasename,

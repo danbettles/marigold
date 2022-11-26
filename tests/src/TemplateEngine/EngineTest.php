@@ -184,7 +184,7 @@ class EngineTest extends AbstractTestCase
         $this->assertTrue($variablesParam->isOptional());
     }
 
-    /** @return array<int, array<int, mixed>> */
+    /** @return array<int,array<int,mixed>> */
     public function providesNonExistentTemplateFiles(): array
     {
         $fixturesDir = $this->createFixturePathname('testRenderThrowsAnExceptionIfTheFileDoesNotExist');

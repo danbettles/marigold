@@ -42,7 +42,7 @@ class Engine
      * - and `insertInto()`/`wrapWith()`, which causes the output of the template to be inserted into another template.
      *
      * @param string|SplFileInfo $pathnameOrFileInfo
-     * @param array<string, mixed> $variables
+     * @param array<string,mixed> $variables
      * @throws FileNotFoundException If the template file could not be found.
      */
     public function render(
@@ -82,7 +82,7 @@ class Engine
                 $wrapperVariables
             ) = $output->getWrapperArgs();
 
-            /** @var array<string, mixed> */
+            /** @var array<string,mixed> */
             $wrapperVariables = array_replace($wrapperVariables, [
                 ($wrapperTargetVarName) => $renderedOutput,
             ]);
