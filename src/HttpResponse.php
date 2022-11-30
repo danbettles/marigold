@@ -52,8 +52,11 @@ class HttpResponse
 
     public function send(HttpRequest $request): void
     {
+        /** @var array{SERVER_PROTOCOL?:string} */
+        $serverVars = $request->server;
+
         $statusHeader = (
-            ($request->server['SERVER_PROTOCOL'] ?? 'HTTP/1.0')
+            ($serverVars['SERVER_PROTOCOL'] ?? 'HTTP/1.0')
             . ' '
             . (string) $this->getStatusCode()
             . ' '

@@ -20,7 +20,7 @@ class HttpRequest
     public array $request;
 
     /**
-     * @var array<string,string>
+     * @var array<string,string|string[]>
      */
     public array $server;
 
@@ -34,7 +34,7 @@ class HttpRequest
     /**
      * @param array<string,string> $query
      * @param array<string,string> $request
-     * @param array<string,string> $server
+     * @param array<string,string|string[]> $server
      */
     public function __construct(
         array $query,

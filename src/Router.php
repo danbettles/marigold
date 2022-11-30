@@ -117,11 +117,14 @@ class Router
             throw new OutOfBoundsException('There is no request URI in the server vars.');
         }
 
+        /** @var array{REQUEST_URI:string} */
+        $serverVars = $request->server;
+
         $requestUriParts = null;
 
         $requestUriIsValid = (bool) preg_match(
             '~^(?P<path>/.*?)(\?.*)?$~',
-            $request->server['REQUEST_URI'],
+            $serverVars['REQUEST_URI'],
             $requestUriParts
         );
 
