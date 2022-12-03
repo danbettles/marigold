@@ -42,7 +42,7 @@ class HttpRequest
      * @param array<string,string> $query
      * @param array<string,string> $request
      * @param array<string,string|string[]> $server
-     * @param mixed $content
+     * @param mixed $content = null
      */
     public function __construct(
         array $query,
@@ -54,7 +54,8 @@ class HttpRequest
         $this->request = $request;
         $this->server = $server;
         $this->attributes = [];
-        $this->content = $content;
+
+        $this->setContent($content);
     }
 
     /**
