@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace DanBettles\Marigold;
 
+use const null;
+
 /**
  * For now, just a container, for convenience.
  */
@@ -25,6 +27,11 @@ class HttpRequest
     public array $server;
 
     /**
+     * @var mixed
+     */
+    private $content;
+
+    /**
      * Somewhere to store additional information about the request.
      *
      * @var array<string,mixed>
@@ -35,16 +42,36 @@ class HttpRequest
      * @param array<string,string> $query
      * @param array<string,string> $request
      * @param array<string,string|string[]> $server
+     * @param mixed $content
      */
     public function __construct(
         array $query,
         array $request,
-        array $server
+        array $server,
+        $content = null
     ) {
         $this->query = $query;
         $this->request = $request;
         $this->server = $server;
         $this->attributes = [];
+        $this->content = $content;
+    }
+
+    /**
+     * @param mixed $content
+     */
+    public function setContent($content): self
+    {
+        $this->content = $content;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getContent()
+    {
+        return $this->content;
     }
 
     public static function createFromGlobals(): self
