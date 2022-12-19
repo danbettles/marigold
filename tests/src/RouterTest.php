@@ -60,7 +60,7 @@ class RouterTest extends AbstractTestCase
         new Router([]);
     }
 
-    /** @return array<int,array<int,mixed>> */
+    /** @return array<mixed[]> */
     public function providesRoutesContainingInvalid(): array
     {
         return [
@@ -116,7 +116,7 @@ class RouterTest extends AbstractTestCase
         new Router($routesContainingInvalid);
     }
 
-    /** @return array<int,array<int,mixed>> */
+    /** @return array<mixed[]> */
     public function providesMatchableRoutes(): array
     {
         return [
@@ -293,7 +293,7 @@ class RouterTest extends AbstractTestCase
         $this->assertSame($expectedRoute, $route);
     }
 
-    /** @return array<int,array<int,mixed>> */
+    /** @return array<mixed[]> */
     public function providesUnmatchableRoutes(): array
     {
         return [
@@ -356,7 +356,7 @@ class RouterTest extends AbstractTestCase
         ;
     }
 
-    /** @return array<int,array<int,mixed>> */
+    /** @return array<mixed[]> */
     public function providesInvalidRequestUris(): array
     {
         return [
@@ -425,7 +425,7 @@ class RouterTest extends AbstractTestCase
         ;
     }
 
-    /** @return array<int,array<int,mixed>> */
+    /** @return array<mixed[]> */
     public function providesIncompleteArgsForGeneratepath(): array
     {
         return [

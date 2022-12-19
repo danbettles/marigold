@@ -26,7 +26,7 @@ class XmlOutputHelperTest extends AbstractTestCase
         $this->assertSame($helper, $something);
     }
 
-    /** @return array<int,array<int,mixed>> */
+    /** @return array<mixed[]> */
     public function providesEscapedStrings(): array
     {
         return [
@@ -82,7 +82,7 @@ class XmlOutputHelperTest extends AbstractTestCase
         $this->assertNotSame($sourceUtf8Str, $helperMock->escape($sourceUtf8Str));
     }
 
-    /** @return array<int,array<int,mixed>> */
+    /** @return array<mixed[]> */
     public function providesAttributesStrings(): array
     {
         return [
@@ -157,7 +157,7 @@ class XmlOutputHelperTest extends AbstractTestCase
         $this->assertSame('foo="bar" baz="qux"', $attributesStr);
     }
 
-    /** @return array<int,array<int,mixed>> */
+    /** @return array<mixed[]> */
     public function providesAttributesWithInvalidNames(): array
     {
         return [
@@ -210,7 +210,7 @@ class XmlOutputHelperTest extends AbstractTestCase
         (new XmlOutputHelper())->createAttributes($attributesWithInvalidNames);
     }
 
-    /** @return array<int,array<int,mixed>> */
+    /** @return array<mixed[]> */
     public function providesAttributesWithInvalidValues(): array
     {
         return [
@@ -309,7 +309,7 @@ class XmlOutputHelperTest extends AbstractTestCase
         );
     }
 
-    /** @return array<int,array<int,mixed>> */
+    /** @return array<mixed[]> */
     public function providesInvalidContent(): array
     {
         return [

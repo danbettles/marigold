@@ -95,7 +95,7 @@ class TemplateFileLoaderTest extends AbstractTestCase
         $this->assertNull($loader->findTemplate($notATemplateFile));  // Absolute path.  Exists but not a file.
     }
 
-    /** @return array<int,array<int,mixed>> */
+    /** @return array<mixed[]> */
     public function providesInvalidPathnames(): array
     {
         return [

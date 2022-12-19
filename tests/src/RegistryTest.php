@@ -23,7 +23,7 @@ class RegistryTest extends AbstractTestCase
         $this->assertSame([], $registry->getElements());
     }
 
-    /** @return array<int,array<int,mixed>> */
+    /** @return array<mixed[]> */
     public function providesElements(): array
     {
         return [
@@ -82,7 +82,7 @@ class RegistryTest extends AbstractTestCase
     {
     }
 
-    /** @return array<int,array<int,mixed>> */
+    /** @return array<mixed[]> */
     public function providesFactories(): array
     {
         return [
@@ -144,7 +144,7 @@ class RegistryTest extends AbstractTestCase
         ], $registry->getFactories());
     }
 
-    /** @return array<int,array<int,mixed>> */
+    /** @return array<mixed[]> */
     public function providesLoadedRegistries(): array
     {
         return [
@@ -181,7 +181,7 @@ class RegistryTest extends AbstractTestCase
         });
     }
 
-    /** @return array<int,array<int,mixed>> */
+    /** @return array<mixed[]> */
     public function providesInvalidFactories(): array
     {
         return [
@@ -231,7 +231,7 @@ class RegistryTest extends AbstractTestCase
         $this->assertSame($expected, $registry->get('foo'));
     }
 
-    /** @return array<int,array<int,mixed>> */
+    /** @return array<mixed[]> */
     public function providesRegistriesContainingFactories(): array
     {
         return [

@@ -15,29 +15,42 @@ class HttpExceptionTest extends AbstractTestCase
         $this->assertTrue($this->getTestedClass()->isSubclassOf(RuntimeException::class));
     }
 
-    public function testCanBeThrown(): void
+    /** @return array<mixed[]> */
+    public function providesArguments(): array
     {
-        $this->expectException(HttpException::class);
-        $this->expectExceptionMessage('404 Not Found');
-
-        throw new HttpException(404);
+        return [
+            [
+                '404 Not Found',
+                [404],
+            ],
+            [
+                '404 Not Found: Article #123',
+                [404, 'Article #123'],
+            ],
+        ];
     }
 
-    public function testCanBeThrownWithASpecifier(): void
-    {
-        $this->expectException(HttpException::class);
-        $this->expectExceptionMessage('404 Not Found: Article #123');
+    /**
+     * @dataProvider providesArguments
+     * @param array{0:int,1?:string} $arguments
+     */
+    public function testGetmessageReturnsAHelpfulMessage(
+        string $expectedMessage,
+        array $arguments
+    ): void {
+        $ex = new HttpException(...$arguments);
 
-        throw new HttpException(404, 'Article #123');
+        $this->assertSame($expectedMessage, $ex->getMessage());
     }
 
     public function testTheHttpStatusCodeIsAccessible(): void
     {
         $expectedStatusCode = 500;
+
         $httpException = new HttpException($expectedStatusCode);
 
-        $this->assertSame($expectedStatusCode, $httpException->getCode());
-        $this->assertSame($httpException->getCode(), $httpException->getStatusCode());
+        $this->assertSame($expectedStatusCode, $httpException->getStatusCode());
+        $this->assertSame($httpException->getStatusCode(), $httpException->getCode());
     }
 
     public function testGetstatustextReturnsTheStatusText(): void

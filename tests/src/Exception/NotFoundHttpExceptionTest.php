@@ -15,19 +15,31 @@ class NotFoundHttpExceptionTest extends AbstractTestCase
         $this->assertTrue($this->getTestedClass()->isSubclassOf(HttpException::class));
     }
 
-    public function testCanBeThrown(): void
+    /** @return array<mixed[]> */
+    public function providesArguments(): array
     {
-        $this->expectException(NotFoundHttpException::class);
-        $this->expectExceptionMessage('404 Not Found');
-
-        throw new NotFoundHttpException();
+        return [
+            [
+                '404 Not Found',
+                [],
+            ],
+            [
+                '404 Not Found: Article #123',
+                ['Article #123'],
+            ],
+        ];
     }
 
-    public function testCanBeThrownWithASpecifier(): void
-    {
-        $this->expectException(NotFoundHttpException::class);
-        $this->expectExceptionMessage('404 Not Found: Article #123');
+    /**
+     * @dataProvider providesArguments
+     * @param array{0?:string} $arguments
+     */
+    public function testGetmessageReturnsAHelpfulMessage(
+        string $expectedMessage,
+        array $arguments
+    ): void {
+        $ex = new NotFoundHttpException(...$arguments);
 
-        throw new NotFoundHttpException('Article #123');
+        $this->assertSame($expectedMessage, $ex->getMessage());
     }
 }

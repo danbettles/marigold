@@ -15,19 +15,31 @@ class InternalServerErrorHttpExceptionTest extends AbstractTestCase
         $this->assertTrue($this->getTestedClass()->isSubclassOf(HttpException::class));
     }
 
-    public function testCanBeThrown(): void
+    /** @return array<mixed[]> */
+    public function providesArguments(): array
     {
-        $this->expectException(InternalServerErrorHttpException::class);
-        $this->expectExceptionMessage('500 Internal Server Error');
-
-        throw new InternalServerErrorHttpException();
+        return [
+            [
+                '500 Internal Server Error',
+                [],
+            ],
+            [
+                '500 Internal Server Error: Failed to do something.',
+                ['Failed to do something.'],
+            ],
+        ];
     }
 
-    public function testCanBeThrownWithASpecifier(): void
-    {
-        $this->expectException(InternalServerErrorHttpException::class);
-        $this->expectExceptionMessage('500 Internal Server Error: Failed to do something.');
+    /**
+     * @dataProvider providesArguments
+     * @param array{0?:string} $arguments
+     */
+    public function testGetmessageReturnsAHelpfulMessage(
+        string $expectedMessage,
+        array $arguments
+    ): void {
+        $ex = new InternalServerErrorHttpException(...$arguments);
 
-        throw new InternalServerErrorHttpException('Failed to do something.');
+        $this->assertSame($expectedMessage, $ex->getMessage());
     }
 }

@@ -9,7 +9,7 @@ use DanBettles\Marigold\CssMinifier;
 
 class CssMinifierTest extends AbstractTestCase
 {
-    /** @return array<int,array<int,mixed>> */
+    /** @return array<mixed[]> */
     public function providesCssWithCommentsRemoved(): array
     {
         return [
@@ -50,7 +50,7 @@ class CssMinifierTest extends AbstractTestCase
         $this->assertSame($expected, $minified);
     }
 
-    /** @return array<int,array<int,mixed>> */
+    /** @return array<mixed[]> */
     public function providesCssWithSuperfluousWhitespaceRemoved(): array
     {
         return [
@@ -111,7 +111,7 @@ class CssMinifierTest extends AbstractTestCase
         $this->assertSame($expected, $minified);
     }
 
-    /** @return array<int,array<int,mixed>> */
+    /** @return array<mixed[]> */
     public function providesCssContainingZeroesWithUnitsRemoved(): array
     {
         return [
@@ -140,7 +140,7 @@ class CssMinifierTest extends AbstractTestCase
         $this->assertSame($expected, $minified);
     }
 
-    /** @return array<int,array<int,mixed>> */
+    /** @return array<mixed[]> */
     public function providesCssContainingHexColoursThatHaveBeenCondensed(): array
     {
         return [
@@ -169,7 +169,7 @@ class CssMinifierTest extends AbstractTestCase
         $this->assertSame($expected, $minified);
     }
 
-    /** @return array<int,array<int,mixed>> */
+    /** @return array<mixed[]> */
     public function providesCssThatHasBeenMinified(): array
     {
         return [

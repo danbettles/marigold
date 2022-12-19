@@ -20,7 +20,7 @@ class Html5OutputHelperTest extends AbstractTestCase
         $this->assertTrue($this->getTestedClass()->isSubclassOf(XmlOutputHelper::class));
     }
 
-    /** @return array<int,array<int,mixed>> */
+    /** @return array<mixed[]> */
     public function providesAttributesStrings(): array
     {
         return [
@@ -76,7 +76,7 @@ class Html5OutputHelperTest extends AbstractTestCase
         $this->assertSame($expected, $helper->createAttributes($input));
     }
 
-    /** @return array<int,array<int,mixed>> */
+    /** @return array<mixed[]> */
     public function providesBooleanAttributesWithInvalidNames(): array
     {
         return [
@@ -129,7 +129,7 @@ class Html5OutputHelperTest extends AbstractTestCase
         (new Html5OutputHelper())->createAttributes($attrsWithInvalidNames);
     }
 
-    /** @return array<int,array<int,mixed>> */
+    /** @return array<mixed[]> */
     public function providesArgsForVoidElements(): array
     {
         return [

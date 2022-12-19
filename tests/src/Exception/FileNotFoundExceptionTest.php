@@ -15,13 +15,12 @@ class FileNotFoundExceptionTest extends AbstractTestCase
         $this->assertTrue($this->getTestedClass()->isSubclassOf(RuntimeException::class));
     }
 
-    public function testCanBeThrown(): void
+    public function testGetmessageReturnsAHelpfulMessage(): void
     {
         $pathname = $this->createFixturePathname('non_existent.file');
 
-        $this->expectException(FileNotFoundException::class);
-        $this->expectExceptionMessage("File `{$pathname}` does not exist.");
+        $ex = new FileNotFoundException($pathname);
 
-        throw new FileNotFoundException($pathname);
+        $this->assertSame("File `{$pathname}` does not exist.", $ex->getMessage());
     }
 }

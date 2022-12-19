@@ -24,7 +24,7 @@ class OutputFacadeTest extends AbstractTestCase
         $this->assertNull($facade->getWrapperArgs());
     }
 
-    /** @return array<int,array<int,mixed>> */
+    /** @return array<mixed[]> */
     public function providesTheRenderedOutputOfFiles(): array
     {
         return [

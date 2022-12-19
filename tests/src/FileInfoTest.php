@@ -15,7 +15,7 @@ class FileInfoTest extends AbstractTestCase
         $this->assertTrue($this->getTestedClass()->isSubclassOf(SplFileInfo::class));
     }
 
-    /** @return array<int,array<int,mixed>> */
+    /** @return array<mixed[]> */
     public function providesExistentFileMetadata(): array
     {
         return [
