@@ -42,24 +42,28 @@ class CssMinifier
      */
     public function removeSuperfluousWhitespaceFilter(string $css): string
     {
-        //Normalize newlines.
+        // Normalize newlines.
         $css = str_replace(["\r\n", "\r", "\n"], "\n", $css);
 
-        //Normalize horizontal whitespace.
+        // Normalize horizontal whitespace.
         $css = str_replace("\t", ' ', $css);
 
-        //Replace multiple, contiguous occurrences of the same whitespace character with just one.
-        //We don't simply replace all whitespace characters with spaces - for example - because we want to retain the
-        //vertical structure of the CSS, so that it's just about readable after minification.
+        // Replace multiple, contiguous occurrences of the same whitespace character with just one.
+        // We don't simply replace all whitespace characters with spaces - for example - because we want to retain the
+        // vertical structure of the CSS, so that it's just about readable after minification.
         $css = $this->replace('/([\n ])\1+/', '$1', $css);
 
-        //Remove horizontal whitespace from around delimiters.
-        $css = $this->replace('/[ ]*([,:;\{\}])[ ]*/', '$1', $css);
+        // Remove horizontal whitespace from around delimiters.
+        $css = $this->replace('/[ ]*([,;\{\}])[ ]*/', '$1', $css);
 
-        //Remove leading and trailing whitespace from lines.
+        // Remove horizontal space from after colons.  We can't *easily* remove whitespace from before colons without
+        // risking breaking selectors containing a pseudo-class.
+        $css = str_replace(': ', ':', $css);
+
+        // Remove leading and trailing whitespace from lines.
         $css = $this->replace('/^[ ]*(.*?)[ ]*$/m', '$1', $css);
 
-        //Remove empty lines.
+        // Remove empty lines.
         $css = trim($this->replace('/(?<=\n)[ ]*\n|/', '', $css));
 
         return $css;
@@ -81,7 +85,7 @@ class CssMinifier
      */
     public function removeUnitsFromZeroesFilter(string $css): string
     {
-        //See http://www.w3.org/TR/CSS21/grammar.html#scanner and http://www.w3schools.com/cssref/css_units.asp
+        // See http://www.w3.org/TR/CSS21/grammar.html#scanner and http://www.w3schools.com/cssref/css_units.asp
         return $this->replace('/\b0((?:em|ex|ch|rem|vw|vh|vmin|vm|vmax|cm|mm|in|px|pt|pc)\b|%)/i', '0', $css);
     }
 

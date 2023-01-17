@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 No unreleased changes.
 
+## [2.3.3] - 2023-01-17
+
+### Fixed
+
+- In the CSS minifier, fixed a bug that was breaking selectors containing a pseudo-class.
+
 ## [2.3.2] - 2022-12-19
 
 ### Changed
@@ -64,7 +70,8 @@ No unreleased changes.
 
 First stable release.
 
-[unreleased]: https://github.com/danbettles/marigold/compare/v2.3.2...HEAD
+[unreleased]: https://github.com/danbettles/marigold/compare/v2.3.3...HEAD
+[2.3.3]: https://github.com/danbettles/marigold/compare/v2.3.2...v2.3.3
 [2.3.2]: https://github.com/danbettles/marigold/compare/v2.3.1...v2.3.2
 [2.3.1]: https://github.com/danbettles/marigold/compare/v2.3.0...v2.3.1
 [2.3.0]: https://github.com/danbettles/marigold/compare/v2.2.1...v2.3.0

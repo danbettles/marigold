@@ -95,7 +95,7 @@ class CssMinifierTest extends AbstractTestCase
                 "h1, h2 {\n    font-weight: bold;\n}",
             ],
             [
-                "h1,h2{font-weight:bold;}",
+                "h1,h2{font-weight :bold;}",
                 "h1 , h2 { font-weight : bold ; }",
             ],
         ];
@@ -180,7 +180,7 @@ class CssMinifierTest extends AbstractTestCase
             [
                 <<<END
                 body{
-                color:#000;
+                color :#000;
                 }
                 h1,h2{font-weight:bold;}
                 .smallest{
@@ -210,5 +210,24 @@ class CssMinifierTest extends AbstractTestCase
         $minified = (new CssMinifier())->minify($css);
 
         $this->assertSame($expected, $minified);
+    }
+
+    public function testDoesNotBreakRuleSetsUsingTheWherePseudoClass(): void
+    {
+        $minified = (new CssMinifier())->minify(<<<END
+        :where(nav) :where(ol, ul) {
+            list-style-type: none;
+            padding: 0;
+            border : 0;
+        }
+        END);
+
+        $this->assertSame(<<<END
+        :where(nav) :where(ol,ul){
+        list-style-type:none;
+        padding:0;
+        border :0;
+        }
+        END, $minified);
     }
 }
