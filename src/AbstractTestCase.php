@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace DanBettles\Marigold;
 
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
 use function array_pop;
 use function explode;
+use function file_get_contents;
 use function get_class;
 use function implode;
+use function is_file;
 use function preg_replace;
 use function strlen;
 use function substr;
@@ -46,6 +49,7 @@ abstract class AbstractTestCase extends TestCase
         $fixturesDir = (
             self::$testsDir .
             DIRECTORY_SEPARATOR .
+            // (Forward slash or backslash.)
             preg_replace('~[\x2F\x5C]~', DIRECTORY_SEPARATOR, $relativeClassName)
         );
 
@@ -74,6 +78,21 @@ abstract class AbstractTestCase extends TestCase
     protected function createFixturePathname(string $basename): string
     {
         return $this->getFixturesDir() . DIRECTORY_SEPARATOR . $basename;
+    }
+
+    /**
+     * @throws InvalidArgumentException If the file does not exist.
+     */
+    protected function getFixtureContents(string $basename): string
+    {
+        $fixturePathname = $this->createFixturePathname($basename);
+
+        if (!is_file($fixturePathname)) {
+            throw new InvalidArgumentException("File `{$fixturePathname}` does not exist.");
+        }
+
+        /** @var string */
+        return file_get_contents($fixturePathname);
     }
 
     /**

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DanBettles\Marigold\Tests;
 
 use DanBettles\Marigold\AbstractTestCase;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
@@ -52,5 +53,18 @@ class AbstractTestCaseTest extends AbstractTestCase
 
         $this->assertInstanceOf(ReflectionClass::class, $testedClass);
         $this->assertSame(AbstractTestCase::class, $testedClass->getName());
+    }
+
+    public function testGetfixturecontentsReturnsTheContentsOfTheFixture(): void
+    {
+        $this->assertSame('Lorem ipsum dolor.', $this->getFixtureContents('fixture.txt'));
+    }
+
+    public function testGetfixturecontentsThrowsAnExceptionIfTheFixtureDoesNotExist(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessageMatches('~^File `[^`]+` does not exist.$~');
+
+        $this->getFixtureContents('non_existent');
     }
 }
