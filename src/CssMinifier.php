@@ -43,7 +43,8 @@ class CssMinifier
     public function removeSuperfluousWhitespaceFilter(string $css): string
     {
         // Normalize newlines.
-        $css = str_replace(["\r\n", "\r", "\n"], "\n", $css);
+        /** @var string */
+        $css = preg_replace('~\R~', "\n", $css);
 
         // Normalize horizontal whitespace.
         $css = str_replace("\t", ' ', $css);

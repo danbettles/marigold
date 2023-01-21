@@ -14,6 +14,10 @@ No unreleased changes.
 
 - Added `AbstractTestCase::getFixtureContents()`, which returns the contents of a fixture file.
 
+### Changed
+
+- Simplified some code.
+
 ### Fixed
 
 - Got `AbstractTestCaseTest` working 🤦‍♂️
