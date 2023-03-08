@@ -4,14 +4,26 @@ declare(strict_types=1);
 
 namespace DanBettles\Marigold;
 
+use function array_key_exists;
 use function header;
 
 use const null;
 
+/**
+ * @phpstan-type HeadersArray array<string,string>
+ */
 class HttpResponse
 {
     /** @var int */
     public const HTTP_OK = 200;
+    /**
+     * See https://developer.mozilla.org/en-US/docs/Web/HTTP/Redirections#temporary_redirections
+     *
+     * @var int
+     */
+    public const HTTP_SEE_OTHER = 303;
+    /** @var int */
+    public const HTTP_BAD_REQUEST = 400;
     /** @var int */
     public const HTTP_NOT_FOUND = 404;
     /** @var int */
@@ -22,6 +34,8 @@ class HttpResponse
      */
     public const STATUS_TEXTS = [
         self::HTTP_OK => 'OK',
+        self::HTTP_SEE_OTHER => 'See Other',
+        self::HTTP_BAD_REQUEST => 'Bad Request',
         self::HTTP_NOT_FOUND => 'Not Found',
         self::HTTP_INTERNAL_SERVER_ERROR => 'Internal Server Error',
     ];
@@ -30,13 +44,23 @@ class HttpResponse
 
     private string $content;
 
+    /**
+     * @phpstan-var HeadersArray
+     */
+    private array $headers;
+
+    /**
+     * @phpstan-param HeadersArray $headers
+     */
     public function __construct(
         string $content = '',
-        int $statusCode = self::HTTP_OK
+        int $statusCode = self::HTTP_OK,
+        array $headers = []
     ) {
         $this
             ->setContent($content)
             ->setStatusCode($statusCode)
+            ->setHeaders($headers)
         ;
     }
 
@@ -55,15 +79,24 @@ class HttpResponse
         /** @var array{SERVER_PROTOCOL?:string} */
         $serverVars = $request->server;
 
+        $statusText = array_key_exists($this->getStatusCode(), self::STATUS_TEXTS)
+            ? ' ' . self::STATUS_TEXTS[$this->getStatusCode()]
+            : ''
+        ;
+
         $statusHeader = (
             ($serverVars['SERVER_PROTOCOL'] ?? 'HTTP/1.0')
             . ' '
             . (string) $this->getStatusCode()
-            . ' '
-            . self::STATUS_TEXTS[$this->getStatusCode()]
+            . $statusText
         );
 
-        $this->sendHeader($statusHeader);
+        $headers = $this->getHeaders();
+        $headers[$statusHeader] = null;
+
+        foreach ($headers as $name => $value) {
+            $this->sendHeader($name, $value);
+        }
 
         // phpcs:ignore
         echo $this->getContent();
@@ -89,5 +122,22 @@ class HttpResponse
     public function getStatusCode(): int
     {
         return $this->statusCode;
+    }
+
+    /**
+     * @phpstan-param HeadersArray $headers
+     */
+    public function setHeaders(array $headers): self
+    {
+        $this->headers = $headers;
+        return $this;
+    }
+
+    /**
+     * @phpstan-return HeadersArray
+     */
+    public function getHeaders(): array
+    {
+        return $this->headers;
     }
 }

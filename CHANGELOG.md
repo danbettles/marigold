@@ -8,6 +8,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 No unreleased changes.
 
+## [2.5.0] - 2023-03-08
+
+### Added
+
+- Added headers to `HTTPResponse`.
+- Added the 303 (See Other) and 400 (Bad Request) response codes to `HTTPResponse`.
+
+### Fixed
+
+- An `HTTPResponse` can safely be created from a response code unknown to the class&mdash;which is most of them at present.
+
 ## [2.4.0] - 2023-01-21
 
 ### Added
@@ -84,7 +95,8 @@ No unreleased changes.
 
 First stable release.
 
-[unreleased]: https://github.com/danbettles/marigold/compare/v2.4.0...HEAD
+[unreleased]: https://github.com/danbettles/marigold/compare/v2.5.0...HEAD
+[2.5.0]: https://github.com/danbettles/marigold/compare/v2.4.0...v2.5.0
 [2.4.0]: https://github.com/danbettles/marigold/compare/v2.3.3...v2.4.0
 [2.3.3]: https://github.com/danbettles/marigold/compare/v2.3.2...v2.3.3
 [2.3.2]: https://github.com/danbettles/marigold/compare/v2.3.1...v2.3.2

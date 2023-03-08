@@ -218,7 +218,7 @@ class XmlOutputHelperTest extends AbstractTestCase
                 'bar',
                 ['bar' => false],
             ],
-            [  // How would a `null` value--as compared to a blank string--be represented?
+            [  // How would a `null` value -- as compared to a blank string -- be represented?
                 'bar',
                 ['bar' => null],
             ],
