@@ -19,6 +19,7 @@ use const true;
 /**
  * @method string createAttributes(array<string,string|int|float|bool> $attributes)
  * @method string createEl(string $tagName, array<string,string|int|float|bool>|string|int|float|null $attributesOrContent = [], string|int|float|null $contentOrNothing = null)
+ * @todo Maybe don't extend `XmlOutputHelper`.
  */
 class Html5OutputHelper extends XmlOutputHelper
 {
