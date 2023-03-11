@@ -7,6 +7,7 @@ namespace DanBettles\Marigold\Tests;
 use DanBettles\Marigold\AbstractTestCase;
 use DanBettles\Marigold\Exception\FileNotFoundException;
 use DanBettles\Marigold\Php;
+use Error;
 
 use const null;
 
@@ -42,10 +43,14 @@ class PhpTest extends AbstractTestCase
 
     public function testFilesExecutedByExecutefileDoNotHaveAccessToTheObjectToWhichItBelongs(): void
     {
-        $this->expectError();
-        $this->expectErrorMessage('Using $this when not in object context');
+        try {
+            (new Php())->executeFile($this->createFixturePathname('attempts_to_access_this.php'));
+        } catch (Error $err) {
+            $this->assertSame('Using $this when not in object context', $err->getMessage());
+            return;
+        }
 
-        (new Php())->executeFile($this->createFixturePathname('attempts_to_access_this.php'));
+        $this->fail();
     }
 
     public function testExecutefileExecutesAPhpFileAndPassesBackAnyOutput(): void
