@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2023-03-11
+
+### Added
+
+- Added `RedirectHttpResponse`.
+- Added a couple more oft-used HTTP-response status codes.
+
+### Changed
+
+- Restructured exception classes.
+
 ## [2.5.0] - 2023-03-08
 
 ### Added
@@ -91,6 +102,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 First stable release.
 
+[3.0.0]: https://github.com/danbettles/marigold/compare/v2.5.0...v3.0.0
 [2.5.0]: https://github.com/danbettles/marigold/compare/v2.4.0...v2.5.0
 [2.4.0]: https://github.com/danbettles/marigold/compare/v2.3.3...v2.4.0
 [2.3.3]: https://github.com/danbettles/marigold/compare/v2.3.2...v2.3.3
