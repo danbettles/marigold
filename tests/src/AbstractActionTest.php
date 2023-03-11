@@ -6,7 +6,7 @@ namespace DanBettles\Marigold\Tests;
 
 use DanBettles\Marigold\AbstractAction;
 use DanBettles\Marigold\AbstractTestCase;
-use DanBettles\Marigold\Exception\NotFoundHttpException;
+use DanBettles\Marigold\Exception\HttpException\NotFoundHttpException;
 use DanBettles\Marigold\HttpRequest;
 use DanBettles\Marigold\HttpResponse;
 use DanBettles\Marigold\TemplateEngine\Engine;

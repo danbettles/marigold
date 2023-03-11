@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace DanBettles\Marigold\Exception;
+namespace DanBettles\Marigold\Exception\HttpException;
 
+use DanBettles\Marigold\Exception\HttpException;
 use DanBettles\Marigold\HttpResponse;
 use Throwable;
 

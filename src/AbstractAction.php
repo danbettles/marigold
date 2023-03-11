@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DanBettles\Marigold;
 
-use DanBettles\Marigold\Exception\NotFoundHttpException;
+use DanBettles\Marigold\Exception\HttpException\NotFoundHttpException;
 use DanBettles\Marigold\TemplateEngine\Engine;
 
 /**

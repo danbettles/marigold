@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace DanBettles\Marigold\Tests\Exception;
+namespace DanBettles\Marigold\Tests\Exception\HttpException;
 
 use DanBettles\Marigold\AbstractTestCase;
 use DanBettles\Marigold\Exception\HttpException;
-use DanBettles\Marigold\Exception\NotFoundHttpException;
+use DanBettles\Marigold\Exception\HttpException\InternalServerErrorHttpException;
 
-class NotFoundHttpExceptionTest extends AbstractTestCase
+class InternalServerErrorHttpExceptionTest extends AbstractTestCase
 {
     public function testIsAnHttpexception(): void
     {
@@ -20,12 +20,12 @@ class NotFoundHttpExceptionTest extends AbstractTestCase
     {
         return [
             [
-                '404 Not Found',
+                '500 Internal Server Error',
                 [],
             ],
             [
-                '404 Not Found: Article #123',
-                ['Article #123'],
+                '500 Internal Server Error: Failed to do something.',
+                ['Failed to do something.'],
             ],
         ];
     }
@@ -38,7 +38,7 @@ class NotFoundHttpExceptionTest extends AbstractTestCase
         string $expectedMessage,
         array $arguments
     ): void {
-        $ex = new NotFoundHttpException(...$arguments);
+        $ex = new InternalServerErrorHttpException(...$arguments);
 
         $this->assertSame($expectedMessage, $ex->getMessage());
     }
