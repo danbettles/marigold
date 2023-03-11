@@ -33,7 +33,11 @@ class HttpResponse
     /** @var int */
     public const HTTP_BAD_REQUEST = 400;
     /** @var int */
+    public const HTTP_FORBIDDEN = 403;
+    /** @var int */
     public const HTTP_NOT_FOUND = 404;
+    /** @var int */
+    public const HTTP_UNPROCESSABLE_CONTENT = 422;
     /** @var int */
     public const HTTP_INTERNAL_SERVER_ERROR = 500;
 
@@ -63,7 +67,9 @@ class HttpResponse
         self::HTTP_TEMPORARY_REDIRECT => 'Temporary Redirect',
         self::HTTP_PERMANENT_REDIRECT => 'Permanent Redirect',
         self::HTTP_BAD_REQUEST => 'Bad Request',
+        self::HTTP_FORBIDDEN => 'Forbidden',
         self::HTTP_NOT_FOUND => 'Not Found',
+        self::HTTP_UNPROCESSABLE_CONTENT => 'Unprocessable Content',
         self::HTTP_INTERNAL_SERVER_ERROR => 'Internal Server Error',
     ];
 
