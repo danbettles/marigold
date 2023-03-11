@@ -20,7 +20,7 @@ use const null;
 class CssMinifier
 {
     /**
-     * @throws RuntimeException If it failed to perform the replacement.
+     * @throws RuntimeException If it failed to perform the replacement
      */
     private function replace(
         string $pattern,
@@ -30,7 +30,7 @@ class CssMinifier
         $result = preg_replace($pattern, $replacement, $subject);
 
         if (null === $result) {
-            throw new RuntimeException("Failed to replace `{$pattern}` with `{$replacement}`.");
+            throw new RuntimeException("Failed to replace `{$pattern}` with `{$replacement}`");
         }
 
         return $result;

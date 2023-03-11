@@ -81,14 +81,14 @@ abstract class AbstractTestCase extends TestCase
     }
 
     /**
-     * @throws InvalidArgumentException If the file does not exist.
+     * @throws InvalidArgumentException If the file does not exist
      */
     protected function getFixtureContents(string $basename): string
     {
         $fixturePathname = $this->createFixturePathname($basename);
 
         if (!is_file($fixturePathname)) {
-            throw new InvalidArgumentException("File `{$fixturePathname}` does not exist.");
+            throw new InvalidArgumentException("File `{$fixturePathname}` does not exist");
         }
 
         /** @var string */

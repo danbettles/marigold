@@ -63,7 +63,7 @@ class AbstractTestCaseTest extends AbstractTestCase
     public function testGetfixturecontentsThrowsAnExceptionIfTheFixtureDoesNotExist(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessageMatches('~^File `[^`]+` does not exist.$~');
+        $this->expectExceptionMessageMatches('~^File `[^`]+` does not exist$~');
 
         $this->getFixtureContents('non_existent');
     }

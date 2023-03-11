@@ -32,7 +32,7 @@ class TemplateFileLoader
 
     /**
      * @param string|SplFileInfo $pathnameOrFileInfo
-     * @throws InvalidArgumentException If the pathname is invalid.
+     * @throws InvalidArgumentException If the pathname is invalid
      */
     public function findTemplate($pathnameOrFileInfo): ?TemplateFile
     {
@@ -42,7 +42,7 @@ class TemplateFileLoader
         ;
 
         if (!is_string($pathnameOrBasename) || !strlen($pathnameOrBasename)) {
-            throw new InvalidArgumentException('The pathname is invalid.');
+            throw new InvalidArgumentException('The pathname is invalid');
         }
 
         if (DIRECTORY_SEPARATOR === substr($pathnameOrBasename, 0, 1)) {
@@ -68,12 +68,12 @@ class TemplateFileLoader
     }
 
     /**
-     * @throws InvalidArgumentException If the directory does not exist.
+     * @throws InvalidArgumentException If the directory does not exist
      */
     private function addTemplateDir(string $dir): self
     {
         if (!is_dir($dir)) {
-            throw new InvalidArgumentException("Directory `{$dir}` does not exist.");
+            throw new InvalidArgumentException("Directory `{$dir}` does not exist");
         }
 
         $this->templateDirs[] = $dir;
@@ -83,12 +83,12 @@ class TemplateFileLoader
 
     /**
      * @param string[] $dirs
-     * @throws InvalidArgumentException If the array of directory paths is empty.
+     * @throws InvalidArgumentException If the array of directory paths is empty
      */
     private function setTemplateDirs(array $dirs): self
     {
         if (!$dirs) {
-            throw new InvalidArgumentException('The array of directory paths is empty.');
+            throw new InvalidArgumentException('The array of directory paths is empty');
         }
 
         $this->templateDirs = [];

@@ -124,7 +124,7 @@ class Html5OutputHelperTest extends AbstractTestCase
         array $attrsWithInvalidNames
     ): void {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Attribute name `{$invalidName}` is invalid.");
+        $this->expectExceptionMessage("Attribute name `{$invalidName}` is invalid");
 
         (new Html5OutputHelper())->createAttributes($attrsWithInvalidNames);
     }
@@ -239,7 +239,7 @@ class Html5OutputHelperTest extends AbstractTestCase
     public function testCreateelThrowsAnExceptionIfAnAttemptIsMadeToCreateAVoidElementWithContent(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Content was passed: a void element may not have content.');
+        $this->expectExceptionMessage('Content was passed: a void element may not have content');
 
         (new Html5OutputHelper())->createEl('br', 'foo');
     }
@@ -271,7 +271,7 @@ class Html5OutputHelperTest extends AbstractTestCase
     public function testCallThrowsAnExceptionIfTheMethodDoesNotExist(): void
     {
         $this->expectException(BadMethodCallException::class);
-        $this->expectExceptionMessage('The method, `create`, does not exist.');
+        $this->expectExceptionMessage('The method, `create`, does not exist');
 
         (new Html5OutputHelper())->create();
     }

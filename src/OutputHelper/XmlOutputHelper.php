@@ -76,17 +76,17 @@ class XmlOutputHelper
 
     /**
      * @param string|int|float $value
-     * @throws InvalidArgumentException If the name is invalid.
-     * @throws InvalidArgumentException If the type of the value is invalid.
+     * @throws InvalidArgumentException If the name is invalid
+     * @throws InvalidArgumentException If the type of the value is invalid
      */
     protected function createAttribute(string $name, $value): string
     {
         if (!$this->validateXmlName($name)) {
-            throw new InvalidArgumentException("Attribute name `{$name}` is invalid.");
+            throw new InvalidArgumentException("Attribute name `{$name}` is invalid");
         }
 
         if (!$this->validateValue($value)) {
-            throw new InvalidArgumentException("The type of attribute `{$name}` is invalid.");
+            throw new InvalidArgumentException("The type of attribute `{$name}` is invalid");
         }
 
         return $name . '="' . $this->escape((string) $value) . '"';
@@ -142,7 +142,7 @@ class XmlOutputHelper
      * @param string $tagName
      * @param array<string,string>|string|int|float|null $attributesOrContent
      * @param string|int|float|null $contentOrNothing
-     * @throws InvalidArgumentException If the type of the content is invalid.
+     * @throws InvalidArgumentException If the type of the content is invalid
      */
     public function createEl(
         string $tagName,
@@ -161,7 +161,7 @@ class XmlOutputHelper
         $contentIsValid = $this->validateValue($content) || null === $content;
 
         if (!$contentIsValid) {
-            throw new InvalidArgumentException('The type of the content is invalid.');
+            throw new InvalidArgumentException('The type of the content is invalid');
         }
 
         /** @var array $attributes */

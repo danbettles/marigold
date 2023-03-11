@@ -108,13 +108,13 @@ class Router
 
     /**
      * @return array{id:string,path:string,action:mixed,parameters:array<string,string>}|null
-     * @throws OutOfBoundsException If there is no request URI in the server vars.
-     * @throws InvalidArgumentException If the request URI is invalid.
+     * @throws OutOfBoundsException If there is no request URI in the server vars
+     * @throws InvalidArgumentException If the request URI is invalid
      */
     public function match(HttpRequest $request): ?array
     {
         if (!array_key_exists('REQUEST_URI', $request->server)) {
-            throw new OutOfBoundsException('There is no request URI in the server vars.');
+            throw new OutOfBoundsException('There is no request URI in the server vars');
         }
 
         /** @var array{REQUEST_URI:string} */
@@ -129,7 +129,7 @@ class Router
         );
 
         if (!$requestUriIsValid) {
-            throw new InvalidArgumentException('The request URI is invalid.');
+            throw new InvalidArgumentException('The request URI is invalid');
         }
 
         $path = $requestUriParts['path'];
@@ -182,13 +182,13 @@ class Router
 
     /**
      * @param array<string,string|int> $parameters
-     * @throws OutOfBoundsException If the route does not exist.
-     * @throws InvalidArgumentException If parameter values were missing.
+     * @throws OutOfBoundsException If the route does not exist
+     * @throws InvalidArgumentException If parameter values were missing
      */
     public function generatePath(string $routeId, array $parameters = []): string
     {
         if (!array_key_exists($routeId, $this->getRoutes())) {
-            throw new OutOfBoundsException("The route, `{$routeId}`, does not exist.");
+            throw new OutOfBoundsException("The route, `{$routeId}`, does not exist");
         }
 
         $route = $this->getRoutes()[$routeId];
@@ -204,7 +204,7 @@ class Router
 
         if (count($placeholders) !== count($filteredParameters)) {
             throw new InvalidArgumentException(
-                'Parameter values were missing.  Required: ' . implode(', ', array_keys($placeholders)) . '.'
+                'Parameter values were missing.  Required: ' . implode(', ', array_keys($placeholders))
             );
         }
 
@@ -217,13 +217,13 @@ class Router
 
     /**
      * @param array<array{id:string,path:string,action:mixed}> $routes
-     * @throws InvalidArgumentException If there are no routes.
-     * @throws InvalidArgumentException If a route is missing elements.
+     * @throws InvalidArgumentException If there are no routes
+     * @throws InvalidArgumentException If a route is missing elements
      */
     private function setRoutes(array $routes): self
     {
         if (!$routes) {
-            throw new InvalidArgumentException('There are no routes.');
+            throw new InvalidArgumentException('There are no routes');
         }
 
         $numExpectedRouteEls = count(self::EMPTY_ROUTE);

@@ -34,7 +34,7 @@ class TemplateFileLoaderTest extends AbstractTestCase
     public function testThrowsAnExceptionIfTheArrayOfDirectoryPathsIsEmpty(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('The array of directory paths is empty.');
+        $this->expectExceptionMessage('The array of directory paths is empty');
 
         new TemplateFileLoader([]);
     }
@@ -44,7 +44,7 @@ class TemplateFileLoaderTest extends AbstractTestCase
         $nonExistentDir = $this->createFixturePathname(__FUNCTION__ . '/non_existent/');
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Directory `{$nonExistentDir}` does not exist.");
+        $this->expectExceptionMessage("Directory `{$nonExistentDir}` does not exist");
 
         new TemplateFileLoader([
             $nonExistentDir,
@@ -118,7 +118,7 @@ class TemplateFileLoaderTest extends AbstractTestCase
     public function testFindtemplateThrowsAnExceptionIfThePathnameIsInvalid($pathnameOrFileInfo): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('The pathname is invalid.');
+        $this->expectExceptionMessage('The pathname is invalid');
 
         (new TemplateFileLoader([$this->createFixturePathname(__FUNCTION__)]))
             ->findTemplate($pathnameOrFileInfo)

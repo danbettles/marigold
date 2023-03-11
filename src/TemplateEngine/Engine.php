@@ -43,7 +43,7 @@ class Engine
      *
      * @param string|SplFileInfo $pathnameOrFileInfo
      * @param array<string,mixed> $variables
-     * @throws FileNotFoundException If the template file could not be found.
+     * @throws FileNotFoundException If the template file could not be found
      */
     public function render(
         $pathnameOrFileInfo,

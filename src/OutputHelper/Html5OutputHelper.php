@@ -47,14 +47,14 @@ class Html5OutputHelper extends XmlOutputHelper
     ];
 
     /**
-     * @throws InvalidArgumentException If the name is invalid.
+     * @throws InvalidArgumentException If the name is invalid
      * @param string|int|float|bool $value
      */
     protected function createAttribute(string $name, $value): string
     {
         if (is_bool($value)) {
             if (!$this->validateXmlName($name)) {
-                throw new InvalidArgumentException("Attribute name `{$name}` is invalid.");
+                throw new InvalidArgumentException("Attribute name `{$name}` is invalid");
             }
 
             // See https://meiert.com/en/blog/boolean-attributes-of-html/
@@ -68,7 +68,7 @@ class Html5OutputHelper extends XmlOutputHelper
     }
 
     /**
-     * @throws InvalidArgumentException If content was passed when creating a void element.
+     * @throws InvalidArgumentException If content was passed when creating a void element
      */
     protected function createElement(
         string $tagName,
@@ -78,7 +78,7 @@ class Html5OutputHelper extends XmlOutputHelper
         if (in_array($tagName, self::TAG_NAMES_BY_TYPE['void'])) {
             // See https://html.spec.whatwg.org/multipage/syntax.html#elements-2:void-elements-4
             if (null !== $content) {
-                throw new InvalidArgumentException('Content was passed: a void element may not have content.');
+                throw new InvalidArgumentException('Content was passed: a void element may not have content');
             }
 
             $attributesStr = $this->createAttributes($attributes);
@@ -95,7 +95,7 @@ class Html5OutputHelper extends XmlOutputHelper
 
     /**
      * @param mixed[] $arguments
-     * @throws BadMethodCallException If the called method does not exist.
+     * @throws BadMethodCallException If the called method does not exist
      */
     public function __call(string $methodName, array $arguments): string
     {
@@ -104,7 +104,7 @@ class Html5OutputHelper extends XmlOutputHelper
         $methodNameIsValid = (bool) preg_match('~^create([A-Z][a-zA-Z0-9]*)$~', $methodName, $matches);
 
         if (!$methodNameIsValid) {
-            throw new BadMethodCallException("The method, `{$methodName}`, does not exist.");
+            throw new BadMethodCallException("The method, `{$methodName}`, does not exist");
         }
 
         $tagName = strtolower($matches[1]);

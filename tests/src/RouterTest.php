@@ -55,7 +55,7 @@ class RouterTest extends AbstractTestCase
     public function testThrowsAnExceptionIfThereAreNoRoutes(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('There are no routes.');
+        $this->expectExceptionMessage('There are no routes');
 
         new Router([]);
     }
@@ -348,7 +348,7 @@ class RouterTest extends AbstractTestCase
     public function testMatchThrowsAnExceptionIfTheRequestDoesNotContainTheRequestUri(): void
     {
         $this->expectException(OutOfBoundsException::class);
-        $this->expectExceptionMessage('There is no request URI in the server vars.');
+        $this->expectExceptionMessage('There is no request URI in the server vars');
 
         $this
             ->createRouterWithPostsRoute()
@@ -373,7 +373,7 @@ class RouterTest extends AbstractTestCase
     public function testMatchThrowsAnExceptionIfTheRequestUriIsInvalid(HttpRequest $request): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('The request URI is invalid.');
+        $this->expectExceptionMessage('The request URI is invalid');
 
         $this
             ->createRouterWithPostsRoute()
@@ -417,7 +417,7 @@ class RouterTest extends AbstractTestCase
     public function testGeneratepathThrowsAnExceptionIfThePathDoesNotExist(): void
     {
         $this->expectException(OutOfBoundsException::class);
-        $this->expectExceptionMessage('The route, `nonExistent`, does not exist.');
+        $this->expectExceptionMessage('The route, `nonExistent`, does not exist');
 
         $this
             ->createRouterWithPostsRoute()

@@ -45,7 +45,7 @@ class Registry
 
     /**
      * @param string|callable $factory
-     * @throws InvalidArgumentException If the factory is neither a class-name nor a callable.
+     * @throws InvalidArgumentException If the factory is neither a class-name nor a callable
      */
     private function setFactory(string $id, $factory): self
     {
@@ -54,7 +54,7 @@ class Registry
         ;
 
         if (!$factoryIsValid) {
-            throw new InvalidArgumentException('The factory is neither a class-name nor a callable.');
+            throw new InvalidArgumentException('The factory is neither a class-name nor a callable');
         }
 
         $this->factories[$id] = $factory;
@@ -89,12 +89,12 @@ class Registry
      * Adds an element.
      *
      * @param mixed $value
-     * @throws RuntimeException If the ID already exists.
+     * @throws RuntimeException If the ID already exists
      */
     public function add(string $id, $value): self
     {
         if ($this->contains($id)) {
-            throw new RuntimeException("The ID, `{$id}`, already exists.");
+            throw new RuntimeException("The ID, `{$id}`, already exists");
         }
 
         return $this->setElement($id, $value);
@@ -102,19 +102,19 @@ class Registry
 
     /**
      * @param string|callable $factory
-     * @throws RuntimeException If the ID already exists.
+     * @throws RuntimeException If the ID already exists
      */
     public function addFactory(string $id, $factory): self
     {
         if ($this->contains($id)) {
-            throw new RuntimeException("The ID, `{$id}`, already exists.");
+            throw new RuntimeException("The ID, `{$id}`, already exists");
         }
 
         return $this->setFactory($id, $factory);
     }
 
     /**
-     * @throws RuntimeException If the factory for the element does not return an object.
+     * @throws RuntimeException If the factory for the element does not return an object
      */
     private function createService(string $id): object
     {
@@ -129,7 +129,7 @@ class Registry
         $service = $factory($this);
 
         if (!is_object($service)) {
-            throw new RuntimeException("The factory for `{$id}` does not return an object.");
+            throw new RuntimeException("The factory for `{$id}` does not return an object");
         }
 
         return $service;
@@ -137,7 +137,7 @@ class Registry
 
     /**
      * @return mixed
-     * @throws OutOfBoundsException If the element does not exist.
+     * @throws OutOfBoundsException If the element does not exist
      */
     public function get(string $id)
     {
@@ -152,6 +152,6 @@ class Registry
             return $this->getElements()[$id];
         }
 
-        throw new OutOfBoundsException("The element, `{$id}`, does not exist.");
+        throw new OutOfBoundsException("The element, `{$id}`, does not exist");
     }
 }
