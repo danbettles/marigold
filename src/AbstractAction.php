@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace DanBettles\Marigold;
 
-use DanBettles\Marigold\Exception\HttpException\NotFoundHttpException;
 use DanBettles\Marigold\TemplateEngine\Engine;
 
 /**
- * Takes an HTTP request and creates an appropriate response.
+ * Creates an `HttpResponse` from an `HttpRequest`.
  */
 abstract class AbstractAction
 {
@@ -33,11 +32,6 @@ abstract class AbstractAction
         ;
 
         return new HttpResponse($output, $httpStatusCode);
-    }
-
-    protected function createNotFoundException(string $specifier): NotFoundHttpException
-    {
-        return new NotFoundHttpException($specifier);
     }
 
     abstract public function __invoke(HttpRequest $request): HttpResponse;

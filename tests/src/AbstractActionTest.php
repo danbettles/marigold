@@ -77,20 +77,4 @@ class AbstractActionTest extends AbstractTestCase
         $this->assertSame(418, $response->getStatusCode());
         $this->assertSame("I'm sorry, Dave, I'm afraid I can't do that.", $response->getContent());
     }
-
-    public function testCreatenotfoundexceptionCreatesANotFoundHttpexception(): void
-    {
-        $this->expectException(NotFoundHttpException::class);
-        $this->expectExceptionMessage('404 Not Found: something');
-
-        $templateEngineStub = $this->createStub(Engine::class);
-
-        (new class ($templateEngineStub) extends AbstractAction
-        {
-            public function __invoke(HttpRequest $request): HttpResponse
-            {
-                throw $this->createNotFoundException('something');
-            }
-        })(HttpRequest::createFromGlobals());
-    }
 }
