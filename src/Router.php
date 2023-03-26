@@ -10,19 +10,21 @@ use OutOfBoundsException;
 use function array_combine;
 use function array_filter;
 use function array_intersect_key;
-use function array_keys;
 use function array_key_exists;
+use function array_keys;
+use function array_replace;
 use function count;
 use function explode;
 use function implode;
 use function preg_match;
 use function preg_match_all;
-use function strpos;
 use function str_replace;
+use function strpos;
 
 use const ARRAY_FILTER_USE_KEY;
 use const false;
 use const null;
+use const true;
 
 /**
  * Maps paths to actions.
@@ -35,37 +37,58 @@ use const null;
  *       'path' => '/posts/{postId}',
  *       'action' => ['FooBar', 'baz'],
  *     ],
+ *     [
+ *       'id' => 'showArticle',
+ *       'path' => '/articles/{articleId}',
+ *       'action' => ShowArticleAction::class,
+ *     ],
+ *     [
+ *       'id' => 'showAboutPage',
+ *       'path' => '/about',
+ *       'action' => ShowArticleAction::class,
+ *       'parameters' => [
+ *          'articleId' => 123,
+ *       ],
+ *     ],
  *     // ...
  * ]
  *
  * `action` can be anything: the name of a method; a callable; whatever's appropriate for the app.
  *
- * A matched route, the return value of `match()`, will have an additional element, `parameters`, containing the values
- * of any parameters found in the path.
+ * A matched route, the return value of `match()`, will always have an additional array element, `parameters`,
+ * containing the values of any parameters found in the path.
+ *
+ * Default values for parameters can be supplied in the `parameters` element.
+ *
+ * @phpstan-type MatchedRouteArray array{id:string,path:string,action:mixed,parameters:array<string,mixed>}
+ * @phpstan-type IndexedRouteArrayArray array<string,RouteArray>
+ * @phpstan-type PlaceholdersArray array<string,string>
  */
 class Router
 {
     /**
-     * @var array{id:null,path:null,action:null}
+     * @var array<string,bool>
      */
-    private const EMPTY_ROUTE = [
-        'id' => null,
-        'path' => null,
-        'action' => null,
+    private const ROUTE_ELEMENTS = [
+        // Name => mandatory?
+        'id' => true,
+        'path' => true,
+        'action' => true,
+        'parameters' => false,
     ];
 
     /**
-     * @var array<string,array{id:string,path:string,action:mixed}>
+     * @phpstan-var IndexedRouteArrayArray
      */
     private array $routes;
 
     /**
-     * @var array<string,array<string,string>>
+     * @phpstan-var array<string,PlaceholdersArray>
      */
     private array $placeholdersByRouteId = [];
 
     /**
-     * @param array<array{id:string,path:string,action:mixed}> $routes
+     * @phpstan-param RouteArray[] $routes
      */
     public function __construct(array $routes)
     {
@@ -78,8 +101,8 @@ class Router
     }
 
     /**
-     * @param array<string,array{id:string,path:string,action:mixed}> $routes
-     * @return array<string,array{id:string,path:string,action:mixed}>
+     * @phpstan-param IndexedRouteArrayArray $routes
+     * @phpstan-return IndexedRouteArrayArray
      */
     private function eliminateUnmatchableRoutes(string $path, array $routes): array
     {
@@ -93,21 +116,24 @@ class Router
     }
 
     /**
-     * @param array{id:string,path:string,action:mixed} $baseRoute
+     * @phpstan-param RouteArray $baseRoute
      * @param array<string,string> $parameters
-     * @return array{id:string,path:string,action:mixed,parameters:array<string,string>}
+     * @phpstan-return MatchedRouteArray
      */
     private function createMatchedRoute(
         array $baseRoute,
         array $parameters = []
     ): array {
-        $baseRoute['parameters'] = $parameters;
+        $baseRoute['parameters'] = array_replace(
+            ($baseRoute['parameters'] ?? []),
+            $parameters
+        );
 
         return $baseRoute;
     }
 
     /**
-     * @return array{id:string,path:string,action:mixed,parameters:array<string,string>}|null
+     * @phpstan-return MatchedRouteArray|null
      * @throws OutOfBoundsException If there is no request URI in the server vars
      * @throws InvalidArgumentException If the request URI is invalid
      */
@@ -216,7 +242,7 @@ class Router
     }
 
     /**
-     * @param array<array{id:string,path:string,action:mixed}> $routes
+     * @phpstan-param RouteArray[] $routes
      * @throws InvalidArgumentException If there are no routes
      * @throws InvalidArgumentException If a route is missing elements
      */
@@ -226,23 +252,26 @@ class Router
             throw new InvalidArgumentException('There are no routes');
         }
 
-        $numExpectedRouteEls = count(self::EMPTY_ROUTE);
+        $mandatoryRouteElements = array_filter(self::ROUTE_ELEMENTS);
+        $numMandatoryRouteElements = count($mandatoryRouteElements);
 
         foreach ($routes as $i => $route) {
-            $filteredRoute = array_intersect_key($route, self::EMPTY_ROUTE);
+            // In reality, some routes won't be valid, hence why we need to adjust PHPStan's expectations.
+            /** @phpstan-var mixed[] */
+            $filteredRoute = array_intersect_key($route, self::ROUTE_ELEMENTS);
 
-            // In reality, some routes may not be what we were hoping for, hence why we need to adjust PHPStan's
-            // expectations.
-            /** @phpstan-var mixed[] $filteredRoute */
-            if ($numExpectedRouteEls !== count($filteredRoute)) {
+            $numMandatoryInFiltered = count(array_intersect_key($filteredRoute, $mandatoryRouteElements));
+
+            if ($numMandatoryRouteElements !== $numMandatoryInFiltered) {
                 throw new InvalidArgumentException(
                     "The route at index `{$i}` is missing elements.  " .
-                    'Required: ' . implode(', ', array_keys(self::EMPTY_ROUTE)) . '.'
+                    'Required: ' . implode(', ', array_keys($mandatoryRouteElements)) . '.'
                 );
             }
 
+            /** @phpstan-var RouteArray $filteredRoute */
+
             $routeId = $route['id'];
-            /** @var array{id:string,path:string,action:mixed} $filteredRoute */
             $this->routes[$routeId] = $filteredRoute;
         }
 
@@ -250,7 +279,7 @@ class Router
     }
 
     /**
-     * @return array<string,array{id:string,path:string,action:mixed}>
+     * @phpstan-return IndexedRouteArrayArray
      */
     public function getRoutes(): array
     {
@@ -258,7 +287,7 @@ class Router
     }
 
     /**
-     * @return array<string,string>
+     * @phpstan-return PlaceholdersArray
      */
     private function getRoutePlaceholders(string $routeId): array
     {
@@ -269,9 +298,9 @@ class Router
             $matches = null;
             $matched = (bool) preg_match_all("~\{($placeholderNamePattern)\}~", $route['path'], $matches);
 
-            /** @var array<string,string> */
+            /** @phpstan-var PlaceholdersArray */
             $placeholders = $matched
-                // name => placeholder
+                // Name => placeholder.  E.g. "articleId" => "{articleId}".
                 ? array_combine($matches[1], $matches[0])
                 : []
             ;

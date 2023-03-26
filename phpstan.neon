@@ -8,6 +8,7 @@ parameters:
 
     typeAliases:
         HeadersArray: 'array<string,string>'
+        RouteArray: 'array{id:string,path:string,action:mixed,parameters?:array<string,mixed>}'
 
     ignoreErrors:
         -

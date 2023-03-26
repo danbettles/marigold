@@ -104,7 +104,7 @@ class RouterTest extends AbstractTestCase
 
     /**
      * @dataProvider providesRoutesContainingInvalid
-     * @param array<array{id:string,path:string,action:mixed}> $routesContainingInvalid (Using the valid type to silence PHPStan.)
+     * @phpstan-param RouteArray[] $routesContainingInvalid (Using the valid type to silence PHPStan.)
      */
     public function testThrowsAnExceptionIfARouteIsInvalid(
         int $routeIndex,
@@ -273,13 +273,56 @@ class RouterTest extends AbstractTestCase
                 ],
                 $this->createHttpRequest(['REQUEST_URI' => '/articles/the-quick-brown-fox']),
             ],
+            [
+                [
+                    'id' => 'showAboutPage',
+                    'path' => '/about',
+                    'action' => 'ShowAboutPageAction',
+                    'parameters' => [
+                        'articleId' => 'about-page',
+                    ],
+                ],
+                [
+                    [
+                        'id' => 'showAboutPage',
+                        'path' => '/about',
+                        'action' => 'ShowAboutPageAction',
+                        'parameters' => [
+                            'articleId' => 'about-page',
+                        ],
+                    ],
+                ],
+                $this->createHttpRequest(['REQUEST_URI' => '/about']),
+            ],
+            // 'Default' parameters will be overridden.
+            [
+                [
+                    'id' => 'showArticle',
+                    'path' => '/articles/{articleId}',
+                    'action' => 'anything',
+                    'parameters' => [
+                        'articleId' => '456',
+                    ],
+                ],
+                [
+                    [
+                        'id' => 'showArticle',
+                        'path' => '/articles/{articleId}',
+                        'action' => 'anything',
+                        'parameters' => [
+                            'articleId' => '123',
+                        ],
+                    ],
+                ],
+                $this->createHttpRequest(['REQUEST_URI' => '/articles/456']),
+            ],
         ];
     }
 
     /**
      * @dataProvider providesMatchableRoutes
      * @param array{path:string,action:mixed,parameters:string[]} $expectedRoute
-     * @param array<array{id:string,path:string,action:mixed}> $routes
+     * @phpstan-param RouteArray[] $routes
      */
     public function testMatchAttemptsToFindAMatchingRoute(
         array $expectedRoute,
@@ -332,7 +375,7 @@ class RouterTest extends AbstractTestCase
 
     /**
      * @dataProvider providesUnmatchableRoutes
-     * @param array<array{id:string,path:string,action:mixed}> $unmatchableRoutes
+     * @phpstan-param RouteArray[] $unmatchableRoutes
      */
     public function testMatchReturnsNullIfThereIsNoMatchingRoute(
         array $unmatchableRoutes,
@@ -478,7 +521,7 @@ class RouterTest extends AbstractTestCase
 
     /**
      * @dataProvider providesIncompleteArgsForGeneratepath
-     * @param array<array{id:string,path:string,action:mixed}> $routes
+     * @phpstan-param RouteArray[] $routes
      * @param array<string,string|int> $parameters
      */
     public function testGeneratepathThrowsAnExceptionIfInsufficientParametersWerePassed(

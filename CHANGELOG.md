@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+No unreleased changes.
+
+## [4.0.0] - 2023-03-26
+
+### Added
+
+- 'Default' route parameters will be processed, and passed through to, the action.
+
 ### Removed
 
 - `AbstractAction::createNotFoundException()` because it was a bit pointless 🤦‍♂️
@@ -108,7 +116,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 First stable release.
 
-[unreleased]: https://github.com/danbettles/marigold/compare/v3.0.0...HEAD
+[unreleased]: https://github.com/danbettles/marigold/compare/v4.0.0...HEAD
+[4.0.0]: https://github.com/danbettles/marigold/compare/v3.0.0...v4.0.0
 [3.0.0]: https://github.com/danbettles/marigold/compare/v2.5.0...v3.0.0
 [2.5.0]: https://github.com/danbettles/marigold/compare/v2.4.0...v2.5.0
 [2.4.0]: https://github.com/danbettles/marigold/compare/v2.3.3...v2.4.0
