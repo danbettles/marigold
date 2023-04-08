@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 No unreleased changes.
 
+## [4.0.1] - 2023-04-08
+
+### Changed
+
+- The UTF-8 BOM is removed from output from `Php::executeFile()` because it's more trouble than it's worth.
+
 ## [4.0.0] - 2023-03-26
 
 ### Added
@@ -116,7 +122,8 @@ No unreleased changes.
 
 First stable release.
 
-[unreleased]: https://github.com/danbettles/marigold/compare/v4.0.0...HEAD
+[unreleased]: https://github.com/danbettles/marigold/compare/v4.0.1...HEAD
+[4.0.1]: https://github.com/danbettles/marigold/compare/v4.0.0...v4.0.1
 [4.0.0]: https://github.com/danbettles/marigold/compare/v3.0.0...v4.0.0
 [3.0.0]: https://github.com/danbettles/marigold/compare/v2.5.0...v3.0.0
 [2.5.0]: https://github.com/danbettles/marigold/compare/v2.4.0...v2.5.0

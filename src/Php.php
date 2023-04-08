@@ -43,7 +43,10 @@ class Php
 
                 $__RESPONSE__ = require $__FILE__;
 
+                /** @phpstan-var string */
                 $__OUTPUT__ = ob_get_contents();
+                // The UTF-8 BOM causes problems and is not strictly necessary.
+                $__OUTPUT__ = preg_replace('~^\xEF\xBB\xBF~', '', $__OUTPUT__);
 
                 return $__RESPONSE__;
             } finally {

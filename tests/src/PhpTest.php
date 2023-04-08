@@ -73,6 +73,20 @@ class PhpTest extends AbstractTestCase
         $this->assertSame('Hello, Dan!', $output);
     }
 
+    public function testExecutefileStripsTheUtf8BomIfThereIsOne(): void
+    {
+        $output = null;
+
+        (new Php())->executeFile(
+            $this->createFixturePathname('stylesheet_with_a_utf8_bom.css'),
+            [],
+            $output
+        );
+
+        // (No BOM)
+        $this->assertSame('html { font-family: "Comic Sans MS", "Comic Sans", cursive }', $output);
+    }
+
     public function testExecutefileThrowsAnExceptionIfThePhpFileDoesNotExist(): void
     {
         $nonExistentFile = $this->createFixturePathname('non_existent.file');
